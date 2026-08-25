@@ -1,0 +1,29 @@
+Surface structure: A high-fidelity 1440×900 landscape desktop web app mockup with a restrained top app header, a compact horizontal scenario selector immediately below it, then a dominant two-column comparison workspace of two large Korean financial statement sheets side by side, linked through the center by a clear repayment connector arrow; a narrow assumptions/footer notice anchors the bottom. The interface is for “학자금 대출 최적화 AI”.
+
+Use case: ui-mockup
+Asset type: production-quality desktop web UI direction mockup for an interactive student-loan planning demo
+Primary request: Visualize the “두 시기의 명세서” concept as a trustworthy, familiar Korean public-finance interface. The two statement sheets should feel like precise official monthly account statements: crisp ruled rows, aligned labels and values, subtotal/total rules, generous white space, restrained emphasis, and excellent Korean typography legibility.
+
+Layout and exact content:
+- Top left product title: “학자금 대출 최적화 AI”
+- Page headline: “두 시기의 명세서”
+- Scenario choices all visibly present in one segmented control: “High 0시간” / “Medium 10시간” / “Low 20시간”. Make High selected with a sober #137A67 accent.
+- Left statement title: “대학 시절 생활 명세”
+- Left rows, verbatim and with no substitutions: “월 근로소득 0만원”, “대출 사용”, “가능한 소비 104만원”, “희망 130만원”
+- Right statement title: “취업 후 월급 명세”
+- Right rows, verbatim and with no substitutions: “월급 300만원”, “월 상환 86만원”, “예상 소비 214만원”, “희망 250만원”
+- A central connector between sheets labeled “졸업 후 5년 상환”, using a simple directional line/arrow, making the relationship between today’s loan use and future repayment immediately understandable.
+- Add a small, plain bottom note: “데모 수치는 단순 계산이며 금융 자문이 아닙니다.”
+
+Visual system:
+- Canvas/background #F3F5F7
+- Primary ink #20252D
+- Accent #137A67
+- Pale accent surface/border #DCE8E4
+- White statement paper surfaces are allowed.
+- Strong typographic hierarchy using a clean Korean sans-serif style, tabular numerals, clear row labels, dark readable body text.
+- Subtle 1px borders and minimal soft paper shadow only; square-to-small-radius corners, no pill-heavy styling.
+- Materials: official account statements, ledger rows, thin divider rules, emphasized total rows, compact administrative chips, familiar trustworthy Korean public-finance service clarity.
+- Show the full desktop viewport straight-on, not perspective, no device frame, no browser chrome.
+
+Constraints: All listed Korean text and numbers must appear verbatim and be readable. No photos, no people, no illustrations, no gradients, no fake logos, no fake institutions, no additional product claims, no stock charts, no decorative 3D, no glassmorphism, no excessive cards, no marketing hero composition. Keep the two statement sheets as the dominant visual focus and make comparison effortless.

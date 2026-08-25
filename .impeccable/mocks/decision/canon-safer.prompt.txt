@@ -1,0 +1,10 @@
+Use case: ui-mockup
+Asset type: high-fidelity north-star comp for a Korean desktop web app direction card, landscape 1440x900-style
+Primary request: Create the standard familiar financial dashboard direction for “학자금 대출 최적화 AI”.
+Surface structure: a compact profile summary across the top; directly below, three equal scenario cards labeled “High · 주 0시간”, “Medium · 주 10시간”, and “Low · 주 20시간”; each card shows 대학 시절 월 소비, 월 대출 사용, 취업 후 월 상환, 취업 후 월 소비; a wide recommendation/comparison region closes the viewport and compares the user’s desired 대학 소비 130만원 and 취업 후 소비 250만원.
+Content: High emphasizes 대학 소비 104만원 / 월 상환 86만원 / 취업 후 소비 214만원. Make the other scenario cards visibly comparable without inventing claims. State “데모 계산” clearly.
+Style/medium: polished production-grade Korean fintech web UI, clean card system, strict information hierarchy, realistic semantic interface—not a poster.
+Color palette: white #FFFFFF, ink #182230, blue #2563EB, rules #E5E7EB.
+Materials/textures: flat white cards, restrained comparison bars, small status badges, no decorative imagery.
+Text (verbatim where legible): “학자금 대출 최적화 AI”, “나의 기준”, “대학 시절 희망 130만원”, “취업 후 희망 250만원”, “데모 계산”.
+Constraints: desktop application surface, no photo, no fake company logo, no testimonial, no invented performance claim, no browser chrome, no gradient, no glassmorphism, no 3D, no excessive rounded pills, no tiny illegible wall of text. The visitor must instantly understand scenario selection and the current-vs-future consumption trade-off.

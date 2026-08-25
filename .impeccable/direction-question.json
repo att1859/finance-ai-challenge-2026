@@ -1,0 +1,114 @@
+{
+  "title": "학자금 대출 데모의 화면 구조 선택",
+  "question": "대학 시절과 취업 후의 교환관계를 어떤 한 장면으로 보여줄지 선택해주세요.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "두 시기의 단면도",
+      "kicker": "THE ROLL",
+      "lineage": "대학 건물의 건축 단면도와 층별 안내 체계",
+      "thesis": "대학 시절과 취업 후를 위아래 두 층으로 놓고 대출 상환선을 하나의 구조로 연결합니다.",
+      "palette": ["#F2F0E8", "#17251F", "#2A6F55", "#F1A93B"],
+      "materials": ["도면 격자", "층별 단면", "측정 눈금"],
+      "viewport": "왼쪽 시나리오 선택부에서 오른쪽의 대학층과 취업층으로 수치가 즉시 이동하는 한 화면입니다.",
+      "risk": "도면 표현이 강해지면 금융 도구보다 인포그래픽처럼 보일 수 있습니다.",
+      "raised": [
+        {"from": "오실로스코프", "raise": "모든 비교값에 공통 기준선과 정확한 눈금을 부여합니다."},
+        {"from": "가변 활자 견본", "raise": "시나리오 전환이 전체 숫자와 도형에 동시에 반영됩니다."},
+        {"from": "센터 레일 판면", "raise": "두 시기를 가르는 중심축이 정보의 읽는 순서를 고정합니다."}
+      ],
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          {"label": "시나리오 레일", "x": 0, "y": 0, "w": 3, "h": 10, "accent": true},
+          {"label": "대학 시절", "x": 3, "y": 0, "w": 9, "h": 5},
+          {"label": "취업 후", "x": 3, "y": 5, "w": 9, "h": 5, "accent": true}
+        ]
+      },
+      "comp": ".impeccable/mocks/decision/assigned.webp"
+    },
+    {
+      "id": "model-pick",
+      "label": "수강신청 시간표",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "대학생이 매 학기 사용하는 수강신청 시간표",
+      "thesis": "근로시간을 시간표 블록으로 채우고 비워지는 시간만큼 대출과 소비가 움직입니다.",
+      "palette": ["#F7F8FA", "#1E2430", "#3567D6", "#E8B44F"],
+      "materials": ["시간표 칸", "학점 배지", "학기 구분선"],
+      "viewport": "주간 시간표와 월 소비·상환 결과가 나란히 놓여 선택의 대가를 즉시 보여줍니다.",
+      "risk": "익숙하고 명확하지만 금융 결과보다 일정 관리 화면처럼 보일 수 있습니다.",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          {"label": "시간표", "x": 0, "y": 0, "w": 7, "h": 10, "accent": true},
+          {"label": "시나리오", "x": 7, "y": 0, "w": 5, "h": 3},
+          {"label": "결과", "x": 7, "y": 3, "w": 5, "h": 7}
+        ]
+      },
+      "comp": ".impeccable/mocks/decision/model-pick.webp"
+    },
+    {
+      "id": "challenger-scope",
+      "label": "상환 신호 계기판",
+      "verdict": "competitive",
+      "lineage": "신호를 같은 눈금 위에서 비교하는 오실로스코프",
+      "thesis": "대학 소비선과 취업 후 소비선을 같은 기준선 위에 겹쳐 변화량을 읽게 합니다.",
+      "palette": ["#101614", "#B9F36B", "#6C8078", "#F2B84B"],
+      "materials": ["측정 격자", "신호선", "고정 눈금"],
+      "viewport": "시나리오 레버를 바꾸면 두 소비선과 상환선이 한 계기판에서 이동합니다.",
+      "case": "제품의 수치 비교는 매우 선명하지만 대학생의 일상적 맥락은 단면도보다 약합니다.",
+      "risk": "어두운 계기판이 금융 전문 도구처럼 보여 초보자에게 어렵게 느껴질 수 있습니다.",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          {"label": "측정 화면", "x": 0, "y": 0, "w": 9, "h": 10, "accent": true},
+          {"label": "레버", "x": 9, "y": 0, "w": 3, "h": 4},
+          {"label": "수치", "x": 9, "y": 4, "w": 3, "h": 6}
+        ]
+      },
+      "comp": ".impeccable/mocks/decision/challenger-scope.webp",
+      "hero": "https://impeccable.style/worlds/cards/scientific-notation-oscilloscope-signal-bench-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/scientific-notation-oscilloscope-signal-bench.webp"
+    },
+    {
+      "id": "challenger-variable",
+      "label": "가변 수치 견본",
+      "verdict": "declined",
+      "lineage": "축을 움직이면 전체 활자가 동시에 변하는 가변 활자 견본",
+      "thesis": "근로시간 축 하나가 모든 숫자의 크기와 무게를 동시에 바꿉니다.",
+      "palette": ["#FAFAF7", "#151515", "#3B61E8"],
+      "materials": ["대형 숫자", "축 눈금", "무장식 평면"],
+      "viewport": "거대한 핵심 숫자와 하나의 근로시간 축이 화면을 지배합니다.",
+      "case": "즉각적인 반응은 좋지만 두 시기의 관계와 대학 생활 맥락을 충분히 담기 어렵습니다.",
+      "kept": "한 번의 선택이 모든 표현에 동시에 반영되는 반응성.",
+      "risk": "숫자 포스터처럼 보여 구체적인 상환 과정을 놓칠 수 있습니다.",
+      "hero": "https://impeccable.style/worlds/cards/variable-font-specimen-hero.webp"
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "buildPath": {"value": "code", "toggle": true},
+  "canon": true,
+  "canonCard": {
+    "label": "일반 금융 대시보드",
+    "thesis": "세 개의 카드와 막대그래프로 결과를 정돈해 보여주는 익숙한 방식입니다.",
+    "palette": ["#FFFFFF", "#182230", "#2563EB", "#E5E7EB"],
+    "materials": ["흰 카드", "막대그래프", "상태 배지"],
+    "viewport": "상단 프로필 요약 아래에 세 시나리오 카드가 같은 크기로 놓입니다.",
+    "risk": "배우기 쉽지만 이 서비스만의 시간과 소비 교환관계가 기억에 남기 어렵습니다.",
+    "wireframe": {
+      "cols": 12,
+      "rows": 10,
+      "regions": [
+        {"label": "요약", "x": 0, "y": 0, "w": 12, "h": 3},
+        {"label": "카드 1", "x": 0, "y": 3, "w": 4, "h": 7},
+        {"label": "카드 2", "x": 4, "y": 3, "w": 4, "h": 7},
+        {"label": "카드 3", "x": 8, "y": 3, "w": 4, "h": 7}
+      ]
+    },
+    "comp": ".impeccable/mocks/decision/canon.webp"
+  },
+  "steer": true
+}
