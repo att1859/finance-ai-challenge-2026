@@ -1,0 +1,92 @@
+{
+  "title": "더 익숙한 화면 구조",
+  "question": "설명 없이도 바로 이해되는 세 가지 구조로 다시 구성했습니다.",
+  "options": [
+    {
+      "id": "safe-timeline",
+      "label": "9년 재무 타임라인",
+      "kicker": "SAFER HAND",
+      "lineage": "은행의 대출 상환 일정표와 생애주기 타임라인",
+      "thesis": "대학 4년과 상환 5년을 한 줄로 이어 현재 선택이 미래 생활비를 어떻게 바꾸는지 보여줍니다.",
+      "palette": ["#F7F9FC", "#172033", "#2E6BD9", "#F0B24A"],
+      "materials": ["연도 눈금", "비교선", "상환 구간"],
+      "viewport": "상단의 세 시나리오 선택 아래에 9년 타임라인과 현재·미래 소비 수치가 연결됩니다.",
+      "risk": "전체 흐름은 가장 명확하지만 특정 월의 상세 계산은 덜 강조됩니다.",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          {"label": "시나리오", "x": 0, "y": 0, "w": 12, "h": 2, "accent": true},
+          {"label": "9년 타임라인", "x": 0, "y": 2, "w": 12, "h": 4},
+          {"label": "대학 결과", "x": 0, "y": 6, "w": 6, "h": 4},
+          {"label": "취업 후 결과", "x": 6, "y": 6, "w": 6, "h": 4, "accent": true}
+        ]
+      },
+      "comp": ".impeccable/mocks/decision/safe-timeline.png"
+    },
+    {
+      "id": "safe-planner",
+      "label": "선택형 재무 플래너",
+      "lineage": "토스·뱅크샐러드 계열의 단계형 금융 계산기",
+      "thesis": "왼쪽에서 근로시간을 고르고 오른쪽에서 소비·대출·상환 결과를 순서대로 읽습니다.",
+      "palette": ["#FFFFFF", "#141B2D", "#3859E8", "#EAF0FF"],
+      "materials": ["선택 세그먼트", "결과 패널", "비교 막대"],
+      "viewport": "선택 패널과 결과 패널이 4:8 비율로 나뉘고 핵심 네 수치가 우측에 크게 표시됩니다.",
+      "risk": "사용하기 쉽지만 국내 금융 앱과 비슷해 서비스 고유성이 약할 수 있습니다.",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          {"label": "조건 선택", "x": 0, "y": 0, "w": 4, "h": 10, "accent": true},
+          {"label": "핵심 결과", "x": 4, "y": 0, "w": 8, "h": 5},
+          {"label": "소비 비교", "x": 4, "y": 5, "w": 8, "h": 5}
+        ]
+      },
+      "comp": ".impeccable/mocks/decision/safe-planner.png"
+    },
+    {
+      "id": "safe-statement",
+      "label": "두 시기의 명세서",
+      "lineage": "한국장학재단 상환 안내와 월급명세서의 항목 체계",
+      "thesis": "대학 시절 생활 명세서와 취업 후 월급 명세서를 나란히 놓아 들어오고 나가는 돈을 설명합니다.",
+      "palette": ["#F3F5F7", "#20252D", "#137A67", "#DCE8E4"],
+      "materials": ["명세 항목", "합계선", "공식 안내문"],
+      "viewport": "두 장의 명세표 사이에 대출 원리금이 이동하는 연결선이 놓입니다.",
+      "risk": "신뢰감은 높지만 숫자가 많아지면 데모가 다소 행정적으로 보일 수 있습니다.",
+      "wireframe": {
+        "cols": 12,
+        "rows": 10,
+        "regions": [
+          {"label": "대학 명세", "x": 0, "y": 0, "w": 5, "h": 10},
+          {"label": "연결", "x": 5, "y": 0, "w": 2, "h": 10, "accent": true},
+          {"label": "취업 명세", "x": 7, "y": 0, "w": 5, "h": 10}
+        ]
+      },
+      "comp": ".impeccable/mocks/decision/safe-statement.png"
+    }
+  ],
+  "reroll": {"registers": ["safer", "bolder"]},
+  "buildPath": {"value": "code", "toggle": true},
+  "canon": true,
+  "canonCard": {
+    "label": "표준 금융 대시보드",
+    "thesis": "토스의 쉬운 금융 문장, 뱅크샐러드의 자산 요약, 한국장학재단의 상환 항목을 익숙한 카드형 화면으로 결합합니다.",
+    "palette": ["#FFFFFF", "#182230", "#2563EB", "#E5E7EB"],
+    "materials": ["흰 카드", "막대그래프", "상태 배지"],
+    "viewport": "프로필 요약 아래에 세 시나리오 카드와 추천 카드가 표준 대시보드 구조로 놓입니다.",
+    "risk": "학습 비용은 가장 낮지만 경쟁 서비스와 구분되는 기억점도 가장 적습니다.",
+    "wireframe": {
+      "cols": 12,
+      "rows": 10,
+      "regions": [
+        {"label": "프로필", "x": 0, "y": 0, "w": 12, "h": 3},
+        {"label": "시나리오 1", "x": 0, "y": 3, "w": 4, "h": 4},
+        {"label": "시나리오 2", "x": 4, "y": 3, "w": 4, "h": 4},
+        {"label": "시나리오 3", "x": 8, "y": 3, "w": 4, "h": 4},
+        {"label": "추천", "x": 0, "y": 7, "w": 12, "h": 3, "accent": true}
+      ]
+    },
+    "comp": ".impeccable/mocks/decision/canon-safer.png"
+  },
+  "steer": true
+}

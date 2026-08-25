@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta name="color-scheme" content="light dark">
+    <script>
+    (function(window, document, mode) {
+      try {
+        document.documentElement.dataset.seed = '';
+        document.documentElement.dataset.seedColorMode = mode;
+      } catch (e) {}
+
+      try {
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+        if ('addEventListener' in prefersDark) {
+          prefersDark.addEventListener('change', apply);
+        } else if ('addListener' in prefersDark) {
+          prefersDark.addListener(apply);
+        }
+
+        if (prefersDark.matches) {
+          document.documentElement.dataset.seedUserColorScheme = 'dark';
+        } else {
+          document.documentElement.dataset.seedUserColorScheme = 'light';
+        }
+
+        function apply() {
+          document.documentElement.dataset.seedUserColorScheme = prefersDark.matches ? 'dark' : 'light';
+        }
+      } catch (e) {}
+
+      try {
+        if (typeof window.AndroidFunction !== 'undefined') {
+          document.documentElement.dataset.seedPlatform = 'android';
+        } else if (typeof window.webkit !== 'undefined' && typeof window.webkit.messageHandlers !== 'undefined') {
+          document.documentElement.dataset.seedPlatform = 'ios';
+        } else {
+          document.documentElement.dataset.seedPlatform = 'ios';
+        }
+      } catch (e) {}
+
+      try {
+        if (false) {
+          var platform = document.documentElement.dataset.seedPlatform;
+
+          if (platform === 'ios') {
+            document.documentElement.dataset.seedFontScaling = 'enabled';
+
+            function applyIOSFontScaling() {
+              try {
+                var tempEl = document.createElement('div');
+                tempEl.style.cssText = 'position:absolute;visibility:hidden;font-size:16px;font:-apple-system-body;';
+                document.body.appendChild(tempEl);
+                var size = parseFloat(window.getComputedStyle(tempEl).fontSize);
+                document.body.removeChild(tempEl);
+                var mult = Math.max(0.8, Math.min(1.35, (size / 16) * 0.9412));
+                document.documentElement.dataset.seedFontMultiplier = parseFloat(mult.toFixed(2)).toString();
+              } catch (e) {}
+            }
+
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', applyIOSFontScaling);
+            } else {
+              applyIOSFontScaling();
+            }
+          } else if (platform === 'android') {
+            var fontSize = parseFloat(window.getComputedStyle(document.documentElement).fontSize);
+            var scale = Math.max(0.8, Math.min(1.5, fontSize / 16));
+            document.documentElement.dataset.seedFontMultiplier = parseFloat(scale.toFixed(2)).toString();
+            document.documentElement.dataset.seedFontScaling = 'enabled';
+          }
+        }
+      } catch (e) {}
+    })(window, document, 'system');
+  </script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f8fa" />
+    <meta
+      name="description"
+      content="대학 시절의 노동과 소비, 취업 후 상환 부담을 함께 비교하는 학자금 대출 최적화 AI 데모"
+    />
+    <title>학자금 대출 최적화 AI</title>
+    <script type="module" crossorigin src="/assets/index-DQJRgbMH.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BsTTSF_i.css">
+  </head>
+  <body>
+    <!--
+      THESIS: 현재의 시간과 미래의 소비를 같은 숫자 체계에서 비교하고, 정보를 한 화면에 압축하는 금융 대시보드 관습을 거부한다.
+      OWN-WORLD: #F7F8FA 바탕, #191F28 잉크, 흰 데이터 면과 5~8% 이내의 #C7F000 선택색으로 구성된 프리미엄 금융 작업대다.
+      STORY: 사용자는 세 시나리오를 고르고 대학 소비·노동시간·취업 후 상환·소비를 확인한 뒤 아래로 내려가 시간 흐름과 계산 근거를 검토한다.
+      FIRST VIEWPORT: 얇은 헤더와 간결한 소개 뒤 세 선택지가 놓이고, 선택 결과는 다음 넓은 검정 데이터 면에서 대학과 취업 후를 강하게 대비한다.
+      FORM: Toss식 정보 위계와 절제된 투자 플랫폼 태도를 결합한 사용자 고정 방향, seed ce855290 이후 명시적 리디자인.
+      FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+    -->
+    <div id="app"></div>
+  <!-- impeccable-live-start -->
+<script src="http://localhost:8400/live.js?token=41923fa6-deea-44e9-ab74-15002e478bd2"></script>
+<!-- impeccable-live-end -->
+</body>
+</html>

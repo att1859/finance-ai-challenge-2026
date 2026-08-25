@@ -1,0 +1,46 @@
+Surface structure: a single polished 1440×900 landscape Korean desktop web app interface with an exact 4:8 split. A narrow left condition-selector column occupies one third of the usable content width; a wide right results workspace occupies two thirds. Keep everything inside one desktop viewport with a slim top header. On the right, place a clear 2×2 group of four key result panels in the upper half, then two horizontal comparison-bar sections in the lower half. This structure must be immediately obvious.
+
+Use case: ui-mockup
+Asset type: high-fidelity desktop web UI north-star comp for a project decision page
+Primary request: design a practical, shippable Korean fintech calculator interface for “학자금 대출 최적화 AI”. It helps a university student compare college-period consumption and weekly work with post-employment loan repayment and consumption. Make it extremely polished yet familiar, reassuring, and easy to scan—not experimental concept art.
+
+Scene/backdrop: clean #FFFFFF app canvas with sparse #EAF0FF section surfaces; desktop browser viewport only, no browser chrome.
+Style/medium: realistic production-grade Korean fintech web product UI; crisp sans-serif Korean typography; restrained 12–16px radii; precise alignment and spacing; thin neutral dividers; subtle offset soft shadows only where needed.
+Color palette: #FFFFFF background, #141B2D primary text, #3859E8 primary/action/data emphasis, #EAF0FF selected and supporting surfaces. Do not introduce other dominant colors.
+Materials: segmented controls, structured result panels, horizontal comparison bars. No photographs, illustrations, fake logos, decorative gradients, glass effects, or excessive card nesting.
+
+Header text, verbatim: “학자금 대출 최적화 AI”
+Small supporting header text, verbatim: “대학 생활과 취업 후의 소비 여력을 함께 비교해요”
+A small unobtrusive demo tag may read exactly: “데모”
+
+Left column:
+- Section heading, verbatim: “조건 선택”
+- A compact profile summary with these exact facts: “희망 대학 소비 130만원”, “희망 취업 후 소비 250만원”, “시급 12,000원”, “졸업까지 4년”
+- Prominent scenario segmented choices stacked or vertically grouped, with exact labels: “High · 주 0시간”, “Medium · 주 10시간”, “Low · 주 20시간”
+- High / 주 0시간 is visibly selected using #3859E8 and #EAF0FF.
+- A compact loan assumptions area with exact text: “학자금 대출 5,000만원”, “연이율 1.5%”, “5년 상환”
+- Make this left pane feel interactive and calm, not like a marketing sidebar.
+
+Right workspace:
+- Main heading, verbatim: “High 시나리오 결과”
+- Supporting sentence, verbatim: “대학 시절의 시간을 확보하고, 취업 후 소비 여력을 높이는 선택이에요.”
+- Show four key values with exact Korean text and prominent tabular numerals:
+  1. label “대학 시절 가능한 월 평균 소비” value “104만원”
+  2. label “예상 주별 노동 시간” value “0시간”
+  3. label “취업 후 월 원리금 상환액” value “86만원”
+  4. label “취업 후 예상 월 평균 소비” value “214만원”
+- Visually pair the first two as “대학 시절”, and the latter two as “취업 후”, but avoid nested-card clutter.
+- The four values must be the visual focal point and readable at a glance.
+
+Comparison area:
+- Heading, verbatim: “희망 수준과 비교”
+- First horizontal bar compares college consumption with exact labels “대학 소비”, “희망 130만원”, “예상 104만원”, and a compact difference note “26만원 낮음”.
+- Second horizontal bar compares post-employment consumption with exact labels “취업 후 소비”, “희망 250만원”, “예상 214만원”, and a compact difference note “36만원 낮음”.
+- Use #EAF0FF for desired/reference capacity and #3859E8 for expected/result fill. Align both bars to a common scale so differences are honest and easy to understand.
+- Include a restrained explanatory footer note, verbatim: “단순 가정에 따른 데모 결과이며 실제 금융 자문이 아닙니다.”
+
+Hierarchy and usability: the selected scenario, the four key values, and desired-versus-expected gaps must be findable within seconds. Use strong but not oversized typography; obvious scale and weight steps; comfortable desktop density; generous whitespace between groups; WCAG-friendly contrast. No eyebrow label above the main title. Avoid equal repeated icon-heading-text cards as the overall page scaffold. No progress rings, no sparklines, no emojis, no fake icons, no extra navigation, no additional claims, no invented institutions, no charts beyond the two comparison bars, no watermark.
+
+Text fidelity: render all Korean labels and every number exactly as written, with no extra characters or spelling changes. The interface should look like a screenshot of a finished web product at 1440×900, not a device mockup or presentation slide.
+
+Generation mode: built-in imagegen.

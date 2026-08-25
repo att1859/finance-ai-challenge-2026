@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-25T16:49:30.9692400+09:00",
+  "title": "Design System: 학자금 대출 최적화 AI",
+  "extensions": {
+    "colorMeta": {
+      "neutral-canvas": {
+        "role": "neutral",
+        "displayName": "Neutral Canvas",
+        "canonical": "#f7f8fa",
+        "tonalRamp": ["#202123", "#4a4b4d", "#747577", "#9fa0a2", "#c9cacc", "#e0e1e3", "#f0f1f3", "#f7f8fa"]
+      },
+      "neutral-surface": {
+        "role": "neutral",
+        "displayName": "Neutral Surface",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#262626", "#4d4d4d", "#737373", "#999999", "#bfbfbf", "#d9d9d9", "#f2f2f2", "#ffffff"]
+      },
+      "neutral-surface-secondary": {
+        "role": "neutral",
+        "displayName": "Neutral Surface Secondary",
+        "canonical": "#f2f4f6",
+        "tonalRamp": ["#202122", "#494a4b", "#727475", "#9c9d9f", "#c5c7c9", "#dcdee0", "#ebecee", "#f2f4f6"]
+      },
+      "ink-primary": {
+        "role": "neutral",
+        "displayName": "Primary Ink",
+        "canonical": "#191f28",
+        "tonalRamp": ["#090b0e", "#11151b", "#191f28", "#3d4249", "#62666c", "#8b8e92", "#bcc0c4", "#eef0f2"]
+      },
+      "ink-secondary": {
+        "role": "neutral",
+        "displayName": "Secondary Ink",
+        "canonical": "#4e5968",
+        "tonalRamp": ["#171b20", "#303740", "#4e5968", "#68727e", "#838b94", "#a0a6ad", "#c2c6cb", "#eef0f2"]
+      },
+      "ink-tertiary": {
+        "role": "neutral",
+        "displayName": "Tertiary Ink",
+        "canonical": "#596574",
+        "tonalRamp": ["#1a1e22", "#37404a", "#596574", "#717b86", "#89919a", "#a4aab0", "#c5c9cd", "#eff1f2"]
+      },
+      "border-subtle": {
+        "role": "neutral",
+        "displayName": "Subtle Border",
+        "canonical": "#e5e8eb",
+        "tonalRamp": ["#202122", "#464748", "#6c6e70", "#929496", "#b8babc", "#d0d2d4", "#dfe1e3", "#f4f5f6"]
+      },
+      "acid-action": {
+        "role": "primary",
+        "displayName": "Acid Action",
+        "canonical": "#c7f000",
+        "tonalRamp": ["#283000", "#506000", "#789000", "#a0c000", "#c7f000", "#d5f54a", "#e4fa8c", "#f3fdcf"]
+      },
+      "acid-action-hover": {
+        "role": "primary",
+        "displayName": "Acid Action Hover",
+        "canonical": "#b5db00",
+        "tonalRamp": ["#242c00", "#485800", "#6d8300", "#91af00", "#b5db00", "#c8e64a", "#ddf18c", "#f1fbcf"]
+      },
+      "acid-soft": {
+        "role": "primary",
+        "displayName": "Acid Soft",
+        "canonical": "#f3fbcf",
+        "tonalRamp": ["#262b0e", "#51582c", "#7b854b", "#a5b26d", "#cadc91", "#dbe9a9", "#eaf3bd", "#f3fbcf"]
+      },
+      "positive": {
+        "role": "secondary",
+        "displayName": "Positive",
+        "canonical": "#03b26c",
+        "tonalRamp": ["#012b1a", "#025738", "#038356", "#03b26c", "#42c895", "#80dbb6", "#b8ecd4", "#e8f9f1"]
+      },
+      "negative": {
+        "role": "secondary",
+        "displayName": "Negative",
+        "canonical": "#f04452",
+        "tonalRamp": ["#3d1115", "#782229", "#b5333e", "#f04452", "#f47781", "#f8a8ae", "#fbd0d4", "#feeff1"]
+      },
+      "warning-debt": {
+        "role": "secondary",
+        "displayName": "Debt Amber",
+        "canonical": "#f59f00",
+        "tonalRamp": ["#3d2800", "#7a5000", "#b87800", "#f59f00", "#f8bb42", "#fad47f", "#fde7b8", "#fff7e6"]
+      },
+      "result-stage": {
+        "role": "neutral",
+        "displayName": "Result Stage",
+        "canonical": "#111311",
+        "tonalRamp": ["#080908", "#111311", "#2d302d", "#505350", "#747774", "#9b9e9b", "#c7cac7", "#f3f5f3"]
+      },
+      "result-stage-secondary": {
+        "role": "neutral",
+        "displayName": "Result Stage Secondary",
+        "canonical": "#252925",
+        "tonalRamp": ["#0c0d0c", "#181b18", "#252925", "#484c48", "#6d716d", "#959995", "#c3c6c3", "#f1f3f1"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "첫 화면의 핵심 질문에만 사용한다." },
+      "headline": { "displayName": "Headline", "purpose": "선택 결과의 결정적 결론에 사용한다." },
+      "title": { "displayName": "Title", "purpose": "시나리오와 도구 구획의 진입점에 사용한다." },
+      "body": { "displayName": "Body", "purpose": "설명과 계산 안내를 편안하게 읽게 한다." },
+      "label": { "displayName": "Label", "purpose": "시나리오 상태, 데모 상태, 메타 정보에 사용한다." }
+    },
+    "shadows": [
+      { "name": "keyboard-focus-halo", "value": "0 0 0 6px rgba(199, 240, 0, 0.78)", "purpose": "키보드 탐색 위치를 검정 외곽선 바깥에서 명확히 드러낸다." },
+      { "name": "active-dot-halo", "value": "0 0 0 3px rgba(199, 240, 0, 0.16)", "purpose": "목표선 토글의 켜짐 상태를 조용히 보조한다." },
+      { "name": "timeline-node-ring", "value": "0 0 0 1px #cbd0d5", "purpose": "작은 연도 노드가 흰 면에서 사라지지 않게 한다." }
+    ],
+    "motion": [
+      { "name": "state-standard", "value": "180ms ease", "purpose": "호버, 토글, 펼침 상태의 기본 전환이다." },
+      { "name": "cell-response", "value": "220ms ease", "purpose": "노동시간 셀의 채움과 위치 변화를 연결한다." },
+      { "name": "data-enter", "value": "420ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "결과 트랙이 새 시나리오 값으로 진입할 때 사용한다." },
+      { "name": "route-draw", "value": "1.2s cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "9년 돈의 이동 경로를 한 번 그린다." },
+      { "name": "debt-flow", "value": "1.5s linear 2", "purpose": "상환 경로의 방향성을 두 번만 보여준다." }
+    ],
+    "breakpoints": [
+      { "name": "stack", "value": "960px" },
+      { "name": "mobile", "value": "640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Goal Toggle",
+      "kind": "button",
+      "refersTo": "goal-toggle",
+      "description": "결과 트랙의 목표선 표시 여부를 제어하는 보조 토글이다.",
+      "html": "<button class=\"ds-goal-toggle\" type=\"button\" aria-pressed=\"true\"><span class=\"ds-toggle-dot\"></span><span>목표선 켜짐</span></button>",
+      "css": ".ds-goal-toggle { display:inline-flex; align-items:center; gap:8px; min-height:40px; padding:0 14px; border:1px solid var(--border, #e5e8eb); border-radius:10px; background:var(--surface, #fff); color:var(--text-secondary, #4e5968); cursor:pointer; font:600 .76rem/1.4 'Pretendard Variable', Pretendard, sans-serif; transition:background-color 180ms ease,border-color 180ms ease; } .ds-toggle-dot { width:8px; height:8px; border-radius:50%; background:var(--primary, #c7f000); box-shadow:0 0 0 3px rgba(199,240,0,.16); } .ds-goal-toggle:hover { border-color:#c9cfd5; background:var(--surface-secondary, #f2f4f6); } .ds-goal-toggle:focus-visible { outline:2px solid var(--text-primary, #191f28); outline-offset:3px; box-shadow:0 0 0 6px rgba(199,240,0,.78); } .ds-goal-toggle[aria-pressed='false'] .ds-toggle-dot { background:var(--text-tertiary, #596574); box-shadow:none; }"
+    },
+    {
+      "name": "Scenario Card",
+      "kind": "card",
+      "refersTo": "scenario-card",
+      "description": "한국어 이름, 간결한 의미, 주당 시간만 보여주는 전체 클릭형 라디오 카드다.",
+      "html": "<button class=\"ds-scenario-card\" type=\"button\" role=\"radio\" aria-checked=\"false\"><span class=\"ds-scenario-copy\"><strong>균형형</strong><span>일과 공부의 균형</span></span><span class=\"ds-scenario-hours\">주 <b>10</b>시간</span><span class=\"ds-select-mark\" aria-hidden=\"true\"></span></button>",
+      "css": ".ds-scenario-card { position:relative; display:grid; grid-template-columns:1fr auto; gap:24px; align-items:center; width:min(100%,380px); min-height:126px; padding:26px 54px 26px 26px; overflow:hidden; border:1px solid var(--border, #e5e8eb); border-radius:16px; background:var(--surface, #fff); color:var(--text-primary, #191f28); cursor:pointer; text-align:left; font-family:'Pretendard Variable', Pretendard, sans-serif; transition:border-color 180ms ease,background-color 180ms ease,transform 180ms ease; } .ds-scenario-copy { display:grid; gap:9px; } .ds-scenario-copy strong { font-size:1.12rem; font-weight:650; letter-spacing:-.02em; } .ds-scenario-copy span { color:var(--text-secondary, #4e5968); font-size:.76rem; } .ds-scenario-hours { color:var(--text-tertiary, #596574); white-space:nowrap; } .ds-scenario-hours b { display:inline-block; margin:0 2px; color:var(--text-primary, #191f28); font-size:1.8rem; font-weight:650; letter-spacing:-.03em; font-variant-numeric:tabular-nums; } .ds-select-mark { position:absolute; top:18px; right:18px; width:12px; height:12px; border:1px solid #c7cdd2; border-radius:50%; } .ds-scenario-card:hover { transform:translateY(-2px); border-color:#c8cdd2; } .ds-scenario-card:focus-visible { outline:2px solid var(--text-primary, #191f28); outline-offset:3px; box-shadow:0 0 0 6px rgba(199,240,0,.78); } @media (max-width:640px) { .ds-scenario-card { min-height:106px; padding:21px 48px 21px 20px; } }"
+    },
+    {
+      "name": "Selected Scenario Card",
+      "kind": "card",
+      "refersTo": "scenario-card-selected",
+      "description": "검정 면과 희소한 애시드로 현재 선택을 결정적으로 표시한다.",
+      "html": "<button class=\"ds-scenario-selected\" type=\"button\" role=\"radio\" aria-checked=\"true\"><span class=\"ds-selected-copy\"><strong>대학 집중형</strong><span>공부에 집중</span></span><span class=\"ds-selected-hours\">주 <b>0</b>시간</span><span class=\"ds-selected-mark\" aria-hidden=\"true\"></span></button>",
+      "css": ".ds-scenario-selected { position:relative; display:grid; grid-template-columns:1fr auto; gap:24px; align-items:center; width:min(100%,380px); min-height:126px; padding:26px 54px 26px 26px; overflow:hidden; border:1px solid var(--dark, #111311); border-radius:16px; background:var(--dark, #111311); color:#fff; cursor:pointer; text-align:left; font-family:'Pretendard Variable', Pretendard, sans-serif; transition:transform 180ms ease; } .ds-selected-copy { display:grid; gap:9px; } .ds-selected-copy strong { font-size:1.12rem; font-weight:650; letter-spacing:-.02em; } .ds-selected-copy span { color:#b9c0b9; font-size:.76rem; } .ds-selected-hours { color:#fff; white-space:nowrap; } .ds-selected-hours b { display:inline-block; margin:0 2px; font-size:1.8rem; font-weight:650; letter-spacing:-.03em; font-variant-numeric:tabular-nums; } .ds-selected-mark { position:absolute; top:18px; right:18px; width:12px; height:12px; border:3px solid var(--dark, #111311); border-radius:50%; background:var(--primary, #c7f000); box-shadow:0 0 0 1px var(--primary, #c7f000); } .ds-scenario-selected:hover { transform:translateY(-2px); } .ds-scenario-selected:focus-visible { outline:2px solid #fff; outline-offset:3px; box-shadow:0 0 0 6px rgba(199,240,0,.78); } @media (max-width:640px) { .ds-scenario-selected { min-height:106px; padding:21px 48px 21px 20px; } }"
+    },
+    {
+      "name": "Acid Action Button",
+      "kind": "button",
+      "refersTo": "action-button",
+      "description": "재생처럼 명확한 단일 행동에만 사용하는 애시드 버튼이다.",
+      "html": "<button class=\"ds-action-button\" type=\"button\"><svg aria-hidden=\"true\" viewBox=\"0 0 20 20\"><path d=\"m7 4 7 6-7 6V4Z\" /></svg>다시 보기</button>",
+      "css": ".ds-action-button { display:inline-flex; align-items:center; gap:6px; padding:9px 12px; border:0; border-radius:9px; background:var(--primary, #c7f000); color:var(--text-primary, #191f28); cursor:pointer; font:650 .72rem/1.4 'Pretendard Variable', Pretendard, sans-serif; transition:background-color 180ms ease; } .ds-action-button svg { width:14px; fill:currentColor; } .ds-action-button:hover { background:var(--primary-hover, #b5db00); } .ds-action-button:focus-visible { outline:2px solid var(--text-primary, #191f28); outline-offset:3px; box-shadow:0 0 0 6px rgba(199,240,0,.78); } .ds-action-button:active { transform:translateY(1px); }"
+    },
+    {
+      "name": "Demo Chip",
+      "kind": "chip",
+      "description": "데모 조건을 낮은 강도로 알리는 상태 칩이다.",
+      "html": "<span class=\"ds-demo-chip\">DEMO</span>",
+      "css": ".ds-demo-chip { display:inline-flex; width:max-content; padding:5px 8px; border-radius:6px; background:var(--primary-soft, #f3fbcf); color:var(--text-primary, #191f28); font:700 .68rem/1.4 'Pretendard Variable', Pretendard, sans-serif; letter-spacing:.08em; }"
+    },
+    {
+      "name": "Result Gap Chip",
+      "kind": "chip",
+      "description": "목표 대비 여유 또는 부족을 의미색으로 표시한다.",
+      "html": "<span class=\"ds-gap-chip ds-gap-positive\">희망보다 7만원 여유</span>",
+      "css": ".ds-gap-chip { display:inline-flex; padding:6px 8px; border-radius:7px; font:400 .74rem/1.4 'Pretendard Variable', Pretendard, sans-serif; } .ds-gap-positive { color:#56d59d; background:rgba(3,178,108,.12); } .ds-gap-negative { color:#ff7d88; background:rgba(240,68,82,.12); }"
+    },
+    {
+      "name": "Result Stage",
+      "kind": "custom",
+      "refersTo": "result-stage",
+      "description": "대학과 취업 후 소비 여력을 큰 숫자와 목표선으로 비교하는 검정 데이터 무대다.",
+      "html": "<section class=\"ds-result-stage\"><small>대학 집중형 · 주 0시간</small><h2>대학의 시간을 확보하고, 취업 후 나눠 갚아요.</h2><div class=\"ds-result-period\"><span>대학 시절</span><strong>104만원</strong><em>/ 월</em><div class=\"ds-goal-track\"><i></i><b></b></div></div></section>",
+      "css": ".ds-result-stage { width:min(100%,720px); padding:52px 56px 56px; overflow:hidden; border-radius:16px; background:var(--dark, #111311); color:#fff; font-family:'Pretendard Variable', Pretendard, sans-serif; } .ds-result-stage>small { color:var(--primary, #c7f000); font-size:.7rem; font-weight:750; letter-spacing:.09em; } .ds-result-stage h2 { max-width:620px; margin:12px 0 54px; font-size:clamp(1.65rem,3vw,2.5rem); font-weight:650; line-height:1.3; letter-spacing:-.025em; } .ds-result-period>span { display:block; color:#a5ada5; font-size:.8rem; font-weight:600; } .ds-result-period>strong { display:inline-block; margin-top:12px; font-size:clamp(3rem,6vw,5.2rem); font-weight:650; line-height:1; letter-spacing:-.04em; font-variant-numeric:tabular-nums; } .ds-result-period>em { margin-left:8px; color:#8f988f; font-size:.8rem; font-style:normal; } .ds-goal-track { position:relative; height:7px; margin-top:36px; background:var(--dark-secondary, #252925); } .ds-goal-track i { position:absolute; inset:0; width:70%; background:#f5f7f5; } .ds-goal-track b { position:absolute; top:-7px; bottom:-7px; left:86%; width:2px; background:var(--primary, #c7f000); }"
+    },
+    {
+      "name": "Calculation Details",
+      "kind": "custom",
+      "description": "계산 근거를 필요할 때만 펼치는 평면형 세부 정보 패턴이다.",
+      "html": "<details class=\"ds-calculation\"><summary>계산 방식 보기<svg aria-hidden=\"true\" viewBox=\"0 0 20 20\"><path d=\"m5 8 5 5 5-5\" /></svg></summary><p><b>대학 생활</b><span>근로소득 + 대출 사용액 ÷ 48개월</span></p></details>",
+      "css": ".ds-calculation { width:min(100%,640px); border-top:1px solid var(--border, #e5e8eb); border-bottom:1px solid var(--border, #e5e8eb); color:var(--text-primary, #191f28); font-family:'Pretendard Variable', Pretendard, sans-serif; } .ds-calculation summary { display:flex; align-items:center; justify-content:space-between; padding:24px 2px; cursor:pointer; list-style:none; font-size:.88rem; font-weight:650; } .ds-calculation summary::-webkit-details-marker { display:none; } .ds-calculation summary svg { width:18px; fill:none; stroke:currentColor; stroke-width:1.8; transition:transform 180ms ease; } .ds-calculation[open] summary svg { transform:rotate(180deg); } .ds-calculation p { display:grid; gap:8px; margin:0; padding:12px 2px 32px; color:var(--text-secondary, #4e5968); font-size:.8rem; line-height:1.65; } .ds-calculation p b { color:var(--text-primary, #191f28); } .ds-calculation:focus-within { outline:none; } .ds-calculation summary:focus-visible { outline:2px solid var(--text-primary, #191f28); outline-offset:3px; box-shadow:0 0 0 6px rgba(199,240,0,.78); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Quiet Financial Leverage",
+    "overview": "이 시스템은 돈을 빌리는 행위를 과장하거나 겁주지 않고, 지금의 시간과 미래의 소비 여력 사이에서 사용자가 가진 지렛대를 조용히 드러낸다. Toss 수준의 명확한 정보 위계와 쉬운 조작성을 기반으로, Robinhood에서 연상되는 절제된 흑백 대비와 희소한 애시드 그린을 결합한다.\n\n화면의 85–90%는 밝은 중립 면과 넉넉한 여백이 차지한다. 애시드 그린은 선택, 행동, 목표선, 핵심 상태처럼 판단을 실제로 움직이는 지점에만 5–8% 이내로 사용한다. 비교 결과는 검정 데이터 무대로 전환해 수치가 스스로 말하게 하며, 장식적 차트와 촘촘한 SaaS 대시보드 관습을 피한다.",
+    "keyCharacteristics": [
+      "밝은 중립 캔버스 위에 흰 데이터 면을 놓는 차분한 작업대",
+      "선택과 행동에만 드물게 등장하는 애시드 그린",
+      "검정 결과 무대와 큰 탭형 숫자로 만드는 결정적 대비",
+      "Pretendard 한 가족으로 구축한 명료한 한국어 정보 위계",
+      "한 화면에 압축하지 않고 세로 흐름으로 선택, 결과, 여정, 근거를 분리하는 데이터 우선 구성"
+    ],
+    "rules": [
+      { "name": "The Rare Acid Rule", "body": "애시드 그린은 화면의 5–8%를 넘기지 않으며, 선택·행동·목표·핵심 수치가 아닌 장식에는 사용하지 않는다.", "section": "colors" },
+      { "name": "The Semantic Split Rule", "body": "애시드는 행동, 호박색은 부채 흐름, 초록과 빨강은 결과의 방향에만 사용한다.", "section": "colors" },
+      { "name": "The Numbers Lead Rule", "body": "금액, 시간, 기간은 주변 문장보다 크고 무겁게 제시하며 `tabular-nums`로 열을 안정시킨다.", "section": "typography" },
+      { "name": "The One-Family Rule", "body": "별도의 장식 서체나 모노스페이스를 추가하지 않는다. 위계는 Pretendard의 크기, 굵기, 자간으로 해결한다.", "section": "typography" },
+      { "name": "The Progressive Disclosure Rule", "body": "선택, 결과, 시간 흐름, 계산 근거를 한 화면에 압축하지 않는다. 사용자는 아래로 이동하며 한 번에 하나의 질문을 검토한다.", "section": "layout" },
+      { "name": "The Data Before Chrome Rule", "body": "카드 수나 도구 패널 수를 늘려 대시보드처럼 보이게 하지 않는다. 데이터 비교에 필요한 면만 유지한다.", "section": "layout" },
+      { "name": "The Flat-by-Default Rule", "body": "정적인 카드와 패널에는 그림자를 추가하지 않는다. 위계는 톤, 선, 여백, 면 전환으로 해결한다.", "section": "elevation" },
+      { "name": "The One Card Silhouette Rule", "body": "주요 데이터 컨테이너는 16px 반경을 공유해 서로 다른 기능을 하나의 제품 언어로 묶는다.", "section": "shapes" },
+      { "name": "The Single-Read Card Rule", "body": "HIGH·MEDIUM·LOW 레이블, 반복되는 목표·근거 행, 대출 미터를 카드에 넣지 않는다. 시나리오 비교에 필요한 세 가지 정보만 남긴다.", "section": "components" }
+    ],
+    "dos": [
+      "Do 화면의 85–90%를 밝은 중립색과 여백으로 유지하고 애시드 사용을 5–8% 이내로 제한한다.",
+      "Do 핵심 결과를 검정 데이터 무대에 큰 탭형 숫자와 명확한 목표선으로 제시한다.",
+      "Do 선택 카드 전체를 클릭·터치·키보드로 조작할 수 있게 하고 `aria-checked`, 순환 화살표 탐색, 강한 포커스 표시를 유지한다.",
+      "Do 공통 희망값과 현재 노동시간은 상단 기준 스트립에서 한 번만 보여주고 시나리오 카드는 이름·의미·주당 시간에 집중한다.",
+      "Do 960px과 640px 반응형 전환에서 비교 순서와 의미를 보존한다.",
+      "Do `prefers-reduced-motion`에서 모든 전환과 애니메이션을 사실상 즉시 완료한다."
+    ],
+    "donts": [
+      "Don't 애시드 그린을 넓은 섹션 배경, 장식 그라데이션, 무의미한 아이콘에 사용한다.",
+      "Don't 상시 카드 그림자, 유리 효과, 과도한 색상으로 평평하고 정확한 금융 작업대의 성격을 흐린다.",
+      "Don't 사이드바, KPI 타일 묶음, 조밀한 차트 격자를 추가해 전형적인 SaaS 대시보드처럼 만든다.",
+      "Don't 돈, 시간, 상환 정보를 서로 다른 화면이나 불연속적인 단위로 분리해 비교 비용을 높인다.",
+      "Don't 실제 금융 자문처럼 보이는 확정적 표현이나 계산 근거 없는 장식 데이터를 추가한다.",
+      "Don't 시나리오 카드에 HIGH·MEDIUM·LOW 레이블, 목표·근거 반복 행, 대출 미터를 되살리지 않는다."
+    ]
+  }
+}
