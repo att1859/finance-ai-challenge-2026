@@ -1,270 +1,288 @@
 ---
-name: "학자금 대출 최적화 AI"
-description: "현재의 시간과 미래의 소비 여력을 한 흐름으로 비교하는 학자금 대출 시나리오 도구"
+name: "학자금 소비평탄화 AI"
+description: "장학금과 감면을 먼저 차감하고 남은 필요자금을 근로와 공적 대출에 배치하는 재정 의사결정 도구"
 colors:
-  neutral-canvas: "#f7f8fa"
-  neutral-surface: "#ffffff"
-  neutral-surface-secondary: "#f2f4f6"
-  ink-primary: "#191f28"
-  ink-secondary: "#4e5968"
-  ink-tertiary: "#596574"
-  border-subtle: "#e5e8eb"
-  acid-action: "#c7f000"
-  acid-action-hover: "#b5db00"
-  acid-soft: "#f3fbcf"
-  positive: "#03b26c"
-  negative: "#f04452"
-  warning-debt: "#f59f00"
-  result-stage: "#111311"
-  result-stage-secondary: "#252925"
+  warm-canvas: "#f4f3ee"
+  warm-paper: "#fbfaf6"
+  field-white: "#ffffff"
+  navy-ink: "#102131"
+  ledger-navy: "#091622"
+  navy-soft: "#213747"
+  muted-text: "#5d6870"
+  muted-strong: "#46545e"
+  rule: "#d5d7d2"
+  rule-strong: "#aeb5b4"
+  lime-action: "#c9ef3c"
+  lime-action-hover: "#b9de2d"
+  lime-wash: "#eff7cb"
+  evidence-blue: "#315d78"
+  evidence-blue-wash: "#e8eff4"
+  risk-amber: "#8a5a11"
+  risk-amber-wash: "#f6ecd7"
+  error-red: "#a23832"
+  error-red-wash: "#f7e5e2"
+  neutral-wash: "#ececea"
 typography:
   display:
     fontFamily: "Pretendard Variable, Pretendard, -apple-system, BlinkMacSystemFont, Segoe UI, Malgun Gothic, sans-serif"
-    fontSize: "clamp(2.5rem, 4.6vw, 3.5rem)"
-    fontWeight: 700
-    lineHeight: 1.12
+    fontSize: "clamp(3rem, 5.6vw, 4.8rem)"
+    fontWeight: 780
+    lineHeight: 1.08
     letterSpacing: "-0.04em"
   headline:
     fontFamily: "Pretendard Variable, Pretendard, -apple-system, BlinkMacSystemFont, Segoe UI, Malgun Gothic, sans-serif"
-    fontSize: "clamp(1.65rem, 3vw, 2.5rem)"
-    fontWeight: 650
-    lineHeight: 1.3
-    letterSpacing: "-0.025em"
+    fontSize: "clamp(2rem, 3.4vw, 3rem)"
+    fontWeight: 760
+    lineHeight: 1.2
+    letterSpacing: "-0.035em"
   title:
     fontFamily: "Pretendard Variable, Pretendard, -apple-system, BlinkMacSystemFont, Segoe UI, Malgun Gothic, sans-serif"
-    fontSize: "clamp(1.35rem, 2.2vw, 1.65rem)"
-    fontWeight: 700
+    fontSize: "1.35rem"
+    fontWeight: 740
     lineHeight: 1.3
     letterSpacing: "-0.025em"
   body:
     fontFamily: "Pretendard Variable, Pretendard, -apple-system, BlinkMacSystemFont, Segoe UI, Malgun Gothic, sans-serif"
-    fontSize: "1.02rem"
+    fontSize: "1rem"
     fontWeight: 400
-    lineHeight: 1.65
-    letterSpacing: "normal"
+    lineHeight: 1.7
+    letterSpacing: "-0.01em"
   label:
     fontFamily: "Pretendard Variable, Pretendard, -apple-system, BlinkMacSystemFont, Segoe UI, Malgun Gothic, sans-serif"
     fontSize: "0.72rem"
-    fontWeight: 650
-    lineHeight: 1.4
-    letterSpacing: "0.08em"
+    fontWeight: 720
+    lineHeight: 1.45
+    letterSpacing: "normal"
+  action:
+    fontFamily: "Pretendard Variable, Pretendard, -apple-system, BlinkMacSystemFont, Segoe UI, Malgun Gothic, sans-serif"
+    fontSize: "0.9rem"
+    fontWeight: 720
+    lineHeight: 1
+    letterSpacing: "normal"
 rounded:
-  compact: "6px"
-  status: "7px"
+  tag: "6px"
+  badge: "7px"
+  filter: "8px"
+  option: "9px"
   control: "10px"
-  card: "16px"
-  full: "999px"
+  alert: "12px"
+  surface: "16px"
+  pill: "999px"
 spacing:
   xs: "8px"
-  sm: "16px"
-  md: "24px"
-  lg: "32px"
-  xl: "48px"
-  section: "64px"
+  sm: "10px"
+  md: "18px"
+  lg: "28px"
+  panel: "34px"
+  section: "92px"
 components:
-  goal-toggle:
-    backgroundColor: "{colors.neutral-surface}"
-    textColor: "{colors.ink-secondary}"
-    typography: "{typography.label}"
+  button-primary:
+    backgroundColor: "{colors.lime-action}"
+    textColor: "{colors.ledger-navy}"
+    typography: "{typography.action}"
     rounded: "{rounded.control}"
-    padding: "0 14px"
-    height: "40px"
-  scenario-card:
-    backgroundColor: "{colors.neutral-surface}"
-    textColor: "{colors.ink-primary}"
-    rounded: "{rounded.card}"
-    padding: "26px 54px 26px 26px"
-    height: "126px"
-  scenario-card-selected:
-    backgroundColor: "{colors.result-stage}"
-    textColor: "{colors.neutral-surface}"
-    rounded: "{rounded.card}"
-    padding: "26px 54px 26px 26px"
-    height: "126px"
-  action-button:
-    backgroundColor: "{colors.acid-action}"
-    textColor: "{colors.ink-primary}"
+    padding: "0 17px"
+    height: "46px"
+  button-secondary:
+    backgroundColor: "transparent"
+    textColor: "{colors.navy-ink}"
+    typography: "{typography.action}"
+    rounded: "{rounded.control}"
+    padding: "0 17px"
+    height: "46px"
+  button-dark:
+    backgroundColor: "{colors.ledger-navy}"
+    textColor: "{colors.warm-paper}"
+    typography: "{typography.action}"
+    rounded: "{rounded.control}"
+    padding: "0 17px"
+    height: "46px"
+  input-field:
+    backgroundColor: "{colors.field-white}"
+    textColor: "{colors.navy-ink}"
+    rounded: "{rounded.control}"
+    padding: "0 13px"
+    height: "50px"
+  filter-chip:
+    backgroundColor: "{colors.field-white}"
+    textColor: "{colors.muted-strong}"
     typography: "{typography.label}"
-    rounded: "9px"
-    padding: "9px 12px"
-  result-stage:
-    backgroundColor: "{colors.result-stage}"
-    textColor: "{colors.neutral-surface}"
-    rounded: "{rounded.card}"
-    padding: "52px 56px 56px"
+    rounded: "{rounded.filter}"
+    padding: "0 11px"
+    height: "36px"
+  allocation-ledger:
+    backgroundColor: "{colors.ledger-navy}"
+    textColor: "{colors.warm-paper}"
+    rounded: "{rounded.surface}"
+    padding: "30px"
+  scenario-matrix:
+    backgroundColor: "{colors.warm-paper}"
+    textColor: "{colors.navy-ink}"
+    rounded: "{rounded.surface}"
+  stress-workbench:
+    backgroundColor: "{colors.ledger-navy}"
+    textColor: "{colors.warm-paper}"
+    rounded: "{rounded.surface}"
 ---
 
-# Design System: 학자금 대출 최적화 AI
+# Design System: 학자금 소비평탄화 AI
 
 ## Overview
 
-**Creative North Star: "Quiet Financial Leverage"**
+**Creative North Star: "The Scholarship-First Ledger"**
 
-이 시스템은 돈을 빌리는 행위를 과장하거나 겁주지 않고, 지금의 시간과 미래의 소비 여력 사이에서 사용자가 가진 지렛대를 조용히 드러낸다. Toss 수준의 명확한 정보 위계와 쉬운 조작성을 기반으로, Robinhood에서 연상되는 절제된 흑백 대비와 희소한 애시드 그린을 결합한다.
+이 시스템은 금융 선택을 성과판처럼 점수화하지 않고, 총필요자금에서 상환 의무가 없는 지원을 먼저 빼고 남은 부담만 배치하는 원장으로 설명한다. 따뜻한 종이색 바탕은 학생의 생활 맥락을 품고, 깊은 남색 면은 계산과 책임의 경계를 또렷하게 만든다. 절제된 라임은 장식이 아니라 사용자가 실제로 누르거나 선택한 순간에만 나타난다.
 
-화면의 85–90%는 밝은 중립 면과 넉넉한 여백이 차지한다. 애시드 그린은 선택, 행동, 목표선, 핵심 상태처럼 판단을 실제로 움직이는 지점에만 5–8% 이내로 사용한다. 비교 결과는 검정 데이터 무대로 전환해 수치가 스스로 말하게 하며, 장식적 차트와 촘촘한 SaaS 대시보드 관습을 피한다.
+정보는 KPI 카드 묶음이 아니라 약속, 조건, 배분 관계, 비교, 위험, 근거의 선형 논리로 읽힌다. 면은 대부분 평평하고 얇은 규칙선이 항목 사이의 관계를 유지한다. 거대한 숫자를 독립된 성과로 전시하지 않고, 언제나 금액의 출처·차감·남은 격차와 붙여 보여준다.
 
 **Key Characteristics:**
 
-- 밝은 중립 캔버스 위에 흰 데이터 면을 놓는 차분한 작업대
-- 선택과 행동에만 드물게 등장하는 애시드 그린
-- 검정 결과 무대와 큰 탭형 숫자로 만드는 결정적 대비
-- Pretendard 한 가족으로 구축한 명료한 한국어 정보 위계
-- 한 화면에 압축하지 않고 세로 흐름으로 선택, 결과, 여정, 근거를 분리하는 데이터 우선 구성
+- 따뜻한 오프화이트 캔버스와 심해색 원장이 만드는 공공 금융 문서의 신뢰감
+- 장학금 우선 차감을 중심으로 한 배분 관계와 반복되는 원장 문법
+- 버튼·선택·기본 제안에만 제한되는 라임 신호
+- 카드 모음 대신 규칙선, 행, 열, 비교표로 만드는 조용한 정보 밀도
+- 결과와 함께 가정·미확인 정보·공식기관 경계를 인접 배치하는 증거 중심 태도
 
 ## Colors
 
-차갑고 밝은 금융 중립색을 바탕으로, 산성에 가까운 연두를 희소한 행동 신호로 사용하고 검정에 가까운 결과 무대에서 수치의 대비를 극대화한다.
+팔레트는 따뜻한 종이 중립색, 깊은 청색 잉크, 희소한 라임 행동색, 그리고 증거와 위험을 구분하는 낮은 채도의 의미색으로 구성한다.
 
 ### Primary
 
-- **Acid Action** (`acid-action`): 현재 선택, 주요 행동, 목표선과 핵심 상태를 표시한다. 넓은 배경색이 아니라 판단의 순간을 짚는 신호다.
-- **Acid Action Hover** (`acid-action-hover`): 애시드 버튼의 포인터 상호작용에만 사용해 상태 변화를 짧고 분명하게 만든다.
-- **Acid Soft** (`acid-soft`): 데모 상태처럼 낮은 우선순위의 강조 배경에 사용한다.
+- **Action Lime** (`lime-action`): 주요 CTA, 선택된 필터와 옵션, 기본 제안 표시처럼 사용자의 다음 행동이나 현재 선택을 나타낸다.
+- **Pressed Lime** (`lime-action-hover`): 라임 행동 요소의 호버 상태에만 사용한다.
+- **Support Wash** (`lime-wash`): 장학금 우선 차감처럼 지원이 배분을 바꾼다는 사실을 낮은 강도로 묶는다.
 
 ### Secondary
 
-- **Positive** (`positive`): 희망 소비액보다 여유가 있는 결과에만 사용한다.
-- **Negative** (`negative`): 희망 소비액보다 낮은 결과에만 사용한다.
-- **Debt Amber** (`warning-debt`): 대출 활용량과 취업 후 상환 경로를 나타내며, 애시드 행동색과 의미를 섞지 않는다.
+- **Evidence Blue** (`evidence-blue`, `evidence-blue-wash`): 정보 부족, 근거, 중립적 안내처럼 사실 확인이 필요한 상태를 나타낸다.
+- **Risk Amber** (`risk-amber`, `risk-amber-wash`): 추가 심사와 스트레스 조건처럼 주의가 필요하지만 오류는 아닌 상태를 나타낸다.
+- **Boundary Red** (`error-red`, `error-red-wash`): 입력 오류, 대상 아님, 계산 불가처럼 사용자가 확인하거나 수정해야 하는 경계를 나타낸다.
 
 ### Neutral
 
-- **Neutral Canvas** (`neutral-canvas`): 전체 페이지의 기본 배경이며 화면 면적의 대부분을 차지한다.
-- **Neutral Surface** (`neutral-surface`): 시나리오 카드와 분석 도구의 평평한 데이터 면이다.
-- **Neutral Surface Secondary** (`neutral-surface-secondary`): 트랙, 비활성 영역, 미세한 호버 면을 만든다.
-- **Primary Ink** (`ink-primary`): 본문과 밝은 면의 핵심 숫자 및 제목에 사용한다.
-- **Secondary Ink** (`ink-secondary`): 설명과 보조 데이터에 사용한다.
-- **Tertiary Ink** (`ink-tertiary`): 메타 정보와 가장 낮은 위계의 레이블에 사용한다.
-- **Subtle Border** (`border-subtle`): 카드, 구획, 타임라인을 구분하되 면을 잘게 쪼개지 않는 얇은 선이다.
-- **Result Stage** (`result-stage`): 선택 카드와 핵심 결과 영역을 위한 검정에 가까운 데이터 무대다.
-- **Result Stage Secondary** (`result-stage-secondary`): 검정 무대 내부의 트랙과 보조 면에 사용한다.
+- **Warm Canvas** (`warm-canvas`): 전체 작업 공간을 감싸는 기본 바탕이다.
+- **Warm Paper** (`warm-paper`): 비교표, 폼, 근거 영역의 평평한 작업 면이다.
+- **Field White** (`field-white`): 입력 필드처럼 상호작용이 가능한 밝은 면을 캔버스에서 한 단계 분리한다.
+- **Ledger Navy** (`ledger-navy`): 배분 원장, 위험 작업대, 추천 근거처럼 책임 있는 계산을 다루는 어두운 면이다.
+- **Navy Ink** (`navy-ink`)과 **Soft Navy** (`navy-soft`): 제목, 본문, 링크의 주된 읽기 색이다.
+- **Muted Text** (`muted-text`, `muted-strong`): 설명, 단위, 제한사항의 위계를 낮추되 가독성은 유지한다.
+- **Rules** (`rule`, `rule-strong`): 행과 구획의 관계를 보존하는 1px 선이다.
+- **Neutral Wash** (`neutral-wash`): 비활성·기본 상태를 조용히 구분한다.
 
-**The Rare Acid Rule.** 애시드 그린은 화면의 5–8%를 넘기지 않으며, 선택·행동·목표·핵심 수치가 아닌 장식에는 사용하지 않는다.
+**The Lime Is a Verb Rule.** 라임은 누르기, 선택하기, 우선 적용하기처럼 상태를 바꾸는 의미가 있을 때만 쓴다.
 
-**The Semantic Split Rule.** 애시드는 행동, 호박색은 부채 흐름, 초록과 빨강은 결과의 방향에만 사용한다.
+**The Semantic Role Rule.** 파랑은 근거, 호박은 주의, 빨강은 오류와 경계에 고정하며 서로의 역할을 바꾸지 않는다.
 
 ## Typography
 
-**Display Font:** Pretendard Variable (Pretendard 및 시스템 산세리프 폴백)
-**Body Font:** Pretendard Variable (Pretendard 및 시스템 산세리프 폴백)
+**Display Font:** Pretendard Variable (Pretendard와 시스템 산세리프 폴백)
+**Body Font:** Pretendard Variable (Pretendard와 시스템 산세리프 폴백)
 
-**Character:** 하나의 가변 산세리프 가족 안에서 크기, 굵기, 자간만으로 위계를 만든다. 숫자는 탭형 정렬을 사용해 시나리오 간 비교가 흔들리지 않으며, 제목은 촘촘하고 본문은 느슨하게 읽힌다.
+**Character:** 한글과 숫자를 같은 목소리로 다루는 단일 가변 산세리프 시스템이다. 제목은 촘촘하고 단호하며, 설명은 여유 있는 행간으로 읽히고, 원장 숫자는 탭형 정렬로 배분 관계가 흔들리지 않는다.
 
 ### Hierarchy
 
-- **Display** (`display`): 첫 질문에 사용하며 짧고 균형 잡힌 문장으로 유지한다.
-- **Headline** (`headline`): 검정 결과 무대의 시나리오 결론처럼 한 단계 아래의 결정적 메시지에 사용한다.
-- **Title** (`title`): 시나리오, 여정, 계산 구획의 진입점에 사용한다.
-- **Body** (`body`): 기능 설명과 안내에 사용하며, 소개문은 약 680px 안에서 자연스럽게 줄바꿈한다.
-- **Label** (`label`): 시나리오 상태, 데모 상태, 도구 메타 정보에 사용한다. 짧은 상태는 넓은 자간으로 숫자 위계를 보조한다.
+- **Display** (780, `display`, 1.08): 첫 약속처럼 한 화면에 하나만 존재하는 가장 큰 문장에 사용한다.
+- **Headline** (760, `headline`, 1.2): 각 판단 구획의 질문과 결과 진입점에 사용한다.
+- **Title** (740, `title`, 1.3): 폼 묶음, 비교 열, 근거 그룹의 제목에 사용한다.
+- **Body** (400, `body`, 1.7): 설명과 경계 문구에 사용하며 읽기 폭은 대체로 65–70자로 제한한다.
+- **Label** (720, `label`, 1.45): 상태, 단위, 짧은 메타 정보에 사용한다.
+- **Action** (720, `action`, 1): 버튼과 독립 행동의 짧은 문구에 사용한다.
 
-**The Numbers Lead Rule.** 금액, 시간, 기간은 주변 문장보다 크고 무겁게 제시하며 `tabular-nums`로 열을 안정시킨다.
+**The Ledger Number Rule.** 금액과 시간은 `tabular-nums`로 정렬하고, 숫자만 떼어내기보다 무엇에서 무엇을 뺀 값인지 같은 면에서 읽히게 한다.
 
-**The One-Family Rule.** 별도의 장식 서체나 모노스페이스를 추가하지 않는다. 위계는 Pretendard의 크기, 굵기, 자간으로 해결한다.
+**The One-Family Rule.** 장식 서체나 별도 모노스페이스를 추가하지 않고 크기, 굵기, 자간, 행간으로 위계를 만든다.
 
 ## Layout
 
-기본 컨테이너는 최대 1240px이며 좌우 32px 여백을 확보한다. 상단 서비스 정체성 옆의 공통 기준 스트립에 희망 소비액과 현재 노동시간을 한 번만 제시한 뒤, 소개, 3열 시나리오 선택, 검정 결과 무대, 2열 여정 도구, 계산 방식 순서로 자연스럽게 세로 진행한다. 구획 간 간격은 대체로 52–70px, 카드 내부는 20–56px 범위를 사용해 금융 데이터를 조밀하게 압축하지 않는다.
+기본 컨테이너는 최대 1240px이며 데스크톱 좌우에 32px 여백을 둔다. 큰 구획은 대체로 92px의 세로 리듬과 1px 상단 규칙선을 공유한다. 시스템은 설명과 증거, 전과 후, 입력과 결과를 나란히 놓아 관계를 먼저 보여주고, 독립 KPI 타일을 반복하지 않는다. 내부 데이터는 2–3열 그리드와 행 기반 목록을 사용하며 패널 내부 여백은 주로 28–34px이다.
 
-960px 이하에서는 컨테이너를 최대 760px로 줄이고 시나리오 카드와 여정 도구를 1열로 전환한다. 640px 이하에서는 좌우 여백을 12px로 축소하고 결과 비교를 세로로 쌓으며 상환 화살표를 세로 방향으로 전환한다. 핵심 제목, 숫자, 선택 카드가 첫 번째 읽기 흐름을 유지해야 하며 보조 레이블은 좁은 화면에서 숨길 수 있다.
+1080px 이하에서는 첫 화면을 1열로 바꾸고 세 시나리오를 가로 카드 묶음이 아닌 행형 비교 매트릭스로 재조립한다. 820px 이하에서는 탐색 링크를 숨기고 폼·자금관계·스트레스 작업대·근거 열을 한 열로 전환한다. 580px 이하에서는 좌우 여백을 12px로 줄이고 폼을 1열로 만들며, 독립 링크·필터·행동은 최소 44px 터치 영역을 갖는다.
 
-**The Progressive Disclosure Rule.** 선택, 결과, 시간 흐름, 계산 근거를 한 화면에 압축하지 않는다. 사용자는 아래로 이동하며 한 번에 하나의 질문을 검토한다.
+**The Relationship Before Tile Rule.** 숫자 하나를 카드에 고립시키지 말고 출처, 차감, 결과 또는 기준과 같은 구조 안에 둔다.
 
-**The Data Before Chrome Rule.** 카드 수나 도구 패널 수를 늘려 대시보드처럼 보이게 하지 않는다. 데이터 비교에 필요한 면만 유지한다.
+**The Reflow Preserves Meaning Rule.** 반응형 전환은 정보의 순서를 유지하며, 나란히 보던 관계는 모바일에서 같은 순서의 세로 흐름으로 바뀐다.
 
 ## Elevation & Depth
 
-시스템은 평면이 기본이다. 깊이는 밝은 캔버스와 흰 카드의 미세한 톤 차이, 1px 경계선, 검정 결과 무대의 강한 면 전환으로 만든다. 카드에는 상시 그림자를 두지 않으며, 포커스 링과 작은 상태 점처럼 상호작용을 설명하는 경우에만 제한적인 확산 그림자를 허용한다.
+시스템은 평면이 기본이며 정적인 카드에는 상시 그림자를 두지 않는다. 깊이는 따뜻한 캔버스와 종이면의 미세한 색 차이, 1px 규칙선, 깊은 남색 원장 면의 전환으로 만든다. 유일한 확산 효과는 키보드 포커스 위치를 보장하는 라임 헤일로이며 시각적 장식으로 재사용하지 않는다.
 
 ### Shadow Vocabulary
 
-- **Keyboard Focus Halo** (`0 0 0 6px rgba(199, 240, 0, 0.78)`): 키보드 탐색 위치를 검정 외곽선 바깥에서 명확히 드러낸다.
-- **Active Dot Halo** (`0 0 0 3px rgba(199, 240, 0, 0.16)`): 목표선 토글의 켜짐 상태를 조용히 보조한다.
-- **Timeline Node Ring** (`0 0 0 1px #cbd0d5`): 작은 연도 노드가 흰 면에서 사라지지 않게 하는 구조적 링이다.
+- **Keyboard Focus Halo** (`0 0 0 6px rgba(201, 239, 60, 0.65)`): 2px 남색 외곽선 바깥에서 키보드 탐색 위치를 분명하게 표시한다.
 
-**The Flat-by-Default Rule.** 정적인 카드와 패널에는 그림자를 추가하지 않는다. 위계는 톤, 선, 여백, 면 전환으로 해결한다.
+**The Flat Evidence Rule.** 위계를 만들기 위해 그림자를 쌓지 않고 면의 톤, 규칙선, 여백, 어두운 원장 전환을 사용한다.
 
 ## Shapes
 
-카드와 결과 무대는 부드럽지만 제품적인 16px 모서리를 공유한다. 버튼과 상태 표시는 6–10px의 더 조밀한 반경을 사용하며, 타임라인 노드와 상태 점만 완전한 원형이다. 모든 경계는 기본적으로 1px이고, 선택된 시나리오 카드는 경계보다 검정 면 전환으로 상태를 표현한다.
+핵심 작업 면은 절제된 16px 모서리를 공유하고, 입력과 버튼은 10px, 필터와 작은 선택지는 8–9px로 더 조밀하다. 상태 배지는 6–7px이며 세션 상태처럼 작은 독립 표지만 완전한 pill을 쓴다. 대부분의 경계는 1px이고, 선은 둥근 카드의 윤곽보다 내부 항목의 관계를 드러내는 데 더 자주 사용한다.
 
-**The One Card Silhouette Rule.** 주요 데이터 컨테이너는 16px 반경을 공유해 서로 다른 기능을 하나의 제품 언어로 묶는다.
+**The Bounded Curve Rule.** 큰 면의 최대 반경은 16px로 제한하고, 컨테이너 안의 모든 행을 다시 카드로 감싸지 않는다.
 
 ## Components
 
-### Goal Toggle
+### Buttons
 
-기준선의 표시 여부를 제어하는 작고 절제된 보조 컨트롤이다.
+- **Shape:** 기본 높이 46px, 조밀한 10px 모서리, 좌우 17px 여백을 사용한다. 큰 계산 CTA만 54px 높이와 22px 좌우 여백을 쓴다.
+- **Primary:** 라임 면과 깊은 남색 텍스트로 다음 단계 또는 계산 실행을 표시한다.
+- **Secondary:** 투명 면과 강한 규칙선으로 샘플 불러오기 같은 대안을 제공한다.
+- **Dark:** 깊은 남색 면과 따뜻한 종이색 텍스트로 어두운 작업 구획의 행동이나 보조 진입점을 표시한다.
+- **Hover / Focus:** 호버에서는 1px만 상승하고 색을 한 단계 바꾼다. 포커스는 공통 남색 외곽선과 라임 헤일로를 사용하며 비활성 상태는 움직이지 않는다.
 
-- **Shape:** 조밀한 둥근 사각형 (`control`)과 1px 경계선
-- **Default:** 흰 면, 보조 잉크, 애시드 상태 점
-- **Off:** 상태 점을 3차 잉크로 바꾸고 확산 링을 제거한다.
-- **Hover / Focus:** 중립 보조 면으로 전환하며, 키보드 포커스에는 검정 외곽선과 애시드 헤일로를 함께 사용한다.
+### Chips
 
-### Scenario Cards
-
-카드 전체가 라디오 선택지이며, 한국어 시나리오 이름·간결한 의미·주당 노동시간만 한 단위로 묶는다. 희망 소비액과 현재 노동시간은 상단 공통 기준 스트립에만 두어 세 카드에서 반복하지 않는다.
-
-- **Shape:** 16px 반경과 1px 경계선. 데스크톱 높이 126px·내부 여백 26px 54px 26px 26px, 모바일 높이 106px·내부 여백 21px 48px 21px 20px
-- **Default:** 흰 면에서 이름과 의미를 왼쪽, 탭형 숫자의 주당 시간을 오른쪽에 두고 우상단의 작은 원형 선택 표시를 유지한다.
-- **Selected:** 검정 결과색 면과 흰 텍스트로 전환하고 원형 선택 표시에만 애시드를 사용한다.
-- **Hover / Focus:** 호버 시 2px 상승하며, 키보드 화살표로 인접 카드를 순환 선택할 수 있다.
-
-**The Single-Read Card Rule.** HIGH·MEDIUM·LOW 레이블, 반복되는 목표·근거 행, 대출 미터를 카드에 넣지 않는다. 시나리오 비교에 필요한 세 가지 정보만 남긴다.
-
-### Action Button
-
-다시 보기처럼 명확한 단일 행동에만 애시드 면을 사용한다.
-
-- **Shape:** 9px 반경, 9px 12px 내부 여백
-- **Default:** 애시드 면, 기본 잉크, 650 굵기의 작은 레이블
-- **Hover / Focus:** 호버는 한 단계 어두운 애시드로 전환하고, 포커스는 공통 헤일로를 사용한다.
-
-### Status Chips
-
-데모 조건과 목표 대비 결과처럼 짧은 상태를 본문 흐름에서 분리한다.
-
-- **Style:** 6–7px 반경, 5–8px 수평 여백, 작은 레이블
-- **State:** 데모는 연한 애시드, 긍정은 투명 초록, 부정은 투명 빨강을 사용한다.
-- **Constraint:** 상태 칩을 탐색 태그나 장식 배지로 확장하지 않는다.
+- **Style:** 필터는 36px 높이와 8px 모서리, 체크 선택지는 최소 42px 높이와 9px 모서리를 사용한다.
+- **State:** 선택 전에는 흰 면과 규칙선, 선택 후에는 남색 면 또는 라임 면으로 즉시 반전한다. 상태 배지는 색 테두리와 작은 레이블을 사용하고 장식 태그로 확장하지 않는다.
 
 ### Cards / Containers
 
-- **Corner Style:** 16px 반경
-- **Background:** 기본 도구는 흰 면, 핵심 결과는 검정 결과 무대
-- **Shadow Strategy:** 상시 그림자 없음
-- **Border:** 밝은 카드에만 미세한 1px 경계선
-- **Internal Padding:** 도구 카드는 32px 34px, 결과 무대는 52px 56px 56px
+- **Corner Style:** 핵심 작업 면에 16px 반경을 사용한다.
+- **Background:** 기본은 따뜻한 종이면, 계산·추천·스트레스는 깊은 남색 면이다.
+- **Shadow Strategy:** 상시 그림자 없음. 깊이는 면 전환과 경계선으로 해결한다.
+- **Border:** 밝은 면에는 1px 규칙선을 사용하고, 목록 항목은 개별 카드 대신 행 구분선을 사용한다.
+- **Internal Padding:** 큰 패널은 28–34px, 데이터 행은 16–26px 범위를 사용한다.
 
-### Result Stage
+### Inputs / Fields
 
-선택한 시나리오가 대학 시절과 취업 후 소비 여력에 미치는 영향을 보여주는 시스템의 서명 컴포넌트다. 검정 면, 큰 금액 숫자, 흰 실제값 트랙, 애시드 목표선, 호박색 상환 경로를 한 무대에서 사용한다. 모바일에서는 두 기간을 세로로 쌓고 상환 경로의 방향도 함께 회전시킨다.
+- **Style:** 높이 50px, 10px 모서리, 강한 중립선과 흰 면을 사용한다. 단위는 필드 우측에 고정하고 숫자는 탭형 정렬을 유지한다.
+- **Focus:** 2px 남색 외곽선과 6px 라임 헤일로로 현재 위치를 명확히 표시한다.
+- **Error / Disabled:** 오류는 붉은 경계와 연한 붉은 면을 함께 쓰고, 상단 오류 요약에서 해당 필드로 이동할 수 있게 한다. 비활성 버튼은 투명도를 낮추고 이동 효과를 제거한다.
 
-### Timeline & Hour Grid
+### Navigation
 
-시간을 추상적인 차트 대신 셀과 연도 노드로 직접 보여준다. 노동시간 셀은 선택 시간만 기본 잉크로 채우고, 9년 경로는 대학 구간을 잉크, 상환 구간을 호박색으로 순차 표시한다. 모션은 상태 이해를 돕는 한 번의 짧은 진행이며 반복 재생은 사용자가 명시적으로 요청한다.
+상단 탐색은 78px 높이의 평면 헤더와 하단 규칙선으로 구성한다. 브랜드는 원장 행을 연상시키는 선형 마크를 쓰고 텍스트 링크는 장식 없는 남색 레이블로 유지한다. 820px 이하에서는 핵심 세션 상태와 브랜드만 남겨 진단 흐름을 우선한다.
 
-### Calculation Details
+### Allocation Ledger
 
-계산 근거는 기본적으로 접힌 `details` 패턴으로 제공한다. 상하 1px 경계선만 사용하고, 펼쳤을 때 데스크톱 3열·모바일 1열로 근거를 보여준다.
+시스템의 서명 컴포넌트다. 깊은 남색 면에서 총필요자금, 교육비·생활소비 구성, 장학금 차감, 남은 근로·대출 부담을 한 번의 산술 흐름으로 보여준다. 라임은 차감되는 지원 금액과 하단 진행 규칙선에만 사용하며, 개별 KPI 카드나 장식 차트를 만들지 않는다.
+
+### Scenario Matrix
+
+세 선택은 동일한 행 순서와 단위로 비교한다. 데스크톱에서는 3열 표처럼 이어지고, 좁아지면 시나리오별 행형 패널로 재배치되며 모바일에서는 한 열로 쌓인다. 기본 제안은 라임 표식과 옅은 면 차이로 드러내되 사용자의 최종 선택처럼 과장하지 않는다.
+
+### Evidence Rows & Boundaries
+
+지원사업 목록, 공식 출처, 가정, 아직 모르는 정보는 카드가 아니라 구분선이 있는 행으로 표현한다. 상태, 이유, 메타 정보, 공식 링크가 같은 행 안에서 이어져 사용자가 결과를 재검증할 수 있게 한다.
+
+**The Whole Row Is Evidence Rule.** 상태나 금액만 강조하지 말고 이유, 출처, 기준일, 다음 확인 행동을 같은 읽기 단위에 둔다.
 
 ## Do's and Don'ts
 
 ### Do:
 
-- **Do** 화면의 85–90%를 밝은 중립색과 여백으로 유지하고 애시드 사용을 5–8% 이내로 제한한다.
-- **Do** 핵심 결과를 검정 데이터 무대에 큰 탭형 숫자와 명확한 목표선으로 제시한다.
-- **Do** 선택 카드 전체를 클릭·터치·키보드로 조작할 수 있게 하고 `aria-checked`, 순환 화살표 탐색, 강한 포커스 표시를 유지한다.
-- **Do** 공통 희망값과 현재 노동시간은 상단 기준 스트립에서 한 번만 보여주고 시나리오 카드는 이름·의미·주당 시간에 집중한다.
-- **Do** 960px과 640px 반응형 전환에서 비교 순서와 의미를 보존한다.
-- **Do** `prefers-reduced-motion`에서 모든 전환과 애니메이션을 사실상 즉시 완료한다.
+- **Do** 장학금과 감면을 먼저 차감한 뒤 남은 금액만 근로와 대출로 배치하는 원장 관계를 유지한다.
+- **Do** 따뜻한 오프화이트 캔버스, 깊은 남색 계산 면, 희소한 라임 행동색의 역할을 일관되게 지킨다.
+- **Do** 금액을 출처·가정·차감·남은 격차와 함께 보여주고 탭형 숫자로 비교 정렬을 유지한다.
+- **Do** 결과 가까이에 미확인 정보, 공식기관 링크, 데모 경계를 배치한다.
+- **Do** 1080px, 820px, 580px 리플로에서 정보 순서와 최소 44px 모바일 행동 영역을 보존한다.
+- **Do** `prefers-reduced-motion`에서 스크롤, 애니메이션, 전환을 사실상 즉시 완료한다.
 
 ### Don't:
 
-- **Don't** 애시드 그린을 넓은 섹션 배경, 장식 그라데이션, 무의미한 아이콘에 사용한다.
-- **Don't** 상시 카드 그림자, 유리 효과, 과도한 색상으로 평평하고 정확한 금융 작업대의 성격을 흐린다.
-- **Don't** 사이드바, KPI 타일 묶음, 조밀한 차트 격자를 추가해 전형적인 SaaS 대시보드처럼 만든다.
-- **Don't** 돈, 시간, 상환 정보를 서로 다른 화면이나 불연속적인 단위로 분리해 비교 비용을 높인다.
-- **Don't** 실제 금융 자문처럼 보이는 확정적 표현이나 계산 근거 없는 장식 데이터를 추가한다.
-- **Don't** 시나리오 카드에 HIGH·MEDIUM·LOW 레이블, 목표·근거 반복 행, 대출 미터를 되살리지 않는다.
+- **Don't** 독립 KPI 카드, 거대한 숫자 타일, 사이드바형 금융 SaaS 대시보드로 재구성한다.
+- **Don't** 그라디언트, 글래스모피즘, 상시 그림자, 장식적 AI 스파클을 추가한다.
+- **Don't** 라임을 넓은 배경이나 의미 없는 장식에 사용한다.
+- **Don't** 지원사업과 시나리오의 근거를 숨기거나 추천을 공식 자격·승인 결과처럼 표현한다.
+- **Don't** 모든 행을 다시 둥근 카드로 감싸 정보의 관계와 원장 리듬을 끊는다.
+- **Don't** 구조 참고 제품의 시각 스타일을 복제하거나 이 제품의 공공 금융 문서 톤을 소비자 투자 앱처럼 바꾼다.

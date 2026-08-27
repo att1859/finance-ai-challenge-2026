@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { scenarios } from "../src/data/scenarios.js";
-import { createCustomerPool, getWorkflowIndex, scoreCustomer } from "../src/lib/matching.js";
+import { createCustomerPool, getEligibleExtraSupports, scoreCustomer } from "../src/lib/matching.js";
 
 test("각 시나리오는 100명의 합성 고객 풀을 만든다", () => {
   for (const scenario of scenarios) {
@@ -31,15 +31,13 @@ test("비영향지역 고객은 지역 점수를 받지 않는다", () => {
   assert.equal(result.score, 10);
 });
 
-test("심사 이관은 마지막 워크플로 단계다", () => {
-  assert.equal(
-    getWorkflowIndex({
-      noticeAnalyzed: true,
-      noticeApproved: true,
-      caseCreated: true,
-      appVisible: true,
-      applicationStatus: "transferred",
-    }),
-    6,
+test("고객 속성에 맞는 추가 지원만 추천한다", () => {
+  const scenario = scenarios[0];
+  const customer = {
+    attributes: { hasBusinessInsurance: false, delinquencyRisk: true, usesBusinessCard: false },
+  };
+  assert.deepEqual(
+    getEligibleExtraSupports(customer, scenario.extraSupports).map((support) => support.id),
+    ["fresh-start"],
   );
 });

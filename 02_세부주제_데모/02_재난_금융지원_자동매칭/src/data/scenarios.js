@@ -1,3 +1,5 @@
+import { buildScenarioDates } from "../domain/dates.js";
+
 const commonSources = {
   flood: {
     label: "금융위원회 2026년 수해 피해 금융지원방안",
@@ -79,13 +81,10 @@ export const scenarios = [
     compactLabel: "침수",
     icon: "waves",
     current: true,
-    statusLabel: "현재 공지",
+    statusLabel: "신청 가능 데모",
     title: "수도권 집중호우 피해",
     location: "서울특별시 관악구·동작구",
-    occurredAt: "2026.08.18 03:40",
-    endedAt: "2026.08.19",
-    reportDeadline: "2026.08.29",
-    reportDday: "D-4",
+    dateOffsets: { occurredDaysAgo: 3, durationDays: 1, deadlineDaysFromNow: 5, startTime: "03:40" },
     source: commonSources.flood,
     noticeText:
       "집중호우로 피해를 입은 소상공인과 중소기업은 지자체가 발급한 재해피해확인서를 지참하여 기존 거래 금융회사에서 최대 1년의 대출 만기연장 및 상환유예를 신청할 수 있습니다. 소상공인시장진흥공단의 긴급경영안정자금과 신용보증기금 특례보증도 지원하며, 세부 접수기간과 추가서류는 각 기관에 확인해야 합니다.",
@@ -127,6 +126,7 @@ export const scenarios = [
       branch: "관악금융센터",
       affected: true,
       verified: false,
+      attributes: { hasBusinessInsurance: true, delinquencyRisk: true, usesBusinessCard: true },
     },
   },
   {
@@ -134,14 +134,11 @@ export const scenarios = [
     label: "산불 피해 숙박업",
     compactLabel: "산불",
     icon: "flame",
-    current: false,
-    statusLabel: "과거 공지 기반 데모",
+    current: true,
+    statusLabel: "신청 가능 데모",
     title: "강원 동해안 산불 피해",
     location: "강원특별자치도 고성군",
-    occurredAt: "2025.04.06 14:20",
-    endedAt: "2025.04.08",
-    reportDeadline: "2025.04.18",
-    reportDday: "기한 종료",
+    dateOffsets: { occurredDaysAgo: 5, durationDays: 2, deadlineDaysFromNow: 7, startTime: "14:20" },
     source: {
       label: "과거 재난 금융지원 공지 기반 합성 사건",
       url: "https://www.fsc.go.kr/",
@@ -153,14 +150,14 @@ export const scenarios = [
       affectedRegions: ["강원특별자치도 고성군"],
       eligibleSubjects: ["산불 피해 소상공인", "재해 확인 숙박업 사업자"],
       supportTypes: ["대출 만기연장", "상환유예", "긴급경영안정자금", "재해기업 보증"],
-      applicationPeriod: "과거 공지 재현 · 현재 접수 여부 기관 확인",
+      applicationPeriod: "데모 신고기한까지 · 기관별 세부기간 확인",
       requiredDocuments: ["지자체 발급 재해피해확인서", "기관별 추가 심사서류"],
       processingInstitutions: ["기존 거래 금융회사", "소상공인시장진흥공단", "보증기관"],
       evidenceQuotes: [
         "실제 피해 여부는 지자체 확인서를 통해 확인",
         "최종 지원은 기관별 심사를 거칩니다",
       ],
-      summary: "산불 피해 숙박업 고객의 상환부담 완화와 복구자금 지원을 연결하는 과거 사례입니다.",
+      summary: "산불 피해 숙박업 고객의 상환부담 완화와 복구자금 지원을 연결하는 공지입니다.",
       confidence: "medium",
     },
     customerStatement: "고성에서 펜션을 운영합니다. 산불 진화 과정에서 외벽과 객실 두 곳이 손상돼 예약을 모두 취소했어요.",
@@ -186,6 +183,7 @@ export const scenarios = [
       branch: "속초금융센터",
       affected: true,
       verified: false,
+      attributes: { hasBusinessInsurance: true, delinquencyRisk: false, usesBusinessCard: true },
     },
   },
   {
@@ -193,14 +191,11 @@ export const scenarios = [
     label: "폭설 피해 시설농가",
     compactLabel: "폭설",
     icon: "snowflake",
-    current: false,
-    statusLabel: "과거 공지 기반 데모",
+    current: true,
+    statusLabel: "신청 가능 데모",
     title: "충청권 기록적 폭설 피해",
     location: "충청북도 음성군",
-    occurredAt: "2025.12.17 06:10",
-    endedAt: "2025.12.19",
-    reportDeadline: "2025.12.29",
-    reportDday: "기한 종료",
+    dateOffsets: { occurredDaysAgo: 4, durationDays: 2, deadlineDaysFromNow: 10, startTime: "06:10" },
     source: {
       label: "재해 소상공인 정책자금 제도 기반 합성 사건",
       url: commonSources.policyFund.url,
@@ -212,7 +207,7 @@ export const scenarios = [
       affectedRegions: ["충청북도 음성군"],
       eligibleSubjects: ["폭설 피해 재해 소상공인", "사업자 등록 시설농가"],
       supportTypes: ["긴급경영안정자금", "기존 대출 상환유예", "보증기관 연계 복구자금"],
-      applicationPeriod: "과거 공지 재현 · 현재 접수 여부 기관 확인",
+      applicationPeriod: "데모 신고기한까지 · 기관별 세부기간 확인",
       requiredDocuments: ["재해 중소기업(소상공인) 확인증", "시설 피해 확인자료"],
       processingInstitutions: ["지자체", "소상공인시장진흥공단", "거래 금융회사", "보증기관"],
       evidenceQuotes: [
@@ -245,13 +240,15 @@ export const scenarios = [
       branch: "충북혁신금융센터",
       affected: true,
       verified: false,
+      attributes: { hasBusinessInsurance: false, delinquencyRisk: true, usesBusinessCard: true },
     },
   },
 ].map((scenario) => ({
   ...scenario,
+  ...buildScenarioDates(scenario.dateOffsets),
   supports: baseSupports.map((support) => ({
     ...support,
-    deadline: scenario.current ? support.deadline : "과거 사례 · 현재 접수 여부 확인",
+    deadline: support.deadline,
   })),
   extraSupports,
 }));
@@ -261,7 +258,7 @@ export const workflowSteps = [
   "AI 공지 분석",
   "담당자 승인",
   "고객 선별",
-  "앱 노출",
-  "서류 제출",
+  "앱 안내",
+  "신청 접수",
   "심사 이관",
 ];
