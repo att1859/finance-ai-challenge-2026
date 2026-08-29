@@ -1,166 +1,131 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-27T15:41:07.9577838+09:00",
+  "generatedAt": "2026-08-27T16:52:27.4497517+09:00",
   "title": "Design System: 학자금 소비평탄화 AI",
   "extensions": {
     "colorMeta": {
-      "warm-canvas": {
-        "role": "neutral",
-        "displayName": "Warm Canvas",
-        "canonical": "#f4f3ee",
-        "tonalRamp": ["oklch(15% 0.012 95)", "oklch(27% 0.012 95)", "oklch(39% 0.012 95)", "oklch(51% 0.012 95)", "oklch(63% 0.012 95)", "oklch(75% 0.012 95)", "oklch(87% 0.012 95)", "oklch(95% 0.012 95)"]
-      },
-      "warm-paper": {
-        "role": "neutral",
-        "displayName": "Warm Paper",
-        "canonical": "#fbfaf6",
-        "tonalRamp": ["oklch(15% 0.008 95)", "oklch(27% 0.008 95)", "oklch(39% 0.008 95)", "oklch(51% 0.008 95)", "oklch(63% 0.008 95)", "oklch(75% 0.008 95)", "oklch(87% 0.008 95)", "oklch(95% 0.008 95)"]
-      },
-      "field-white": {
-        "role": "neutral",
-        "displayName": "Field White",
-        "canonical": "#ffffff",
-        "tonalRamp": ["oklch(15% 0 0)", "oklch(27% 0 0)", "oklch(39% 0 0)", "oklch(51% 0 0)", "oklch(63% 0 0)", "oklch(75% 0 0)", "oklch(87% 0 0)", "oklch(95% 0 0)"]
-      },
-      "navy-ink": {
-        "role": "neutral",
-        "displayName": "Navy Ink",
-        "canonical": "#102131",
-        "tonalRamp": ["oklch(15% 0.055 242)", "oklch(27% 0.055 242)", "oklch(39% 0.055 242)", "oklch(51% 0.055 242)", "oklch(63% 0.055 242)", "oklch(75% 0.055 242)", "oklch(87% 0.055 242)", "oklch(95% 0.055 242)"]
-      },
       "ledger-navy": {
-        "role": "neutral",
+        "role": "primary",
         "displayName": "Ledger Navy",
         "canonical": "#091622",
         "tonalRamp": ["oklch(15% 0.05 245)", "oklch(27% 0.05 245)", "oklch(39% 0.05 245)", "oklch(51% 0.05 245)", "oklch(63% 0.05 245)", "oklch(75% 0.05 245)", "oklch(87% 0.05 245)", "oklch(95% 0.05 245)"]
       },
-      "navy-soft": {
+      "ink-secondary": {
         "role": "neutral",
-        "displayName": "Soft Navy",
-        "canonical": "#213747",
-        "tonalRamp": ["oklch(15% 0.06 235)", "oklch(27% 0.06 235)", "oklch(39% 0.06 235)", "oklch(51% 0.06 235)", "oklch(63% 0.06 235)", "oklch(75% 0.06 235)", "oklch(87% 0.06 235)", "oklch(95% 0.06 235)"]
+        "displayName": "Secondary Ink",
+        "canonical": "#243341",
+        "tonalRamp": ["oklch(15% 0.04 240)", "oklch(27% 0.04 240)", "oklch(39% 0.04 240)", "oklch(51% 0.04 240)", "oklch(63% 0.04 240)", "oklch(75% 0.04 240)", "oklch(87% 0.04 240)", "oklch(95% 0.04 240)"]
       },
       "muted-text": {
         "role": "neutral",
         "displayName": "Muted Text",
-        "canonical": "#5d6870",
-        "tonalRamp": ["oklch(15% 0.02 220)", "oklch(27% 0.02 220)", "oklch(39% 0.02 220)", "oklch(51% 0.02 220)", "oklch(63% 0.02 220)", "oklch(75% 0.02 220)", "oklch(87% 0.02 220)", "oklch(95% 0.02 220)"]
+        "canonical": "#65717a",
+        "tonalRamp": ["oklch(15% 0.02 225)", "oklch(27% 0.02 225)", "oklch(39% 0.02 225)", "oklch(51% 0.02 225)", "oklch(63% 0.02 225)", "oklch(75% 0.02 225)", "oklch(87% 0.02 225)", "oklch(95% 0.02 225)"]
       },
-      "muted-strong": {
+      "warm-paper": {
         "role": "neutral",
-        "displayName": "Strong Muted Text",
-        "canonical": "#46545e",
-        "tonalRamp": ["oklch(15% 0.03 225)", "oklch(27% 0.03 225)", "oklch(39% 0.03 225)", "oklch(51% 0.03 225)", "oklch(63% 0.03 225)", "oklch(75% 0.03 225)", "oklch(87% 0.03 225)", "oklch(95% 0.03 225)"]
+        "displayName": "Warm Paper",
+        "canonical": "#f4f3ee",
+        "tonalRamp": ["oklch(15% 0.012 95)", "oklch(27% 0.012 95)", "oklch(39% 0.012 95)", "oklch(51% 0.012 95)", "oklch(63% 0.012 95)", "oklch(75% 0.012 95)", "oklch(87% 0.012 95)", "oklch(95% 0.012 95)"]
+      },
+      "muted-paper": {
+        "role": "neutral",
+        "displayName": "Muted Paper",
+        "canonical": "#ebeae4",
+        "tonalRamp": ["oklch(15% 0.01 95)", "oklch(27% 0.01 95)", "oklch(39% 0.01 95)", "oklch(51% 0.01 95)", "oklch(63% 0.01 95)", "oklch(75% 0.01 95)", "oklch(87% 0.01 95)", "oklch(95% 0.01 95)"]
+      },
+      "warm-white": {
+        "role": "neutral",
+        "displayName": "Warm White",
+        "canonical": "#fffefa",
+        "tonalRamp": ["oklch(15% 0.006 95)", "oklch(27% 0.006 95)", "oklch(39% 0.006 95)", "oklch(51% 0.006 95)", "oklch(63% 0.006 95)", "oklch(75% 0.006 95)", "oklch(87% 0.006 95)", "oklch(95% 0.006 95)"]
       },
       "rule": {
         "role": "neutral",
         "displayName": "Rule",
-        "canonical": "#d5d7d2",
+        "canonical": "#c9ccc8",
         "tonalRamp": ["oklch(15% 0.01 160)", "oklch(27% 0.01 160)", "oklch(39% 0.01 160)", "oklch(51% 0.01 160)", "oklch(63% 0.01 160)", "oklch(75% 0.01 160)", "oklch(87% 0.01 160)", "oklch(95% 0.01 160)"]
       },
       "rule-strong": {
         "role": "neutral",
         "displayName": "Strong Rule",
-        "canonical": "#aeb5b4",
-        "tonalRamp": ["oklch(15% 0.015 190)", "oklch(27% 0.015 190)", "oklch(39% 0.015 190)", "oklch(51% 0.015 190)", "oklch(63% 0.015 190)", "oklch(75% 0.015 190)", "oklch(87% 0.015 190)", "oklch(95% 0.015 190)"]
+        "canonical": "#8e9799",
+        "tonalRamp": ["oklch(15% 0.015 200)", "oklch(27% 0.015 200)", "oklch(39% 0.015 200)", "oklch(51% 0.015 200)", "oklch(63% 0.015 200)", "oklch(75% 0.015 200)", "oklch(87% 0.015 200)", "oklch(95% 0.015 200)"]
       },
-      "lime-action": {
+      "lime-selection": {
         "role": "primary",
-        "displayName": "Action Lime",
+        "displayName": "Selection Lime",
         "canonical": "#c9ef3c",
         "tonalRamp": ["oklch(15% 0.2 125)", "oklch(27% 0.2 125)", "oklch(39% 0.2 125)", "oklch(51% 0.2 125)", "oklch(63% 0.2 125)", "oklch(75% 0.2 125)", "oklch(87% 0.2 125)", "oklch(95% 0.2 125)"]
       },
-      "lime-action-hover": {
-        "role": "primary",
-        "displayName": "Pressed Lime",
-        "canonical": "#b9de2d",
-        "tonalRamp": ["oklch(15% 0.18 125)", "oklch(27% 0.18 125)", "oklch(39% 0.18 125)", "oklch(51% 0.18 125)", "oklch(63% 0.18 125)", "oklch(75% 0.18 125)", "oklch(87% 0.18 125)", "oklch(95% 0.18 125)"]
-      },
       "lime-wash": {
         "role": "primary",
-        "displayName": "Support Wash",
-        "canonical": "#eff7cb",
-        "tonalRamp": ["oklch(15% 0.07 110)", "oklch(27% 0.07 110)", "oklch(39% 0.07 110)", "oklch(51% 0.07 110)", "oklch(63% 0.07 110)", "oklch(75% 0.07 110)", "oklch(87% 0.07 110)", "oklch(95% 0.07 110)"]
+        "displayName": "Selection Wash",
+        "canonical": "#e8f6b7",
+        "tonalRamp": ["oklch(15% 0.07 115)", "oklch(27% 0.07 115)", "oklch(39% 0.07 115)", "oklch(51% 0.07 115)", "oklch(63% 0.07 115)", "oklch(75% 0.07 115)", "oklch(87% 0.07 115)", "oklch(95% 0.07 115)"]
       },
       "evidence-blue": {
         "role": "secondary",
         "displayName": "Evidence Blue",
-        "canonical": "#315d78",
+        "canonical": "#315f7a",
         "tonalRamp": ["oklch(15% 0.08 235)", "oklch(27% 0.08 235)", "oklch(39% 0.08 235)", "oklch(51% 0.08 235)", "oklch(63% 0.08 235)", "oklch(75% 0.08 235)", "oklch(87% 0.08 235)", "oklch(95% 0.08 235)"]
       },
-      "evidence-blue-wash": {
+      "boundary-rose": {
         "role": "secondary",
-        "displayName": "Evidence Blue Wash",
-        "canonical": "#e8eff4",
-        "tonalRamp": ["oklch(15% 0.025 235)", "oklch(27% 0.025 235)", "oklch(39% 0.025 235)", "oklch(51% 0.025 235)", "oklch(63% 0.025 235)", "oklch(75% 0.025 235)", "oklch(87% 0.025 235)", "oklch(95% 0.025 235)"]
+        "displayName": "Boundary Rose",
+        "canonical": "#a54d42",
+        "tonalRamp": ["oklch(15% 0.11 25)", "oklch(27% 0.11 25)", "oklch(39% 0.11 25)", "oklch(51% 0.11 25)", "oklch(63% 0.11 25)", "oklch(75% 0.11 25)", "oklch(87% 0.11 25)", "oklch(95% 0.11 25)"]
       },
-      "risk-amber": {
+      "caution-amber": {
         "role": "secondary",
-        "displayName": "Risk Amber",
-        "canonical": "#8a5a11",
-        "tonalRamp": ["oklch(15% 0.12 70)", "oklch(27% 0.12 70)", "oklch(39% 0.12 70)", "oklch(51% 0.12 70)", "oklch(63% 0.12 70)", "oklch(75% 0.12 70)", "oklch(87% 0.12 70)", "oklch(95% 0.12 70)"]
+        "displayName": "Caution Amber",
+        "canonical": "#865b13",
+        "tonalRamp": ["oklch(15% 0.11 75)", "oklch(27% 0.11 75)", "oklch(39% 0.11 75)", "oklch(51% 0.11 75)", "oklch(63% 0.11 75)", "oklch(75% 0.11 75)", "oklch(87% 0.11 75)", "oklch(95% 0.11 75)"]
       },
-      "risk-amber-wash": {
-        "role": "secondary",
-        "displayName": "Risk Amber Wash",
-        "canonical": "#f6ecd7",
-        "tonalRamp": ["oklch(15% 0.04 80)", "oklch(27% 0.04 80)", "oklch(39% 0.04 80)", "oklch(51% 0.04 80)", "oklch(63% 0.04 80)", "oklch(75% 0.04 80)", "oklch(87% 0.04 80)", "oklch(95% 0.04 80)"]
-      },
-      "error-red": {
-        "role": "secondary",
-        "displayName": "Boundary Red",
-        "canonical": "#a23832",
-        "tonalRamp": ["oklch(15% 0.12 25)", "oklch(27% 0.12 25)", "oklch(39% 0.12 25)", "oklch(51% 0.12 25)", "oklch(63% 0.12 25)", "oklch(75% 0.12 25)", "oklch(87% 0.12 25)", "oklch(95% 0.12 25)"]
-      },
-      "error-red-wash": {
-        "role": "secondary",
-        "displayName": "Boundary Red Wash",
-        "canonical": "#f7e5e2",
-        "tonalRamp": ["oklch(15% 0.04 25)", "oklch(27% 0.04 25)", "oklch(39% 0.04 25)", "oklch(51% 0.04 25)", "oklch(63% 0.04 25)", "oklch(75% 0.04 25)", "oklch(87% 0.04 25)", "oklch(95% 0.04 25)"]
-      },
-      "neutral-wash": {
-        "role": "neutral",
-        "displayName": "Neutral Wash",
-        "canonical": "#ececea",
-        "tonalRamp": ["oklch(15% 0.005 160)", "oklch(27% 0.005 160)", "oklch(39% 0.005 160)", "oklch(51% 0.005 160)", "oklch(63% 0.005 160)", "oklch(75% 0.005 160)", "oklch(87% 0.005 160)", "oklch(95% 0.005 160)"]
+      "focus-blue": {
+        "role": "tertiary",
+        "displayName": "Focus Blue",
+        "canonical": "#1769aa",
+        "tonalRamp": ["oklch(15% 0.13 245)", "oklch(27% 0.13 245)", "oklch(39% 0.13 245)", "oklch(51% 0.13 245)", "oklch(63% 0.13 245)", "oklch(75% 0.13 245)", "oklch(87% 0.13 245)", "oklch(95% 0.13 245)"]
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "첫 화면의 단일 약속에만 사용한다." },
-      "headline": { "displayName": "Headline", "purpose": "판단 구획의 질문과 결과 진입점에 사용한다." },
-      "title": { "displayName": "Title", "purpose": "폼 묶음, 비교 열, 근거 그룹의 제목에 사용한다." },
-      "body": { "displayName": "Body", "purpose": "설명과 경계 문구를 긴 호흡으로 읽게 한다." },
-      "label": { "displayName": "Label", "purpose": "상태, 단위, 짧은 메타 정보에 사용한다." },
+      "display": { "displayName": "Display", "purpose": "첫 화면의 한 문장 약속에 사용한다." },
+      "headline": { "displayName": "Headline", "purpose": "입력과 결과의 큰 진입점에 사용한다." },
+      "title": { "displayName": "Title", "purpose": "비교, 지원, 스트레스, 출처 구획의 제목에 사용한다." },
+      "body": { "displayName": "Body", "purpose": "입력 안내, 계산 설명, 경계 문구에 사용한다." },
+      "label": { "displayName": "Label", "purpose": "상태, 단위, 표 메타 정보, 선택 표식에 사용한다." },
       "action": { "displayName": "Action", "purpose": "버튼과 독립 행동의 짧은 문구에 사용한다." }
     },
     "shadows": [
       {
-        "name": "keyboard-focus-halo",
-        "value": "0 0 0 6px rgba(201, 239, 60, 0.65)",
-        "purpose": "2px 남색 외곽선 바깥에서 키보드 탐색 위치를 표시한다."
+        "name": "selected-option-inset",
+        "value": "inset 0 0 0 3px #c9ef3c",
+        "purpose": "현재 시나리오 선택지의 경계를 컨테이너 안에서 표시한다."
       }
     ],
     "motion": [
       {
         "name": "state-quick",
         "value": "160ms ease",
-        "purpose": "버튼의 색과 1px 이동처럼 짧은 상호작용 피드백에 사용한다."
+        "purpose": "버튼의 색, 경계, 1px 이동에 사용한다."
       },
       {
         "name": "loading-spin",
-        "value": "720ms linear infinite",
-        "purpose": "샘플 데이터와 계산 로딩 인디케이터에 사용한다."
+        "value": "800ms linear infinite",
+        "purpose": "세 시나리오 계산 중 로더에 사용한다."
       },
       {
         "name": "reduced-motion",
         "value": "0.01ms",
-        "purpose": "사용자가 모션 감소를 요청하면 모든 전환과 애니메이션을 사실상 즉시 완료한다."
+        "purpose": "모션 감소 요청 시 애니메이션을 사실상 즉시 완료한다."
       }
     ],
     "breakpoints": [
-      { "name": "wide-reflow", "value": "1080px" },
-      { "name": "tablet-stack", "value": "820px" },
-      { "name": "mobile-stack", "value": "580px" }
+      { "name": "compact-desktop", "value": "1080px" },
+      { "name": "single-column", "value": "820px" },
+      { "name": "mobile", "value": "580px" },
+      { "name": "narrow-mobile", "value": "360px" }
     ]
   },
   "components": [
@@ -168,116 +133,117 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "계산 실행과 다음 단계처럼 흐름을 실제로 전진시키는 라임 행동이다.",
-      "html": "<button class=\"ds-button-primary\" type=\"button\">장학금부터 계산하기 <svg aria-hidden=\"true\" viewBox=\"0 0 20 20\"><path d=\"M4 10h12M12 5l5 5-5 5\"/></svg></button>",
-      "css": ".ds-button-primary { display:inline-flex; min-height:46px; align-items:center; justify-content:center; gap:9px; padding:0 17px; border:1px solid transparent; border-radius:var(--radius-control,10px); background:var(--lime,#c9ef3c); color:var(--ink-strong,#091622); cursor:pointer; font:720 .9rem/1 'Pretendard Variable',Pretendard,sans-serif; transition:background-color 160ms ease,transform 160ms ease; } .ds-button-primary svg { width:1.15em; height:1.15em; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; } .ds-button-primary:hover { background:var(--lime-hover,#b9de2d); transform:translateY(-1px); } .ds-button-primary:active { transform:translateY(0); } .ds-button-primary:focus-visible { outline:2px solid var(--ink-strong,#091622); outline-offset:3px; box-shadow:0 0 0 6px rgba(201,239,60,.65); }"
+      "description": "계산과 다음 단계 행동을 표시하는 남색 버튼이다.",
+      "html": "<button class=\"ds-button-primary\" type=\"button\">세 가지 계획 비교하기 <svg aria-hidden=\"true\" viewBox=\"0 0 24 24\"><path d=\"M5 12h14M13 6l6 6-6 6\"/></svg></button>",
+      "css": ".ds-button-primary { display:inline-flex; min-height:48px; align-items:center; justify-content:center; gap:10px; padding:0 19px; border:1px solid transparent; border-radius:7px; background:var(--navy,#091622); color:var(--white,#fffefa); cursor:pointer; font:700 1rem/1 'Noto Sans KR UI','Malgun Gothic',system-ui,sans-serif; transition:transform .16s ease,background .16s ease; } .ds-button-primary svg { width:1.1em; height:1.1em; fill:none; stroke:var(--lime,#c9ef3c); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; } .ds-button-primary:hover { background:#162b3a; transform:translateY(-1px); } .ds-button-primary:active { transform:translateY(0); } .ds-button-primary:focus-visible { outline:3px solid var(--focus,#1769aa); outline-offset:3px; }"
     },
     {
-      "name": "Secondary Button",
+      "name": "Quiet Button",
       "kind": "button",
-      "refersTo": "button-secondary",
-      "description": "샘플 불러오기처럼 주요 행동과 나란히 놓이는 투명 대안이다.",
-      "html": "<button class=\"ds-button-secondary\" type=\"button\">가상 데이터 불러오기</button>",
-      "css": ".ds-button-secondary { display:inline-flex; min-height:46px; align-items:center; justify-content:center; padding:0 17px; border:1px solid var(--line-strong,#aeb5b4); border-radius:var(--radius-control,10px); background:transparent; color:var(--ink,#102131); cursor:pointer; font:720 .9rem/1 'Pretendard Variable',Pretendard,sans-serif; transition:background-color 160ms ease,transform 160ms ease; } .ds-button-secondary:hover { background:var(--paper,#fbfaf6); transform:translateY(-1px); } .ds-button-secondary:active { transform:translateY(0); } .ds-button-secondary:focus-visible { outline:2px solid var(--ink-strong,#091622); outline-offset:3px; box-shadow:0 0 0 6px rgba(201,239,60,.65); }"
+      "refersTo": "button-quiet",
+      "description": "예시 정보처럼 주요 행동과 나란히 놓이는 흰 대안이다.",
+      "html": "<button class=\"ds-button-quiet\" type=\"button\">예시 정보로 시작하기</button>",
+      "css": ".ds-button-quiet { display:inline-flex; min-height:48px; align-items:center; justify-content:center; padding:0 19px; border:1px solid var(--line,#c9ccc8); border-radius:7px; background:var(--white,#fffefa); color:var(--ink,#091622); cursor:pointer; font:700 1rem/1 'Noto Sans KR UI','Malgun Gothic',system-ui,sans-serif; transition:transform .16s ease,border-color .16s ease; } .ds-button-quiet:hover { border-color:var(--ink,#091622); transform:translateY(-1px); } .ds-button-quiet:active { transform:translateY(0); } .ds-button-quiet:focus-visible { outline:3px solid var(--focus,#1769aa); outline-offset:3px; }"
     },
     {
-      "name": "Dark Button",
+      "name": "Outline Button",
       "kind": "button",
-      "refersTo": "button-dark",
-      "description": "어두운 계산 구획이나 지원사업 전체 목록으로 진입하는 단호한 보조 행동이다.",
-      "html": "<button class=\"ds-button-dark\" type=\"button\">전체 지원사업 보기</button>",
-      "css": ".ds-button-dark { display:inline-flex; min-height:46px; align-items:center; justify-content:center; padding:0 17px; border:1px solid transparent; border-radius:var(--radius-control,10px); background:var(--ink-strong,#091622); color:var(--paper,#fbfaf6); cursor:pointer; font:720 .9rem/1 'Pretendard Variable',Pretendard,sans-serif; transition:background-color 160ms ease,transform 160ms ease; } .ds-button-dark:hover { background:#183245; transform:translateY(-1px); } .ds-button-dark:active { transform:translateY(0); } .ds-button-dark:focus-visible { outline:2px solid var(--ink-strong,#091622); outline-offset:3px; box-shadow:0 0 0 6px rgba(201,239,60,.65); }"
+      "refersTo": "button-outline",
+      "description": "지원사업 카탈로그처럼 보조 정보를 펼치는 투명 행동이다.",
+      "html": "<button class=\"ds-button-outline\" type=\"button\" aria-expanded=\"false\">전체 지원사업 보기 <span>19</span></button>",
+      "css": ".ds-button-outline { display:inline-flex; min-height:48px; align-items:center; justify-content:center; gap:10px; padding:0 19px; border:1px solid var(--ink,#091622); border-radius:7px; background:transparent; color:var(--ink,#091622); cursor:pointer; font:700 1rem/1 'Noto Sans KR UI','Malgun Gothic',system-ui,sans-serif; transition:transform .16s ease,background .16s ease; } .ds-button-outline span { min-width:26px; height:24px; border-radius:12px; display:inline-grid; place-items:center; background:var(--ink,#091622); color:var(--white,#fffefa); font-size:.78rem; } .ds-button-outline:hover { background:var(--white,#fffefa); transform:translateY(-1px); } .ds-button-outline:active { transform:translateY(0); } .ds-button-outline:focus-visible { outline:3px solid var(--focus,#1769aa); outline-offset:3px; }"
     },
     {
       "name": "Financial Input Field",
       "kind": "input",
       "refersTo": "input-field",
-      "description": "금액과 시간의 단위를 필드 안에서 고정하는 50px 높이의 원장 입력이다.",
-      "html": "<label class=\"ds-field\" for=\"ds-tuition\"><span>학기 등록금</span><span class=\"ds-input-unit\"><input id=\"ds-tuition\" type=\"number\" value=\"420\" /><b>만원</b></span><small>학기당 실제 납부 예정 금액</small></label>",
-      "css": ".ds-field { display:grid; gap:9px; color:var(--ink-soft,#213747); font:700 .8rem/1.45 'Pretendard Variable',Pretendard,sans-serif; } .ds-input-unit { position:relative; display:block; } .ds-input-unit input { width:100%; min-height:50px; padding:0 52px 0 13px; border:1px solid var(--line-strong,#aeb5b4); border-radius:var(--radius-control,10px); background:var(--paper-strong,#fff); color:var(--ink,#102131); font:400 .92rem/1 'Pretendard Variable',Pretendard,sans-serif; font-variant-numeric:tabular-nums; } .ds-input-unit b { position:absolute; right:13px; top:50%; color:var(--muted,#5d6870); font-size:.78rem; transform:translateY(-50%); } .ds-field small { color:var(--muted,#5d6870); font-size:.71rem; font-weight:500; } .ds-input-unit input:hover { border-color:#7b898e; } .ds-input-unit input:focus-visible { outline:2px solid var(--ink-strong,#091622); outline-offset:3px; box-shadow:0 0 0 6px rgba(201,239,60,.65); } .ds-input-unit input[aria-invalid='true'] { border-color:var(--red,#a23832); background:#fff8f7; }"
+      "description": "금액과 기간의 단위를 필드 안에 고정하는 48px 높이의 계산 입력이다.",
+      "html": "<label class=\"ds-field\" for=\"ds-years\"><span>졸업까지 남은 기간</span><span class=\"ds-input-unit\"><input id=\"ds-years\" type=\"number\" value=\"4\" /><em>년</em></span><small>4년 = 8학기 · 48개월</small></label>",
+      "css": ".ds-field { display:grid; gap:8px; color:var(--ink,#091622); font-family:'Noto Sans KR UI','Malgun Gothic',system-ui,sans-serif; } .ds-field>span:first-child { font-size:.9rem; font-weight:700; } .ds-input-unit { position:relative; display:block; } .ds-input-unit input { width:100%; min-height:48px; padding:0 63px 0 13px; border:1px solid var(--line-strong,#8e9799); border-radius:6px; background:var(--white,#fffefa); color:var(--ink,#091622); font:400 1rem/1 'Noto Sans KR UI','Malgun Gothic',system-ui,sans-serif; font-variant-numeric:tabular-nums; } .ds-input-unit em { position:absolute; right:13px; top:50%; color:var(--muted,#65717a); font-size:.84rem; font-style:normal; transform:translateY(-50%); } .ds-field small { color:var(--muted,#65717a); font-size:.78rem; } .ds-input-unit input:hover { border-color:var(--ink,#091622); } .ds-input-unit input:focus-visible { outline:3px solid var(--focus,#1769aa); outline-offset:3px; } .ds-input-unit input[aria-invalid='true'] { border-color:var(--rose,#a54d42); }"
     },
     {
-      "name": "Status Filter",
+      "name": "Qualification Chip",
       "kind": "chip",
-      "refersTo": "filter-chip",
-      "description": "지원사업 카탈로그의 상태를 바꾸는 조밀한 필터다.",
-      "html": "<button class=\"ds-filter-chip\" type=\"button\" aria-pressed=\"true\">자동 매칭 가능 3</button>",
-      "css": ".ds-filter-chip { display:inline-flex; min-height:36px; align-items:center; padding:0 11px; border:1px solid var(--line,#d5d7d2); border-radius:8px; background:var(--paper-strong,#fff); color:var(--muted-strong,#46545e); cursor:pointer; font:650 .72rem/1.45 'Pretendard Variable',Pretendard,sans-serif; transition:background-color 160ms ease,border-color 160ms ease,color 160ms ease; } .ds-filter-chip:hover,.ds-filter-chip[aria-pressed='true'] { border-color:var(--ink,#102131); background:var(--ink,#102131); color:var(--paper,#fbfaf6); } .ds-filter-chip:focus-visible { outline:2px solid var(--ink-strong,#091622); outline-offset:3px; box-shadow:0 0 0 6px rgba(201,239,60,.65); }"
+      "description": "특별자격을 선택하는 최소 44px 높이의 pill이다.",
+      "html": "<label class=\"ds-chip\"><input type=\"checkbox\" checked /><span>비수도권 인재</span></label>",
+      "css": ".ds-chip { position:relative; display:inline-flex; cursor:pointer; font-family:'Noto Sans KR UI','Malgun Gothic',system-ui,sans-serif; } .ds-chip input { position:absolute; width:1px; height:1px; opacity:0; } .ds-chip span { min-height:44px; padding:9px 15px; display:inline-flex; align-items:center; border:1px solid var(--line-strong,#8e9799); border-radius:22px; background:var(--white,#fffefa); color:var(--ink,#091622); } .ds-chip input:checked+span { border-color:var(--ink,#091622); background:var(--ink,#091622); color:var(--white,#fffefa); } .ds-chip input:focus-visible+span { outline:3px solid var(--focus,#1769aa); outline-offset:3px; }"
     },
     {
       "name": "Header Navigation",
       "kind": "nav",
-      "description": "브랜드와 진단·결과·근거 앵커를 하나의 평면 규칙선 위에 두는 상단 탐색이다.",
-      "html": "<nav class=\"ds-header-nav\" aria-label=\"주요 탐색\"><a class=\"ds-brand\" href=\"#top\"><svg aria-hidden=\"true\" viewBox=\"0 0 32 32\"><path d=\"M4 8h24M4 16h18M4 24h12\"/><path class=\"ds-brand-accent\" d=\"M24 16h4M18 24h10\"/></svg><span>학자금 소비평탄화 AI</span></a><span class=\"ds-nav-links\"><a href=\"#diagnosis\">진단</a><a href=\"#results\">결과</a><a href=\"#sources\">출처·가정</a></span></nav>",
-      "css": ".ds-header-nav { display:flex; min-height:78px; align-items:center; gap:32px; border-bottom:1px solid var(--line,#d5d7d2); color:var(--ink,#102131); font-family:'Pretendard Variable',Pretendard,sans-serif; } .ds-brand { display:inline-flex; align-items:center; gap:11px; color:inherit; font-size:.96rem; font-weight:760; letter-spacing:-.02em; text-decoration:none; } .ds-brand svg { width:28px; height:28px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:square; } .ds-brand-accent { stroke:#87aa05; } .ds-nav-links { display:flex; gap:24px; margin-left:auto; } .ds-nav-links a { color:var(--ink-soft,#213747); font-size:.86rem; font-weight:650; text-decoration:none; } .ds-nav-links a:hover { color:var(--ink-strong,#091622); } .ds-header-nav a:focus-visible { outline:2px solid var(--ink-strong,#091622); outline-offset:3px; box-shadow:0 0 0 6px rgba(201,239,60,.65); }"
+      "description": "브랜드와 계획 계산·계산 방식·공식 정보 앵커를 평면 규칙선 위에 두는 탐색이다.",
+      "html": "<nav class=\"ds-header\" aria-label=\"주요 메뉴\"><a class=\"ds-brand\" href=\"#top\"><span>평</span>학자금 소비평탄화 AI</a><span class=\"ds-links\"><a href=\"#diagnosis\">계획 계산</a><a href=\"#how-it-works\">계산 방식</a><a href=\"#sources\">공식 정보</a></span></nav>",
+      "css": ".ds-header { display:flex; min-height:72px; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line,#c9ccc8); color:var(--ink,#091622); font-family:'Noto Sans KR UI','Malgun Gothic',system-ui,sans-serif; } .ds-brand { display:inline-flex; gap:11px; align-items:center; color:inherit; font-weight:700; letter-spacing:-.025em; text-decoration:none; } .ds-brand>span { display:grid; width:34px; height:34px; place-items:center; border-radius:50%; background:var(--navy,#091622); color:var(--lime,#c9ef3c); } .ds-links { display:flex; gap:28px; } .ds-links a { padding:16px 0; color:var(--ink-2,#243341); font-size:.92rem; font-weight:600; text-decoration:none; } .ds-links a:hover { color:var(--ink,#091622); text-decoration:underline; text-underline-offset:5px; } .ds-header a:focus-visible { outline:3px solid var(--focus,#1769aa); outline-offset:3px; }"
     },
     {
-      "name": "Allocation Ledger",
-      "kind": "custom",
-      "refersTo": "allocation-ledger",
-      "description": "총필요자금에서 장학금 후보를 먼저 차감하고 남은 부담을 산술 관계로 보여주는 서명 원장이다.",
-      "html": "<section class=\"ds-ledger\"><header><h3>지원이 먼저인 자금 원장</h3><span>가상 예시</span></header><div class=\"ds-ledger-row ds-ledger-total\"><span>졸업까지 총필요자금</span><strong>1억 464만원</strong></div><div class=\"ds-ledger-minus\"><i>−</i><div><span>조건상 장학금 후보</span><small>수혜 확정 아님</small></div><strong>2,400만원</strong></div><div class=\"ds-ledger-row ds-ledger-remain\"><span>근로·대출로 나눌 금액</span><strong>8,064만원</strong></div></section>",
-      "css": ".ds-ledger { position:relative; width:min(100%,520px); overflow:hidden; padding:30px; border-radius:var(--radius,16px); background:var(--ink-strong,#091622); color:var(--paper,#fbfaf6); font-family:'Pretendard Variable',Pretendard,sans-serif; } .ds-ledger::after { position:absolute; right:0; bottom:0; width:42%; height:5px; background:var(--lime,#c9ef3c); content:''; } .ds-ledger header,.ds-ledger-row,.ds-ledger-minus { display:flex; align-items:center; justify-content:space-between; gap:20px; } .ds-ledger header { margin-bottom:34px; } .ds-ledger h3 { margin:0; font-size:1.05rem; } .ds-ledger header>span { padding:6px 9px; border-radius:7px; background:var(--lime,#c9ef3c); color:var(--ink-strong,#091622); font-size:.68rem; font-weight:780; } .ds-ledger-row>span,.ds-ledger-minus div>span { color:#dbe1df; font-size:.86rem; } .ds-ledger strong { font-variant-numeric:tabular-nums; letter-spacing:-.025em; } .ds-ledger-total strong { font-size:2.1rem; } .ds-ledger-minus { margin-top:22px; padding-block:22px; border-block:1px solid #314453; } .ds-ledger-minus i { display:grid; width:28px; height:28px; flex:0 0 auto; place-items:center; border:1px solid #516471; border-radius:50%; color:var(--lime,#c9ef3c); font-size:1.2rem; font-style:normal; } .ds-ledger-minus div { display:grid; gap:6px; margin-right:auto; } .ds-ledger-minus small { color:#9eaaad; font-size:.68rem; } .ds-ledger-minus strong { color:var(--lime,#c9ef3c); font-size:1.35rem; } .ds-ledger-remain { padding-top:26px; } .ds-ledger-remain strong { font-size:1.6rem; }"
-    },
-    {
-      "name": "Scholarship Program Row",
-      "kind": "custom",
-      "description": "상태, 이유, 출처, 기준, 공식 행동을 한 줄의 증거로 묶는 카탈로그 행이다.",
-      "html": "<article class=\"ds-program-row\"><div class=\"ds-program-status\"><span>자동 매칭 가능</span><small>등록금 지원</small></div><div class=\"ds-program-main\"><h3>국가장학금 I유형</h3><p>입력한 지원구간을 기준으로 조건상 후보로 분류했습니다.</p><b>데모 계산값 · 학기당 300만원</b></div><dl><div><dt>출처</dt><dd>한국장학재단</dd></div><div><dt>최종 확인</dt><dd>2026-08-27</dd></div></dl><a href=\"#official\">공식 원문 확인</a></article>",
-      "css": ".ds-program-row { display:grid; grid-template-columns:140px minmax(240px,1fr) minmax(170px,.6fr) 110px; gap:24px; align-items:start; padding:26px 0; border-bottom:1px solid var(--line,#d5d7d2); color:var(--ink,#102131); font-family:'Pretendard Variable',Pretendard,sans-serif; } .ds-program-status { display:grid; justify-items:start; gap:9px; } .ds-program-status span { display:inline-flex; min-height:27px; align-items:center; padding:0 8px; border:1px solid #405a00; border-radius:7px; color:#405a00; font-size:.66rem; font-weight:730; } .ds-program-status small { color:var(--muted,#5d6870); font-size:.7rem; } .ds-program-main h3 { margin:0; font-size:1rem; letter-spacing:-.02em; } .ds-program-main p { margin:10px 0 0; color:var(--muted-strong,#46545e); font-size:.78rem; line-height:1.58; } .ds-program-main b { display:inline-block; margin-top:10px; color:#456000; font-size:.68rem; } .ds-program-row dl { display:grid; gap:7px; margin:0; } .ds-program-row dl>div { display:grid; grid-template-columns:58px 1fr; gap:8px; font-size:.7rem; line-height:1.45; } .ds-program-row dt { color:var(--muted,#5d6870); } .ds-program-row dd { margin:0; color:var(--ink-soft,#213747); font-weight:620; } .ds-program-row>a { color:var(--ink-soft,#213747); font-size:.72rem; font-weight:700; text-underline-offset:4px; } .ds-program-row>a:hover { color:var(--ink-strong,#091622); } .ds-program-row>a:focus-visible { outline:2px solid var(--ink-strong,#091622); outline-offset:3px; box-shadow:0 0 0 6px rgba(201,239,60,.65); }"
-    },
-    {
-      "name": "Scenario Column",
+      "name": "Loan Type Choice",
       "kind": "card",
-      "refersTo": "scenario-matrix",
-      "description": "모든 선택을 같은 지표와 단위로 비교하는 원장형 시나리오 열이다.",
-      "html": "<article class=\"ds-scenario\"><header><div><h3>균형형</h3><span>기본 제안</span></div><p>학업시간과 미래 상환의 중간점</p></header><section><small>대학 시절 월 생활소비</small><div><em>희망 130만원</em><strong>121만원</strong></div><p>희망 대비 −9만원</p></section><section><small>취업 후 상환</small><dl><div><dt>월 원리금</dt><dd>42만원</dd></div><div><dt>총이자</dt><dd>125만원</dd></div></dl></section></article>",
-      "css": ".ds-scenario { width:min(100%,380px); overflow:hidden; border:1px solid var(--line-strong,#aeb5b4); border-radius:var(--radius,16px); background:#f6f8eb; color:var(--ink,#102131); font-family:'Pretendard Variable',Pretendard,sans-serif; } .ds-scenario>header { min-height:126px; padding:26px; border-bottom:1px solid var(--line,#d5d7d2); background:var(--ink-strong,#091622); color:var(--paper,#fbfaf6); } .ds-scenario>header>div { display:flex; align-items:center; justify-content:space-between; gap:10px; } .ds-scenario h3 { margin:0; font-size:1.22rem; letter-spacing:-.025em; } .ds-scenario header span { padding:5px 7px; border-radius:6px; background:var(--lime,#c9ef3c); color:var(--ink-strong,#091622); font-size:.62rem; font-weight:760; } .ds-scenario header p { margin:12px 0 0; color:#b6c0c2; font-size:.76rem; } .ds-scenario>section { min-height:138px; padding:22px 26px; border-bottom:1px solid var(--line,#d5d7d2); } .ds-scenario section>small { color:var(--muted,#5d6870); font-size:.72rem; font-weight:720; } .ds-scenario section>div { display:flex; align-items:end; justify-content:space-between; gap:12px; margin-top:18px; } .ds-scenario section em { color:var(--muted,#5d6870); font-size:.7rem; font-style:normal; } .ds-scenario section strong { font-size:2.2rem; font-variant-numeric:tabular-nums; letter-spacing:-.04em; } .ds-scenario section>p { color:var(--red,#a23832); font-size:.7rem; font-weight:700; } .ds-scenario dl { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:16px 0 0; } .ds-scenario dt { color:var(--muted,#5d6870); font-size:.66rem; } .ds-scenario dd { margin:5px 0 0; font-weight:720; font-variant-numeric:tabular-nums; }"
+      "refersTo": "loan-choice",
+      "description": "상환 계산축을 바꾸는 96px 높이의 라디오 선택 면이다.",
+      "html": "<label class=\"ds-loan-choice\"><input type=\"radio\" name=\"loan-type\" checked /><span><strong>일반 상환</strong><small>정한 거치·상환기간에 따라 매달 갚아요.</small></span></label>",
+      "css": ".ds-loan-choice { position:relative; display:block; min-height:96px; cursor:pointer; font-family:'Noto Sans KR UI','Malgun Gothic',system-ui,sans-serif; } .ds-loan-choice input { position:absolute; opacity:0; } .ds-loan-choice>span { min-height:96px; padding:17px 18px; border:1px solid var(--line-strong,#8e9799); border-radius:8px; display:grid; gap:5px; align-content:center; background:var(--white,#fffefa); } .ds-loan-choice strong::before { content:''; display:inline-block; width:14px; height:14px; margin-right:8px; border:1px solid var(--line-strong,#8e9799); border-radius:50%; vertical-align:-1px; } .ds-loan-choice small { color:var(--muted,#65717a); } .ds-loan-choice input:checked+span { border:2px solid var(--ink,#091622); background:#f8f9ef; } .ds-loan-choice input:checked+span strong::before { border:4px solid var(--ink,#091622); background:var(--lime,#c9ef3c); } .ds-loan-choice input:focus-visible+span { outline:3px solid var(--focus,#1769aa); outline-offset:3px; }"
     },
     {
-      "name": "Stress Toggle",
+      "name": "Scenario Option",
+      "kind": "card",
+      "refersTo": "scenario-option",
+      "description": "기본 보기와 현재 선택을 구분하는 세 계획 라디오 옵션이다.",
+      "html": "<label class=\"ds-scenario is-selected\"><input type=\"radio\" name=\"scenario\" checked /><i aria-hidden=\"true\"></i><span><span class=\"ds-scenario-line\"><strong>균형형</strong><em>기본 보기</em><b>내 선택</b></span><small>근로와 대출을 함께 사용해 부담을 나눕니다.</small></span></label>",
+      "css": ".ds-scenario { position:relative; min-height:112px; padding:20px; display:flex; gap:12px; align-items:flex-start; border:1px solid var(--line-strong,#8e9799); border-radius:12px; background:var(--white,#fffefa); color:var(--ink,#091622); cursor:pointer; font-family:'Noto Sans KR UI','Malgun Gothic',system-ui,sans-serif; } .ds-scenario input { position:absolute; opacity:0; } .ds-scenario>i { flex:0 0 auto; width:18px; height:18px; margin-top:3px; border:1px solid var(--line-strong,#8e9799); border-radius:50%; } .ds-scenario>span { display:grid; gap:6px; } .ds-scenario-line { display:flex; flex-wrap:wrap; gap:6px; align-items:center; } .ds-scenario-line em,.ds-scenario-line b { padding:2px 7px; border-radius:10px; font-size:.68rem; font-style:normal; } .ds-scenario-line em { background:var(--paper-2,#ebeae4); color:var(--muted,#65717a); } .ds-scenario-line b { background:var(--lime,#c9ef3c); } .ds-scenario small { color:var(--muted,#65717a); line-height:1.45; } .ds-scenario.is-selected { box-shadow:inset 0 0 0 3px var(--lime,#c9ef3c); background:#fbfcf4; } .ds-scenario.is-selected>i { border:4px solid var(--ink,#091622); background:var(--lime,#c9ef3c); } .ds-scenario input:focus-visible~span { outline:3px solid var(--focus,#1769aa); outline-offset:5px; }"
+    },
+    {
+      "name": "Grouped Comparison",
       "kind": "custom",
-      "description": "선택 즉시 모든 시나리오를 다시 계산하는 어두운 위험 작업대의 체크 행이다.",
-      "html": "<label class=\"ds-stress-toggle\"><input type=\"checkbox\" /><span><b>장학금 미선정</b><small>조건상 후보 금액을 0원으로 재계산</small></span></label>",
-      "css": ".ds-stress-toggle { display:flex; min-height:72px; align-items:center; gap:13px; padding:0 18px; border-bottom:1px solid #314453; background:var(--ink-strong,#091622); color:var(--paper,#fbfaf6); cursor:pointer; font-family:'Pretendard Variable',Pretendard,sans-serif; } .ds-stress-toggle input { width:20px; height:20px; flex:0 0 auto; margin:0; accent-color:var(--lime,#c9ef3c); } .ds-stress-toggle span { display:grid; gap:5px; } .ds-stress-toggle b { font-size:.82rem; } .ds-stress-toggle small { color:#a9b4b7; font-size:.68rem; } .ds-stress-toggle:hover { background:#10283a; } .ds-stress-toggle input:focus-visible { outline:2px solid var(--paper,#fbfaf6); outline-offset:3px; box-shadow:0 0 0 6px rgba(201,239,60,.65); }"
+      "refersTo": "comparison-figure",
+      "description": "세 계획의 세 핵심 지표를 기준선과 함께 한 자리에서 비교하는 서명 figure다.",
+      "html": "<figure class=\"ds-comparison\"><figcaption><h3>지금의 시간과 미래의 부담을 같은 자리에서 보세요.</h3><p>막대 길이는 각 지표 안에서만 비교하세요.</p></figcaption><section><header><h4>대학 시절 월 생활비 여력</h4><span>만 원/월</span></header><div class=\"ds-bars\"><div><span>학업시간 확보형</span><i style=\"width:72%\"></i><b>106만 원</b></div><div class=\"is-selected\"><span>균형형</span><i style=\"width:84%\"></i><b>121만 원 <em>내 선택</em></b></div><div><span>부채 최소형</span><i style=\"width:62%\"></i><b>90만 원</b></div></div></section></figure>",
+      "css": ".ds-comparison { width:min(100%,760px); margin:0; padding:34px; border:1px solid var(--ink,#091622); border-radius:12px; background:var(--white,#fffefa); color:var(--ink,#091622); font-family:'Noto Sans KR UI','Malgun Gothic',system-ui,sans-serif; } .ds-comparison figcaption { display:flex; justify-content:space-between; gap:40px; align-items:end; margin-bottom:25px; padding-bottom:24px; border-bottom:1px solid var(--line,#c9ccc8); } .ds-comparison figcaption h3 { max-width:520px; margin:0; font-size:1.65rem; line-height:1.18; letter-spacing:-.04em; } .ds-comparison figcaption p { max-width:220px; margin:0; color:var(--muted,#65717a); font-size:.82rem; } .ds-comparison section { display:grid; grid-template-columns:190px 1fr; gap:28px; } .ds-comparison header h4 { margin:2px 0 4px; font-size:.98rem; } .ds-comparison header span { color:var(--muted,#65717a); font-size:.75rem; } .ds-bars { display:grid; gap:7px; } .ds-bars>div { min-height:38px; display:grid; grid-template-columns:112px minmax(0,1fr) 120px; gap:10px; align-items:center; } .ds-bars span { color:var(--muted,#65717a); font-size:.76rem; } .ds-bars i { height:12px; background:#526879; border-radius:0 8px 8px 0; } .ds-bars b { font-size:.78rem; white-space:nowrap; } .ds-bars .is-selected i { height:16px; background:var(--lime,#c9ef3c); outline:1px solid var(--ink,#091622); } .ds-bars .is-selected span { color:var(--ink,#091622); font-weight:700; } .ds-bars em { padding:2px 5px; background:var(--lime,#c9ef3c); font-size:.6rem; font-style:normal; }"
+    },
+    {
+      "name": "Selected Detail and Funding Ledger",
+      "kind": "custom",
+      "refersTo": "selected-detail",
+      "description": "현재 선택의 네 지표와 확정 금액 차감 원리를 이어 보여주는 남색·종이 원장 조합이다.",
+      "html": "<div class=\"ds-detail-stack\"><section class=\"ds-selected-detail\"><header><div><h3>균형형</h3><p>근로와 대출을 함께 사용해 부담을 나눕니다.</p></div><span><b>조정 필요</b>희망 생활비보다 낮아 점검이 필요합니다.</span></header><div class=\"ds-detail-metrics\"><div><small>대학 시절 월 생활비 여력</small><strong>121만 원</strong></div><div><small>주당 근로시간</small><strong>10시간</strong></div><div><small>상환 후 월 생활비 여력</small><strong>244만 원</strong></div><div><small>졸업 시 예상 대출잔액</small><strong>3,240만 원</strong></div></div></section><section class=\"ds-funding-ledger\"><div><span>총필요자금</span><strong>9,600만 원</strong></div><div><span>확정 생활비성 지원금</span><b>− 0만 원</b></div><div><span>근로소득</span><b>− 1,920만 원</b></div><div><span>신규 대출</span><b>− 3,500만 원</b></div><div><span>아직 채워지지 않은 금액</span><strong>4,180만 원</strong></div></section></div>",
+      "css": ".ds-detail-stack { width:min(100%,820px); color:var(--ink,#091622); font-family:'Noto Sans KR UI','Malgun Gothic',system-ui,sans-serif; } .ds-selected-detail { padding:42px; border-radius:16px 16px 16px 4px; background:var(--navy,#091622); color:var(--white,#fffefa); } .ds-selected-detail header { display:flex; justify-content:space-between; gap:30px; margin-bottom:30px; } .ds-selected-detail h3 { margin:0 0 9px; font-size:2.1rem; letter-spacing:-.04em; } .ds-selected-detail p { margin:0; color:#b9c3c8; } .ds-selected-detail header>span { max-width:260px; padding:13px 16px; border-top:3px solid var(--lime,#c9ef3c); background:#182936; font-size:.78rem; } .ds-selected-detail header b { display:block; color:var(--lime,#c9ef3c); } .ds-detail-metrics { display:grid; grid-template-columns:repeat(4,1fr); border-block:1px solid #374651; } .ds-detail-metrics>div { padding:20px 14px; } .ds-detail-metrics>div+div { border-left:1px solid #374651; } .ds-detail-metrics small { display:block; min-height:3em; color:#aeb8be; font-size:.72rem; } .ds-detail-metrics strong { display:block; margin-top:5px; font-size:1.45rem; font-variant-numeric:tabular-nums; } .ds-funding-ledger { margin-top:30px; border-top:2px solid var(--ink,#091622); } .ds-funding-ledger>div { display:grid; grid-template-columns:210px 1fr; gap:20px; padding:16px 4px; border-bottom:1px solid var(--line,#c9ccc8); } .ds-funding-ledger>div:last-child { border-bottom:2px solid var(--ink,#091622); } .ds-funding-ledger b { color:var(--blue,#315f7a); } .ds-funding-ledger strong,.ds-funding-ledger b { text-align:right; font-variant-numeric:tabular-nums; }"
     }
   ],
   "narrative": {
-    "northStar": "The Scholarship-First Ledger",
-    "overview": "이 시스템은 금융 선택을 성과판처럼 점수화하지 않고, 총필요자금에서 상환 의무가 없는 지원을 먼저 빼고 남은 부담만 배치하는 원장으로 설명한다. 따뜻한 종이색 바탕은 학생의 생활 맥락을 품고, 깊은 남색 면은 계산과 책임의 경계를 또렷하게 만든다. 절제된 라임은 장식이 아니라 사용자가 실제로 누르거나 선택한 순간에만 나타난다.\n\n정보는 KPI 카드 묶음이 아니라 약속, 조건, 배분 관계, 비교, 위험, 근거의 선형 논리로 읽힌다. 면은 대부분 평평하고 얇은 규칙선이 항목 사이의 관계를 유지한다. 거대한 숫자를 독립된 성과로 전시하지 않고, 언제나 금액의 출처·차감·남은 격차와 붙여 보여준다.",
+    "northStar": "The Comparative Ledger",
+    "overview": "이 시스템은 대학 생활 계획을 하나의 점수나 자동 추천으로 축약하지 않고, 사용자가 세 안을 직접 고른 뒤 지금의 시간과 미래의 부담을 같은 자리에서 비교하게 한다. 따뜻한 종이 바탕은 입력과 근거를 차분히 읽게 하고, 깊은 남색 원장은 선택한 안의 계산 결과를 책임 있는 상세로 묶는다. 라임은 행동과 현재 선택을 표시하지만 어느 안이 객관적 정답이라고 주장하지 않는다.\n\n시각 문법은 KPI 카드 묶음보다 입력 행, 선택 그룹, 통합 비교 막대, 접근 가능한 표, 자금 원장을 우선한다. 숫자는 독립된 성과가 아니라 희망 기준, 현재 기준, 계산 가정, 대출유형과 함께 읽힌다. 균형형은 화면을 이해하기 위한 최초 보기일 뿐 추천이 아니며, 사용자가 바꾸는 선택이 모든 상세와 위험 계산의 중심이다.",
     "keyCharacteristics": [
-      "따뜻한 오프화이트 캔버스와 심해색 원장이 만드는 공공 금융 문서의 신뢰감",
-      "장학금 우선 차감을 중심으로 한 배분 관계와 반복되는 원장 문법",
-      "버튼·선택·기본 제안에만 제한되는 라임 신호",
-      "카드 모음 대신 규칙선, 행, 열, 비교표로 만드는 조용한 정보 밀도",
-      "결과와 함께 가정·미확인 정보·공식기관 경계를 인접 배치하는 증거 중심 태도"
+      "따뜻한 종이색 바탕과 심해색 선택 상세가 만드는 차분한 공공 금융 도구",
+      "세 시나리오를 먼저 선택하고 동일한 세 지표를 한 그룹에서 비교하는 구조",
+      "현재 선택에만 쓰이는 라임 막대, 안쪽 링, 짧은 상태 표식",
+      "카드 모음 대신 행·열·표·원장으로 이어지는 계산 문법",
+      "확정 지원금, 졸업기간, 대출유형, 공식 경계를 결과 가까이 드러내는 증거 중심 태도"
     ],
     "rules": [
-      { "name": "The Lime Is a Verb Rule", "body": "라임은 누르기, 선택하기, 우선 적용하기처럼 상태를 바꾸는 의미가 있을 때만 쓴다.", "section": "colors" },
-      { "name": "The Semantic Role Rule", "body": "파랑은 근거, 호박은 주의, 빨강은 오류와 경계에 고정하며 서로의 역할을 바꾸지 않는다.", "section": "colors" },
-      { "name": "The Ledger Number Rule", "body": "금액과 시간은 `tabular-nums`로 정렬하고, 숫자만 떼어내기보다 무엇에서 무엇을 뺀 값인지 같은 면에서 읽히게 한다.", "section": "typography" },
-      { "name": "The One-Family Rule", "body": "장식 서체나 별도 모노스페이스를 추가하지 않고 크기, 굵기, 자간, 행간으로 위계를 만든다.", "section": "typography" },
-      { "name": "The Relationship Before Tile Rule", "body": "숫자 하나를 카드에 고립시키지 말고 출처, 차감, 결과 또는 기준과 같은 구조 안에 둔다.", "section": "layout" },
-      { "name": "The Reflow Preserves Meaning Rule", "body": "반응형 전환은 정보의 순서를 유지하며, 나란히 보던 관계는 모바일에서 같은 순서의 세로 흐름으로 바뀐다.", "section": "layout" },
-      { "name": "The Flat Evidence Rule", "body": "위계를 만들기 위해 그림자를 쌓지 않고 면의 톤, 규칙선, 여백, 어두운 원장 전환을 사용한다.", "section": "elevation" },
-      { "name": "The Bounded Curve Rule", "body": "큰 면의 최대 반경은 16px로 제한하고, 컨테이너 안의 모든 행을 다시 카드로 감싸지 않는다.", "section": "shapes" },
-      { "name": "The Whole Row Is Evidence Rule", "body": "상태나 금액만 강조하지 말고 이유, 출처, 기준일, 다음 확인 행동을 같은 읽기 단위에 둔다.", "section": "components" }
+      { "name": "The Lime Marks Choice Rule", "body": "라임은 행동, 선택, 단계 진행에만 쓰며 최초 표시 상태를 추천처럼 장식하지 않는다.", "section": "colors" },
+      { "name": "The Calculation Boundary Rule", "body": "파랑은 계산에 반영된 정보, 호박은 미반영 후보, 장미색은 오류와 부족에 고정한다.", "section": "colors" },
+      { "name": "The Comparison Number Rule", "body": "금액과 시간은 `tabular-nums`로 정렬하고 희망·현재·선택 기준과 같은 읽기 단위 안에 둔다.", "section": "typography" },
+      { "name": "The Bundled Voice Rule", "body": "외부 CDN 서체에 의존하지 않고 번들된 Noto Sans KR UI와 명시된 시스템 폴백만 사용한다.", "section": "typography" },
+      { "name": "The Selection-to-Detail Rule", "body": "선택 그룹, 통합 비교, 선택안 상세는 분리된 화면이 아니라 같은 흐름에서 즉시 이어져야 한다.", "section": "layout" },
+      { "name": "The Reflow Preserves Comparison Rule", "body": "반응형 전환은 세 안의 순서와 세 지표의 순서를 보존하고, 시각 막대와 접근 가능한 표의 정보 일치를 유지한다.", "section": "layout" },
+      { "name": "The No Drop Shadow Rule", "body": "선택 상태의 안쪽 링 외에는 그림자를 사용하지 않고 면, 선, 여백으로 위계를 만든다.", "section": "elevation" },
+      { "name": "The Ledger Corner Rule", "body": "큰 남색 결과 면은 한쪽 아래가 각진 비대칭 원장 실루엣을 유지하고 일반 입력 카드에 이를 남용하지 않는다.", "section": "shapes" },
+      { "name": "The Default Is Not a Recommendation Rule", "body": "“기본 보기”는 최초 렌더링 상태를 뜻하며 추천, 최적안, 승인 결과를 의미하지 않는다.", "section": "components" }
     ],
     "dos": [
-      "Do 장학금과 감면을 먼저 차감한 뒤 남은 금액만 근로와 대출로 배치하는 원장 관계를 유지한다.",
-      "Do 따뜻한 오프화이트 캔버스, 깊은 남색 계산 면, 희소한 라임 행동색의 역할을 일관되게 지킨다.",
-      "Do 금액을 출처·가정·차감·남은 격차와 함께 보여주고 탭형 숫자로 비교 정렬을 유지한다.",
-      "Do 결과 가까이에 미확인 정보, 공식기관 링크, 데모 경계를 배치한다.",
-      "Do 1080px, 820px, 580px 리플로에서 정보 순서와 최소 44px 모바일 행동 영역을 보존한다.",
-      "Do `prefers-reduced-motion`에서 스크롤, 애니메이션, 전환을 사실상 즉시 완료한다."
+      "Do 사용자가 세 시나리오를 직접 선택하고 세 핵심 지표를 하나의 그룹에서 비교하게 한다.",
+      "Do 학기당 실제 납부 등록금과 수혜가 확정된 생활비성 지원금만 계산에 반영한다.",
+      "Do 졸업기간과 대출유형을 총필요자금·실행 횟수·이자·상환 결과의 계산축으로 드러낸다.",
+      "Do 균형형을 “기본 보기”로만 표현하고 현재 선택에는 “내 선택”을 명확히 표시한다.",
+      "Do 시각 비교와 스크린리더용 표·상태 알림의 값과 단위를 일치시킨다.",
+      "Do 번들된 Noto Sans KR UI, 1080/820/580/360px 리플로, 최소 44px 모바일 독립 행동 영역을 유지한다."
     ],
     "donts": [
-      "Don't 독립 KPI 카드, 거대한 숫자 타일, 사이드바형 금융 SaaS 대시보드로 재구성한다.",
-      "Don't 그라디언트, 글래스모피즘, 상시 그림자, 장식적 AI 스파클을 추가한다.",
-      "Don't 라임을 넓은 배경이나 의미 없는 장식에 사용한다.",
-      "Don't 지원사업과 시나리오의 근거를 숨기거나 추천을 공식 자격·승인 결과처럼 표현한다.",
-      "Don't 모든 행을 다시 둥근 카드로 감싸 정보의 관계와 원장 리듬을 끊는다.",
-      "Don't 구조 참고 제품의 시각 스타일을 복제하거나 이 제품의 공공 금융 문서 톤을 소비자 투자 앱처럼 바꾼다."
+      "Don't 지원사업 후보 금액을 확정 지원금처럼 차감하거나 카탈로그를 개인 수혜 결과처럼 표현한다.",
+      "Don't 균형형을 추천, 최적안, 정답으로 소개한다.",
+      "Don't 세 지표를 서로 다른 화면이나 독립 KPI 카드로 흩어 비교 비용을 높인다.",
+      "Don't 그라디언트, 글래스모피즘, 드롭 섀도, 장식적 AI 스파클을 추가한다.",
+      "Don't 대출유형별 상환 차이, 졸업기간, 계산 가정, 공식기관 경계를 결과에서 떼어낸다.",
+      "Don't 외부 서체 CDN에 의존하거나 모든 행을 다시 둥근 카드로 감싼다."
     ]
   }
 }

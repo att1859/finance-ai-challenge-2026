@@ -178,28 +178,18 @@ export function evaluateScholarships(profile) {
       ...item,
       status: evaluation.status,
       reason: evaluation.reason,
-      estimatedSemesterAmount: evaluation.amount || 0,
+      estimatedSemesterAmount: evaluation.amount > 0 ? evaluation.amount : null,
     };
   });
 }
 
-export function summarizeScholarships(evaluatedPrograms, semesters) {
+export function summarizeScholarships(evaluatedPrograms) {
   const counts = Object.fromEntries(PROGRAM_STATUSES.map((status) => [status, 0]));
   evaluatedPrograms.forEach((item) => {
     counts[item.status] += 1;
   });
-  const appliedPrograms = evaluatedPrograms.filter((item) => (
-    item.status === '자동 매칭 가능' && item.kind.includes('등록금')
-  ));
-  const total = appliedPrograms.reduce(
-    (sum, item) => sum + (item.estimatedSemesterAmount * semesters),
-    0,
-  );
-
   return {
     counts,
-    appliedPrograms,
-    estimatedTotal: total,
+    candidatePrograms: evaluatedPrograms.filter((item) => item.status === '자동 매칭 가능'),
   };
 }
-
