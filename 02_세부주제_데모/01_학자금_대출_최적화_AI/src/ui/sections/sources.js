@@ -1,0 +1,11 @@
+import { GENERAL_LOAN_POLICY, INCOME_CONTINGENT_POLICY } from '../../policies/loans/2026.js';
+import { icon } from '../shared/icon.js';
+
+export function renderSources() {
+  return `<section class="sources-section" id="sources" aria-labelledby="sources-title"><div class="section-heading compact"><h3 id="sources-title">계산 기준과 공식 정보를 확인하세요.</h3></div><div class="source-grid">
+    <article><span>공식 정보</span><h4>취업 후 상환 학자금대출</h4><p>상환기준소득과 의무상환 방식은 공식 안내를 기준으로 확인했습니다.</p><small>기준연도 ${INCOME_CONTINGENT_POLICY.basisYear} · 최종 확인 ${INCOME_CONTINGENT_POLICY.checkedAt}</small><a href="${INCOME_CONTINGENT_POLICY.officialUrl}" target="_blank" rel="noreferrer">한국장학재단 공식 안내 ${icon('external')}</a></article>
+    <article><span>공식 정보</span><h4>일반 상환 학자금대출</h4><p>원금균등·원리금균등, 거치·상환기간 구조는 공식 안내를 기준으로 했습니다.</p><small>최종 확인 ${GENERAL_LOAN_POLICY.checkedAt}</small><a href="${GENERAL_LOAN_POLICY.officialUrl}" target="_blank" rel="noreferrer">한국장학재단 공식 안내 ${icon('external')}</a></article>
+    <article class="assumption"><span>계산 가정</span><h4>이 결과에 포함하지 않은 것</h4><p>세금, 물가 변화, 자발적 중도상환, 실제 심사 결과는 계산하지 않았습니다. 금리와 소득은 사용자가 입력한 값이 유지된다고 가정합니다.</p><small>실제 금융정보를 연결하려면 인가된 마이데이터 사업자 또는 금융회사 API 제휴가 필요합니다.</small></article>
+  </div><div class="engine-boundary"><strong>결과가 만들어지는 방식</strong><p>공고 정보는 문장 구조를 정리하고, 자격 후보는 입력값과 규칙으로 점검하며, 확정 금액·근로·대출 조합은 계산식으로 비교합니다. 자동 설명은 수혜나 승인을 확정하지 않습니다.</p></div></section>`;
+}
+

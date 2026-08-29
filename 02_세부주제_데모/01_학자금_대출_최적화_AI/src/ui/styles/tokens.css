@@ -1,0 +1,30 @@
+@font-face {
+  font-family: 'Noto Sans KR UI';
+  src: url('../../assets/NotoSansKR-UI.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+  --ink: #091622;
+  --ink-2: #243341;
+  --muted: #65717a;
+  --paper: #f4f3ee;
+  --paper-2: #ebeae4;
+  --white: #fffefa;
+  --line: #c9ccc8;
+  --line-strong: #8e9799;
+  --lime: #c9ef3c;
+  --lime-soft: #e8f6b7;
+  --navy: #091622;
+  --blue: #315f7a;
+  --rose: #a54d42;
+  --amber: #865b13;
+  --focus: #1769aa;
+  --radius: 12px;
+  --max: 1180px;
+  --font-body: 'Noto Sans KR UI', 'Malgun Gothic', system-ui, sans-serif;
+  --font-display: 'Noto Sans KR UI', 'Malgun Gothic', system-ui, sans-serif;
+}
