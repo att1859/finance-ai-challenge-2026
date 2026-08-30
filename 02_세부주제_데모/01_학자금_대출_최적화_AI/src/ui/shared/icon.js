@@ -6,6 +6,7 @@ const ICON_PATHS = Object.freeze({
   external: '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 13v6H5V6h6"/>',
   chevron: '<path d="M6 9l6 6 6-6"/>',
   reset: '<path d="M4 7v5h5"/><path d="M5.5 15a7 7 0 101-8L4 12"/>',
+  close: '<path d="M6 6l12 12M18 6L6 18"/>',
 });
 
 export function icon(name) {

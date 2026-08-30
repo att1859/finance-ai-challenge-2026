@@ -1,4 +1,5 @@
 import { renderForm } from './diagnosis-form.js';
+import { renderSmoothingExplainer } from './smoothing-explainer.js';
 import { icon } from '../shared/icon.js';
 
 export function renderShell(state) {
@@ -24,6 +25,20 @@ export function renderShell(state) {
             <a class="button button-primary" href="#diagnosis">내 계획 계산하기 ${icon('arrow')}</a>
             <button class="button button-quiet" type="button" data-action="sample">예시 정보로 시작하기</button>
           </div>
+          <button
+            class="hero-explainer-trigger"
+            type="button"
+            data-action="open-smoothing"
+            aria-haspopup="dialog"
+            aria-controls="smoothing-dialog"
+          >
+            ${icon('info')}
+            <span>
+              <strong>대출까지 써도 괜찮을까요?</strong>
+              <small>소비평탄화가 필요한 이유를 1분 만에 알아보세요.</small>
+            </span>
+            <span class="hero-explainer-action">왜 그런지 보기 ${icon('arrow')}</span>
+          </button>
           <p class="privacy-note">${icon('shield')} 입력 정보는 브라우저 세션에서만 계산하며 서버에 저장하지 않습니다.</p>
         </div>
         <aside class="hero-ledger" aria-label="비교할 세 가지 기준">
@@ -59,5 +74,6 @@ export function renderShell(state) {
     <footer>
       <div><strong>학자금 소비평탄화 AI</strong><p>지원사업 후보 확인과 학비·생활비 계획을 돕는 간이 계산 서비스</p></div>
       <p>주민등록번호, 계좌번호, 인증서, 금융기관 비밀번호를 요구하지 않습니다.</p>
-    </footer>`;
+    </footer>
+    ${renderSmoothingExplainer()}`;
 }

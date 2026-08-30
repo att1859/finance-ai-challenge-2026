@@ -32,6 +32,29 @@ test('예시 정보로 세 계획을 계산하고 키보드로 선택안을 바�
   expect(errors).toEqual([]);
 });
 
+test('첫 화면에서 소비평탄화 설명을 열고 상세 계산을 확인한다', async ({ page }) => {
+  const errors = trackPageErrors(page);
+  await page.goto('/');
+
+  await page.getByRole('button', { name: /대출까지 써도 괜찮을까요/ }).click();
+  const dialog = page.getByRole('dialog', { name: '대출까지 써도 괜찮을까요?' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('.rate-ledger dd').nth(0)).toContainText('약 17만 원');
+  await expect(dialog.locator('.rate-ledger dd').nth(1)).toContainText('약 30만 원');
+
+  await dialog.getByText('피셔 방정식으로 계산 원리 보기').click();
+  await expect(dialog.getByText(/1\.017 ÷ 1\.028/)).toBeVisible();
+
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+
+  await page.getByRole('button', { name: /대출까지 써도 괜찮을까요/ }).click();
+  await expect(dialog.locator('details')).not.toHaveAttribute('open', '');
+  expect(await dialog.locator('.smoothing-dialog-body').evaluate((element) => element.scrollTop)).toBe(0);
+  await page.keyboard.press('Escape');
+  expect(errors).toEqual([]);
+});
+
 test('취업 후 상환 유형을 계산하고 좁은 화면에서 가로 넘침이 없다', async ({ page }) => {
   const errors = trackPageErrors(page);
   await page.setViewportSize({ width: 360, height: 800 });

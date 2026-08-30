@@ -41,9 +41,13 @@ const loanTypeLabel = (type) => type === 'income-contingent' ? '취업 후 상�
 
 function bindShell() {
   const form = document.querySelector('#diagnosis-form');
+  const smoothingDialog = document.querySelector('#smoothing-dialog');
   form.elements.academicYear.value = state.profile.academicYear;
   form.elements.supportBracket.value = state.profile.supportBracket;
   app.addEventListener('click', handleClick);
+  smoothingDialog?.addEventListener('click', (event) => {
+    if (event.target === smoothingDialog) smoothingDialog.close();
+  });
   form.addEventListener('submit', handleSubmit);
   form.addEventListener('input', handleFormInput);
   form.addEventListener('change', handleFormInput);
@@ -55,6 +59,8 @@ function handleClick(event) {
   const action = trigger.dataset.action;
   if (action === 'sample') loadSample();
   if (action === 'manual') document.querySelector('#diagnosis-form input')?.focus();
+  if (action === 'open-smoothing') openSmoothingDialog();
+  if (action === 'close-smoothing') document.querySelector('#smoothing-dialog')?.close();
   if (action === 'catalog') {
     updateUi(state, { catalogOpen: !state.ui.catalogOpen });
     renderResults();
@@ -63,6 +69,15 @@ function handleClick(event) {
     resetStress(state);
     recalculate();
   }
+}
+
+function openSmoothingDialog() {
+  const dialog = document.querySelector('#smoothing-dialog');
+  if (!dialog) return;
+  dialog.querySelectorAll('details[open]').forEach((details) => { details.open = false; });
+  dialog.showModal();
+  dialog.querySelector('.dialog-close').focus({ preventScroll: true });
+  dialog.querySelector('.smoothing-dialog-body').scrollTop = 0;
 }
 
 function handleFormInput(event) {
