@@ -37,7 +37,6 @@
   .loan-detail { grid-template-columns: 1fr; }
   .loan-detail ul { grid-column: 1; margin-top: 0; }
   .funding-ledger dl > div { grid-template-columns: 170px 1fr; }
-  .program { grid-template-columns: 260px 1fr; }
   .stress-controls { grid-template-columns: 1fr; }
 }
 
@@ -84,16 +83,11 @@
   .detail-metrics > div { padding: 18px 10px; }
   .detail-metrics strong { font-size: 1.35rem; }
   .loan-detail dl { grid-template-columns: 1fr; }
-  .funding-section, .support-program-section, .stress-section, .sources-section { margin-bottom: 72px; }
+  .funding-section, .stress-section, .sources-section { margin-bottom: 72px; }
   .formula-line { gap: 6px; }
   .formula-line span { min-height: 36px; padding: 6px 10px; font-size: .76rem; }
   .funding-ledger dl > div { grid-template-columns: 1fr; gap: 4px; }
   .funding-ledger dd { font-size: .82rem; }
-  .support-program-intro { align-items: stretch; flex-direction: column; }
-  .support-program-intro .button { width: 100%; }
-  .program { grid-template-columns: 1fr; gap: 12px; }
-  .program > div:last-child { grid-template-columns: 1fr; }
-  .program a { justify-self: start; margin-top: 8px; }
   .stress-result { grid-template-columns: 1fr; }
   .stress-result > div + div { border-left: 0; border-top: 1px solid var(--line); }
   .source-grid { grid-template-columns: 1fr; }

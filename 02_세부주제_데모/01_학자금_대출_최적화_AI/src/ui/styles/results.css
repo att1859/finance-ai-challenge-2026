@@ -15,7 +15,7 @@
 .scenario-selector { margin: 0 0 26px; padding: 0; border: 0; }
 .scenario-selector legend { margin-bottom: 13px; font-size: 1rem; font-weight: 700; }
 .scenario-options { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line-strong); border-radius: var(--radius); overflow: hidden; }
-.scenario-option { position: relative; min-width: 0; min-height: 112px; padding: 20px; display: flex; gap: 12px; align-items: flex-start; background: var(--white); cursor: pointer; }
+.scenario-option { position: relative; min-width: 0; min-height: 132px; padding: 20px; display: flex; gap: 12px; align-items: flex-start; background: var(--white); cursor: pointer; }
 .scenario-option + .scenario-option { border-left: 1px solid var(--line); }
 .scenario-option input { position: absolute; opacity: 0; }
 .scenario-radio { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 3px; border: 1px solid var(--line-strong); border-radius: 50%; }
@@ -25,6 +25,7 @@
 .scenario-label-line em { background: var(--paper-2); color: var(--muted); }
 .scenario-label-line b { background: var(--lime); color: var(--ink); }
 .scenario-option small { color: var(--muted); line-height: 1.45; }
+.scenario-work-summary { width: fit-content; margin-top: 2px; padding-top: 6px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: .72rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .scenario-option.is-selected { z-index: 1; box-shadow: inset 0 0 0 3px var(--lime); background: #fbfcf4; }
 .scenario-option.is-selected .scenario-radio { border: 4px solid var(--ink); background: var(--lime); }
 .scenario-option input:focus-visible ~ .scenario-option-copy { outline: 3px solid var(--focus); outline-offset: 5px; }
@@ -88,7 +89,7 @@ tbody th small { display: block; color: var(--muted); font-weight: 400; }
 .comparison-note { margin: 32px 0 0; padding: 18px 20px; border: 1px solid #3c4b55; color: #d5dadd; font-size: .88rem; }
 .comparison-note strong { color: var(--lime); }
 
-.funding-section, .support-program-section, .stress-section, .sources-section { margin-bottom: 100px; }
+.funding-section, .stress-section, .sources-section { margin-bottom: 100px; }
 .formula-line { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 20px; }
 .formula-line span { min-height: 42px; padding: 8px 14px; border: 1px solid var(--ink); border-radius: 22px; display: inline-flex; align-items: center; background: var(--white); font-weight: 700; }
 .formula-line i { color: var(--muted); font-style: normal; }
@@ -96,39 +97,15 @@ tbody th small { display: block; color: var(--muted); font-weight: 400; }
 .funding-ledger dl { margin: 0; }
 .funding-ledger dl > div { display: grid; grid-template-columns: 210px 1fr; gap: 20px; padding: 16px 4px; border-bottom: 1px solid var(--line); }
 .funding-ledger dd { margin: 0; display: flex; justify-content: space-between; gap: 20px; color: var(--muted); }
+.funding-ledger dd > span { display: grid; gap: 3px; }
+.funding-ledger dd small { color: var(--muted); font-size: .7rem; }
 .funding-ledger dd strong { color: var(--ink); }
 .funding-ledger .total { background: var(--paper-2); font-weight: 700; }
 .funding-ledger .deduct dd { color: var(--blue); }
 .funding-ledger .gap { border-bottom: 2px solid var(--ink); }
 .funding-ledger .gap dd { color: var(--ink); font-size: 1.15rem; font-weight: 700; }
 
-.support-program-intro { display: flex; justify-content: space-between; gap: 40px; align-items: end; padding-top: 36px; border-top: 1px solid var(--ink); }
-.support-program-intro > div { max-width: 700px; }
-.support-program-intro h3 { margin-bottom: 12px; font-size: clamp(1.55rem,2.8vw,2.25rem); }
-.support-program-intro p:last-child { color: var(--muted); }
-.status-summary { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 8px; }
-.status-summary span { min-height: 37px; padding: 6px 11px; display: inline-flex; gap: 7px; align-items: center; border: 1px solid var(--line); border-radius: 19px; font-size: .74rem; }
-.status-summary i { width: 7px; height: 7px; border-radius: 50%; background: var(--ink); }
-.status-summary b { min-width: 21px; height: 21px; display: grid; place-items: center; border-radius: 50%; background: var(--paper-2); }
-.catalog { margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--line); }
-.catalog-filters { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
-.catalog-filters button { min-height: 42px; padding: 7px 13px; border: 1px solid var(--line-strong); border-radius: 21px; background: transparent; cursor: pointer; font-size: .78rem; }
-.catalog-filters button.is-active { background: var(--ink); color: var(--white); }
-.program-list { border-top: 2px solid var(--ink); }
-.program { padding: 24px 4px; display: grid; grid-template-columns: 340px 1fr; gap: 34px; border-bottom: 1px solid var(--line); }
-.program > div:first-child > p { display: inline; margin-left: 8px; color: var(--muted); font-size: .72rem; }
-.program h4 { margin: 12px 0 2px; font-size: 1.05rem; }
-.program small { color: var(--muted); }
-.status { padding: 4px 8px; border-radius: 3px; background: var(--paper-2); font-size: .68rem; font-weight: 700; }
-.status-0 { background: var(--lime-soft); }
-.program > div:last-child { display: grid; grid-template-columns: 1fr auto; gap: 4px 24px; align-items: start; }
-.program > div:last-child p { grid-column: 1/-1; margin: 0 0 7px; color: var(--ink-2); font-size: .86rem; }
-.program > div:last-child strong, .program > div:last-child span { font-size: .74rem; }
-.program > div:last-child strong { color: var(--amber); }
-.program > div:last-child span { color: var(--muted); }
-.program a, .source-grid a { display: inline-flex; gap: 6px; align-items: center; justify-self: end; font-size: .78rem; font-weight: 700; text-underline-offset: 4px; }
-.catalog-boundary { margin: 20px 0 0; padding: 15px; background: var(--paper-2); color: var(--muted); font-size: .78rem; }
-.empty-state { padding: 38px; text-align: center; color: var(--muted); }
+.source-grid a { display: inline-flex; gap: 6px; align-items: center; justify-self: end; font-size: .78rem; font-weight: 700; text-underline-offset: 4px; }
 
 .stress-controls { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px; }
 .stress-controls fieldset { margin: 0; padding: 14px; border: 1px solid var(--line-strong); border-radius: 8px; }

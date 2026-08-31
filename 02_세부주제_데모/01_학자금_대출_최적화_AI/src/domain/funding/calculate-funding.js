@@ -9,7 +9,6 @@ export function calculateFundingSummary(profile, stress = {}) {
   const semesters = Math.ceil(studyMonths / 6);
   const educationNeed = nonNegative(profile.tuitionPerSemester) * semesters;
   const livingNeed = nonNegative(profile.desiredCollegeSpend) * studyMonths;
-  const confirmedLivingGrantTotal = nonNegative(profile.confirmedLivingGrantTotal);
   const totalNeed = educationNeed + livingNeed;
 
   return {
@@ -19,7 +18,5 @@ export function calculateFundingSummary(profile, stress = {}) {
     educationNeed,
     livingNeed,
     totalNeed,
-    confirmedLivingGrantTotal,
-    remainingAfterConfirmedSupport: Math.max(0, totalNeed - confirmedLivingGrantTotal),
   };
 }

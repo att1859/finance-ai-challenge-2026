@@ -7,8 +7,6 @@ export function setProfile(state, profile) {
 export function applyPlan(state, plan) {
   state.baselineScenarios = plan.baselineScenarios;
   state.currentScenarios = plan.currentScenarios;
-  state.supportPrograms = plan.supportPrograms;
-  state.supportSummary = plan.supportSummary;
   state.policySnapshotIds = plan.policySnapshotIds;
 
   if (!state.currentScenarios.some(({ id }) => id === state.selectedScenarioId)) {

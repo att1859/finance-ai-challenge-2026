@@ -7,9 +7,7 @@
 .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 25px 20px; }
 .form-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .field { min-width: 0; margin: 0; padding: 0; border: 0; display: grid; align-content: start; gap: 8px; }
-.field-wide { grid-column: 1 / -1; }
 .field > span:first-child, .field legend, .loan-type-fieldset legend { font-size: .9rem; font-weight: 700; }
-.field i { color: var(--muted); font-size: .73rem; font-style: normal; font-weight: 500; }
 .field input, .field select { width: 100%; min-height: 48px; padding: 0 13px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--white); color: var(--ink); }
 .field input:hover, .field select:hover { border-color: var(--ink); }
 .field input[aria-invalid="true"] { border-color: var(--rose); }
@@ -18,14 +16,17 @@
 .input-unit em { position: absolute; right: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: .84rem; font-style: normal; pointer-events: none; }
 .field-hint { color: var(--muted); font-size: .78rem; }
 .error { min-height: 1.2em; color: var(--rose); font-size: .78rem; }
-.check-row { display: flex; flex-wrap: wrap; gap: 8px; }
-.check-row label { cursor: pointer; }
-.check-row input { position: absolute; width: 1px; height: 1px; min-height: 0; padding: 0; opacity: 0; }
-.check-row span { min-height: 44px; padding: 9px 15px; display: inline-flex; align-items: center; border: 1px solid var(--line-strong); border-radius: 22px; background: var(--white); }
-.check-row input:checked + span { border-color: var(--ink); background: var(--ink); color: var(--white); }
-.check-row input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 3px; }
-.inline-summary { grid-column: 2; margin: 4px 0 0; padding: 13px 16px; border-block: 1px solid var(--line); background: var(--paper-2); }
-.inline-summary span { margin-left: 9px; color: var(--muted); font-size: .78rem; }
+.inline-summary { grid-column: 2; margin: 4px 0 0; padding: 15px 16px; border-block: 1px solid var(--line); background: var(--paper-2); }
+.work-income-summary { display: grid; gap: 7px; }
+.work-income-summary p { margin: 0; }
+.work-income-total { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 20px; }
+.work-income-total span { color: var(--ink); font-size: .86rem; font-weight: 700; }
+.work-income-total strong { font-family: var(--font-display); font-size: 1.18rem; font-variant-numeric: tabular-nums; }
+.work-income-breakdown, .work-income-assumption { color: var(--muted); font-size: .76rem; line-height: 1.55; }
+.work-income-breakdown b { color: var(--ink-2); font-weight: 700; }
+.work-income-assumption strong { color: var(--blue); }
+.work-income-explainer { margin-top: 0; }
+.work-income-explainer a { font-weight: 700; text-underline-offset: 3px; }
 .loan-type-fieldset { grid-column: 2; margin: 0 0 24px; padding: 0; border: 0; }
 .loan-type-fieldset legend { margin-bottom: 9px; }
 .loan-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }

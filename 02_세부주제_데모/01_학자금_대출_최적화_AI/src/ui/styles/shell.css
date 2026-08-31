@@ -17,8 +17,6 @@ main { overflow: clip; }
 .button-primary:hover { background: #162b3a; }
 .button-primary svg { color: var(--lime); }
 .button-quiet { border-color: var(--line); background: var(--white); }
-.button-outline { border-color: var(--ink); }
-.button-outline span { min-width: 26px; height: 24px; border-radius: 12px; display: inline-grid; place-items: center; background: var(--ink); color: var(--white); font-size: .78rem; }
 .button-large { min-height: 56px; padding-inline: 24px; }
 .privacy-note { display: flex; align-items: flex-start; gap: 9px; color: var(--muted); font-size: .88rem; }
 .privacy-note svg { flex: 0 0 auto; margin-top: .26em; }

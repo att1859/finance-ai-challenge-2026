@@ -15,14 +15,6 @@ export function hasActiveStress(state) {
   return Object.values(state.stress).some((value) => value > 0);
 }
 
-export function visibleSupportPrograms(state) {
-  return state.ui.catalogFilter === '전체'
-    ? state.supportPrograms
-    : state.supportPrograms.filter(
-      ({ status }) => status === state.ui.catalogFilter,
-    );
-}
-
 export function buildScenarioComparison(state) {
   const { profile, currentScenarios } = state;
   return [
@@ -41,9 +33,8 @@ export function buildScenarioComparison(state) {
       id: 'work',
       label: '주당 근로시간',
       unit: '시간/주',
-      referenceLabel: '희망',
-      reference: nonNegative(profile.desiredWorkHours),
-      currentReference: nonNegative(profile.currentWorkHours),
+      referenceLabel: '현재',
+      reference: nonNegative(profile.currentWorkHours),
       values: currentScenarios.map(({ id, workHours }) => ({
         id,
         value: workHours,

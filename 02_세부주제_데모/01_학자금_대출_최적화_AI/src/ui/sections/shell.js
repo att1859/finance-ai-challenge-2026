@@ -20,7 +20,7 @@ export function renderShell(state) {
       <section class="hero" id="top" aria-labelledby="hero-title">
         <div class="hero-copy">
           <h1 id="hero-title">대학 생활과 졸업 후 부담을 한 번에 비교해 보세요.</h1>
-          <p class="hero-lead">확정된 지원금과 근로소득을 먼저 반영하고, 남은 필요자금을 공적 학자금대출과 나눠 세 가지 계획으로 보여드려요.</p>
+          <p class="hero-lead">근로소득과 공적 학자금대출을 나눠, 대학 생활과 졸업 후 부담이 다른 세 가지 계획을 보여드려요.</p>
           <div class="hero-actions">
             <a class="button button-primary" href="#diagnosis">내 계획 계산하기 ${icon('arrow')}</a>
             <button class="button button-quiet" type="button" data-action="sample">예시 정보로 시작하기</button>
@@ -53,7 +53,7 @@ export function renderShell(state) {
       </section>
 
       <section class="process-strip" id="how-it-works" aria-label="계산 과정">
-        <span><b>1</b> 확정 금액 입력</span><span aria-hidden="true">→</span>
+        <span><b>1</b> 현재 조건 입력</span><span aria-hidden="true">→</span>
         <span><b>2</b> 세 계획 계산</span><span aria-hidden="true">→</span>
         <span><b>3</b> 부담 비교</span>
       </section>
@@ -61,7 +61,7 @@ export function renderShell(state) {
       <section class="diagnosis-section" id="diagnosis" aria-labelledby="diagnosis-title">
         <div class="section-heading">
           <h2 id="diagnosis-title">계산에 필요한 정보를 입력해 주세요.</h2>
-          <p>모르는 지원사업 금액은 넣지 않아도 됩니다. 실제 납부액과 이미 확정된 지원금만 계산에 사용해요.</p>
+          <p>현재 확인할 수 있는 학비, 생활비, 근로조건과 대출 정보를 입력해 주세요.</p>
         </div>
         <div class="input-mode" aria-label="입력 방식">
           <button class="mode-option is-active" type="button" data-action="manual"><span>직접 입력</span><small>내 상황에 맞게 값을 바꿔요</small></button>
@@ -72,7 +72,7 @@ export function renderShell(state) {
       <div id="result-root" tabindex="-1"></div>
     </main>
     <footer>
-      <div><strong>학자금 소비평탄화 AI</strong><p>지원사업 후보 확인과 학비·생활비 계획을 돕는 간이 계산 서비스</p></div>
+      <div><strong>학자금 소비평탄화 AI</strong><p>학비·생활비와 졸업 후 상환 계획을 비교하는 간이 계산 서비스</p></div>
       <p>주민등록번호, 계좌번호, 인증서, 금융기관 비밀번호를 요구하지 않습니다.</p>
     </footer>
     ${renderSmoothingExplainer()}`;

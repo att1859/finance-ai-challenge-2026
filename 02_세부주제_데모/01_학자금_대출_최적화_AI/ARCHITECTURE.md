@@ -15,24 +15,27 @@ main
 ```
 
 - `domain`은 DOM, HTML, URL, 표시 형식을 알지 못한다.
-- `policies`는 기준연도·확인일·공식 링크와 해당 시점의 지원 규칙을 보관한다.
+- `policies`는 기준연도·확인일·공식 링크와 해당 시점의 대출 규칙을 보관한다.
 - `application`은 프로필, 스트레스 조건, 정책을 조립해 하나의 계획 계산 결과를 만든다.
 - `app`은 선택 시나리오와 UI 상태를 보관하며 계산 결과를 화면에 전달한다.
 - `ui`는 계산하지 않고 전달받은 값의 표시, 입력 읽기, 접근 가능한 상호작용을 담당한다.
 
 ## Public seams
 
-- `calculatePlan(profile, stress)`: 기준 시나리오, 위험 조건 적용 시나리오, 지원사업 판정, 사용한 정책 스냅샷을 반환한다.
+- `calculatePlan(profile, stress)`: 기준 시나리오, 위험 조건 적용 시나리오, 사용한 대출정책 스냅샷 ID를 반환한다.
+- `calculateMonthlyWorkIncome({ weeklyHours, hourlyWage, taxPreset })`: 월평균 주 수, 주휴시간, 기본급, 주휴수당, 간편 차감액, 예상 실수령액을 만 원 단위의 반올림되지 않은 값으로 반환한다.
 - 단일 페이지 UI: 직접·예시 입력, 대출 유형 선택, 세 시나리오 선택, 위험 조건 적용을 사용자가 조작하는 경계다.
+
+입력 프로필은 현재 주당 근로시간과 `workTaxPreset`만 보관한다. 시나리오 계층은 현재 근로시간의 0%·50%·100%에서 0.5시간 단위 근로시간을 만들고, 근로소득 계산 결과의 `netMonthly`를 자금 계산에 사용한다. 각 시나리오는 `workHoursReduced`와 `workIncomeBreakdown`을 함께 반환해 UI가 계산을 다시 수행하지 않고 근거를 표시하게 한다.
 
 ## Folders
 
 ```text
 src/
 ├─ app/                 상태, 액션, 선택자, 브라우저 이벤트 조립
-├─ application/         전체 계획 계산과 지원사업 판정 유스케이스
-├─ domain/              자금, 대출, 시나리오, 지원사업 순수 규칙
-├─ policies/            연도·학기별 정책 스냅샷
+├─ application/         전체 계획 계산 유스케이스
+├─ domain/              자금, 대출, 시나리오 순수 규칙
+├─ policies/            연도별 대출정책 스냅샷
 ├─ data/                기본값과 가상 예시 프로필
 ├─ ui/                  섹션 렌더러, 표시 형식, 스타일
 ├─ assets/

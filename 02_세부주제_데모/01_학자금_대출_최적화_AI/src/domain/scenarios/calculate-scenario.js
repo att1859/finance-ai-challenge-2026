@@ -1,5 +1,5 @@
 import { calculateFundingSummary } from '../funding/calculate-funding.js';
-import { monthlyWorkIncome } from '../funding/work-income.js';
+import { calculateMonthlyWorkIncome } from '../funding/work-income.js';
 import { calculateLoan } from '../loans/calculate-loan.js';
 import { nonNegative } from '../shared/numbers.js';
 import { SCENARIO_DEFINITIONS } from './definitions.js';
@@ -8,15 +8,24 @@ import { normalizeStress } from './normalize-stress.js';
 export function calculateScenario(profile, definition, stress = {}, policy) {
   const normalizedStress = normalizeStress(stress);
   const funding = calculateFundingSummary(profile, normalizedStress);
-  const workMonthly = monthlyWorkIncome(definition.workHours, profile.hourlyWage);
+  const currentWorkHours = nonNegative(profile.currentWorkHours);
+  const workHours = Math.round(
+    currentWorkHours * nonNegative(definition.workRatio) * 2,
+  ) / 2;
+  const workIncomeBreakdown = calculateMonthlyWorkIncome({
+    weeklyHours: workHours,
+    hourlyWage: profile.hourlyWage,
+    taxPreset: profile.workTaxPreset,
+  });
+  const workMonthly = workIncomeBreakdown.netMonthly;
   const workTotal = workMonthly * funding.studyMonths;
-  const needAfterSupportAndWork = Math.max(
+  const needAfterWork = Math.max(
     0,
-    funding.totalNeed - funding.confirmedLivingGrantTotal - workTotal,
+    funding.totalNeed - workTotal,
   );
   const newLoan = Math.min(
     nonNegative(profile.loanCap) * definition.loanShare,
-    needAfterSupportAndWork,
+    needAfterWork,
   );
   const loan = calculateLoan(
     profile,
@@ -25,8 +34,7 @@ export function calculateScenario(profile, definition, stress = {}, policy) {
     normalizedStress,
     policy,
   );
-  const availableForLiving = funding.confirmedLivingGrantTotal
-    + workTotal
+  const availableForLiving = workTotal
     + newLoan
     - funding.educationNeed
     - loan.duringStudyPayment;
@@ -37,7 +45,6 @@ export function calculateScenario(profile, definition, stress = {}, policy) {
     0,
     funding.totalNeed
       + loan.duringStudyPayment
-      - funding.confirmedLivingGrantTotal
       - workTotal
       - newLoan,
   );
@@ -67,9 +74,15 @@ export function calculateScenario(profile, definition, stress = {}, policy) {
 
   return {
     ...definition,
+    workHours,
     funding,
     workMonthly,
     workTotal,
+    workHoursReduced: Math.max(
+      currentWorkHours - workHours,
+      0,
+    ),
+    workIncomeBreakdown,
     newLoan,
     totalLoanPrincipal: loan.principal,
     possibleCollegeSpend,

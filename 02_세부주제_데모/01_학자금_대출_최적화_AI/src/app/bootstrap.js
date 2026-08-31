@@ -10,11 +10,11 @@ import {
 import { selectedScenario as findSelectedScenario } from './selectors.js';
 import { createInitialState } from './store.js';
 import { DEFAULT_PROFILE, SAMPLE_PROFILE } from '../data/sample-profile.js';
-import { monthlyWorkIncome } from '../domain/funding/work-income.js';
-import { formatMoney, moneyHtml } from '../ui/formatters/money.js';
+import { formatMoney } from '../ui/formatters/money.js';
 import {
   readProfile,
   renderDiagnosisSection,
+  renderWorkIncomeSummaryContent,
   toggleLoanFields,
   validateProfile,
 } from '../ui/sections/diagnosis-form.js';
@@ -27,7 +27,6 @@ import { renderSelectedDetail } from '../ui/sections/selected-detail.js';
 import { renderShell } from '../ui/sections/shell.js';
 import { renderSources } from '../ui/sections/sources.js';
 import { renderStressControls } from '../ui/sections/stress-controls.js';
-import { renderSupportPrograms } from '../ui/sections/support-programs.js';
 import { escapeHtml } from '../ui/shared/escape-html.js';
 import { icon } from '../ui/shared/icon.js';
 
@@ -35,7 +34,6 @@ const app = document.querySelector('#app');
 const state = createInitialState();
 
 const safe = escapeHtml;
-const money = moneyHtml;
 const selectedScenario = () => findSelectedScenario(state);
 const loanTypeLabel = (type) => type === 'income-contingent' ? '취업 후 상환' : '일반 상환';
 
@@ -61,10 +59,6 @@ function handleClick(event) {
   if (action === 'manual') document.querySelector('#diagnosis-form input')?.focus();
   if (action === 'open-smoothing') openSmoothingDialog();
   if (action === 'close-smoothing') document.querySelector('#smoothing-dialog')?.close();
-  if (action === 'catalog') {
-    updateUi(state, { catalogOpen: !state.ui.catalogOpen });
-    renderResults();
-  }
   if (action === 'reset-stress') {
     resetStress(state);
     recalculate();
@@ -87,8 +81,12 @@ function handleFormInput(event) {
     const years = Number(event.target.value) || 0;
     document.querySelector('#graduation-equivalent').textContent = `${years}년 = ${years * 2}학기 · ${years * 12}개월`;
   }
-  if (['currentWorkHours','hourlyWage'].includes(event.target.name)) {
-    document.querySelector('#work-income-preview').innerHTML = money(monthlyWorkIncome(form.elements.currentWorkHours.value, form.elements.hourlyWage.value));
+  if (['currentWorkHours','hourlyWage','workTaxPreset'].includes(event.target.name)) {
+    document.querySelector('#work-income-summary').innerHTML = renderWorkIncomeSummaryContent({
+      currentWorkHours: form.elements.currentWorkHours.value,
+      hourlyWage: form.elements.hourlyWage.value,
+      workTaxPreset: form.elements.workTaxPreset.value,
+    });
   }
 }
 
@@ -124,10 +122,7 @@ function handleSubmit(event) {
 }
 
 function loadSample() {
-  setProfile(state, {
-    ...SAMPLE_PROFILE,
-    specialQualifications: [...SAMPLE_PROFILE.specialQualifications],
-  });
+  setProfile(state, { ...SAMPLE_PROFILE });
   updateUi(state, { inputMode: 'sample' });
   document.querySelector('.diagnosis-section').outerHTML = renderDiagnosisSection(
     state.profile,
@@ -152,24 +147,21 @@ function renderResults() {
   const root = document.querySelector('#result-root');
   if (!root || !state.ui.calculated) return;
   if (state.ui.loading) {
-    root.innerHTML = `<section class="result-loading" aria-live="polite"><span class="loader" aria-hidden="true"></span><h2>세 가지 계획을 계산하고 있어요.</h2><p>확정 금액, 근로시간, 대출 유형을 같은 기준으로 비교합니다.</p></section>`;
+    root.innerHTML = `<section class="result-loading" aria-live="polite"><span class="loader" aria-hidden="true"></span><h2>세 가지 계획을 계산하고 있어요.</h2><p>학비, 생활비, 근로시간, 대출 유형을 같은 기준으로 비교합니다.</p></section>`;
     return;
   }
   const current = selectedScenario();
-  const programs = state.supportPrograms;
-  const supportSummary = state.supportSummary;
   root.innerHTML = `
     <section class="results" aria-labelledby="result-title">
       <div class="result-intro">
         <div><h2 id="result-title">내게 맞는 대학 생활 계획을 비교해 보세요.</h2><p>${safe(state.profile.school)} · 졸업까지 ${state.profile.graduationYears}년 · ${loanTypeLabel(state.profile.loanType)} 기준</p></div>
-        <aside>${icon('info')}<p><strong>간이 예상 결과입니다.</strong> 실제 장학금 수혜와 대출 자격·승인은 한국장학재단과 각 기관이 최종 판단합니다.</p></aside>
+        <aside>${icon('info')}<p><strong>간이 예상 결과입니다.</strong> 실제 대출 자격·승인은 한국장학재단이 최종 판단합니다.</p></aside>
       </div>
       ${renderScenarioSelector(state)}
       <p id="selection-status" class="sr-only" role="status" aria-live="polite"></p>
       ${renderComparisonFigure(state, current)}
       ${renderSelectedDetail(state, current)}
       ${renderFundingFormula(state, current)}
-      ${renderSupportPrograms(state, programs, supportSummary)}
       ${renderStressControls(state, current)}
       ${renderSources()}
     </section>`;
@@ -180,10 +172,6 @@ function bindResultEvents() {
   document.querySelectorAll('input[name="scenario"]').forEach((input)=>input.addEventListener('change',(event)=>{
     selectScenario(state, event.target.value);
     renderResults(); announceSelection();
-  }));
-  document.querySelectorAll('[data-filter]').forEach((button) => button.addEventListener('click', () => {
-    updateUi(state, { catalogFilter: button.dataset.filter });
-    renderResults();
   }));
   document.querySelectorAll('.stress-controls input').forEach((input)=>input.addEventListener('change',(event)=>{
     if (event.target.name === 'employmentDelayMonths') {

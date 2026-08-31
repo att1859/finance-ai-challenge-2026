@@ -3,6 +3,9 @@ import { formatMoney, moneyHtml, signedMoney } from '../formatters/money.js';
 
 const money = moneyHtml;
 const loanTypeLabel = (type) => type === 'income-contingent' ? '취업 후 상환' : '일반 상환';
+const formatHours = (value) => Number(value).toLocaleString('ko-KR', {
+  maximumFractionDigits: 1,
+});
 
 function formatLoanAssumption(assumption) {
   if (typeof assumption === 'string') return assumption;
@@ -17,13 +20,15 @@ export function renderSelectedDetail(state, scenario) {
   const loan = scenario.loan;
   const safety = { safe:['여유 있음','입력한 희망 생활비를 충족합니다.'], watch:['조정 필요','희망 생활비보다 낮아 다른 지출과 함께 점검해야 합니다.'], 'at-risk':['주의','상환 뒤 생활비 여력이 안전선보다 낮습니다.'], deficit:['부족','상환액이 예상 소득보다 큽니다.'], 'calculation-impossible':['계산 불가','공식 정책값을 확인한 뒤 다시 계산해야 합니다.'] }[scenario.safety];
   const other = state.currentScenarios.filter((item)=>item.id!==scenario.id);
-  const workDelta = scenario.workHours - state.profile.currentWorkHours;
+  const workReductionNote = scenario.workHoursReduced === 0
+    ? '현재 근로시간 유지'
+    : `현재보다 주당 ${formatHours(scenario.workHoursReduced)}시간 덜 일할 수 있어요`;
   const closestCollege = [...other].sort((a,b)=>Math.abs(a.possibleCollegeSpend-scenario.possibleCollegeSpend)-Math.abs(b.possibleCollegeSpend-scenario.possibleCollegeSpend))[0];
   return `<section class="selected-detail" aria-labelledby="detail-title">
     <div class="detail-heading"><div><h3 id="detail-title">${scenario.name}</h3><p>${scenario.summary}</p></div><span class="safety safety-${scenario.safety}"><b>${safety[0]}</b>${safety[1]}</span></div>
     <div class="detail-metrics">
       ${metric('대학 시절 월 생활비 여력',money(scenario.possibleCollegeSpend,1),`희망 ${formatMoney(state.profile.desiredCollegeSpend)} 대비 ${signedMoney(scenario.collegeSpendGap)}`)}
-      ${metric('시나리오 주당 근로시간',`${scenario.workHours}<small>시간</small>`,`현재 대비 ${workDelta>=0?'+':''}${workDelta}시간 · 희망 ${state.profile.desiredWorkHours}시간`)}
+      ${metric('시나리오 주당 근로시간',`${formatHours(scenario.workHours)}<small>시간</small>`,workReductionNote)}
       ${metric('상환 후 월 생활비 여력',money(scenario.possibleCareerSpend,1),`희망 ${formatMoney(state.profile.desiredCareerSpend)} 대비 ${signedMoney(scenario.careerSpendGap)}`)}
       ${metric('졸업 시 예상 대출잔액',money(loan.balanceAtGraduation,1),`신규 원금 ${formatMoney(scenario.newLoan,1)}`)}
     </div>
@@ -45,4 +50,3 @@ export function renderSelectedDetail(state, scenario) {
 }
 
 function metric(label,value,note){return `<div><span>${label}</span><strong>${value}</strong><small>${note}</small></div>`;}
-
