@@ -26,12 +26,13 @@ test('입력 화면에서 장학금·생활비성 지원금·특별자격을 요
   expect(errors).toEqual([]);
 });
 
-test('기본 생활비·금리와 주휴·간편 차감이 반영된 근로소득을 입력 단계에서 확인한다', async ({ page }) => {
+test('기본 생활비와 주휴·간편 차감이 반영된 근로소득을 입력 단계에서 확인한다', async ({ page }) => {
   const errors = trackPageErrors(page);
   await page.goto('/');
 
   await expect(page.getByRole('spinbutton', { name: '대학 시절 희망 월 생활비 만 원' })).toHaveValue('80');
-  await expect(page.getByRole('spinbutton', { name: '계산 금리 %' })).toHaveValue('1.7');
+  await expect(page.getByRole('spinbutton', { name: '계산 금리 %' })).toHaveCount(0);
+  await expect(page.getByRole('radio', { name: '원금균등' })).toHaveCount(0);
   await expect(page.getByRole('spinbutton', { name: '희망 주당 근로시간 시간' })).toHaveCount(0);
 
   const taxPreset = page.getByRole('combobox', { name: '근로소득 간편 차감' });
@@ -74,6 +75,8 @@ test('예시 정보로 세 계획을 계산하고 키보드로 선택안을 바�
   await expect(page.locator('.selected-detail').getByRole('heading', { name: '학업시간 확보형' })).toBeVisible();
   await expect(page.locator('.selected-detail')).toContainText('현재보다 주당 20시간 덜 일할 수 있어요');
   await expect(page.locator('.funding-ledger')).toContainText('예상 실수령 근로소득');
+  await expect(page.locator('.funding-ledger')).toContainText('등록금 대출');
+  await expect(page.locator('.funding-ledger')).toContainText('생활비 대출');
 
   await page.getByRole('checkbox', { name: /졸업 1년 지연/ }).check();
   await expect(page.getByText('위험 조건 초기화')).toBeVisible();
@@ -113,6 +116,8 @@ test('취업 후 상환 유형을 계산하고 좁은 화면에서 가로 넘침
 
   await expect(page.getByText(/취업 후 상환 기준/)).toBeVisible();
   await expect(page.getByText('연간 예상 의무상환액').first()).toBeVisible();
+  await expect(page.getByText('월평균 환산액(참고)').first()).toBeVisible();
+  await expect(page.getByText('월평균 납입액')).toHaveCount(0);
 
   const hasHorizontalOverflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,

@@ -1,16 +1,23 @@
 import { calculateAllScenarios } from '../domain/scenarios/calculate-scenario.js';
 import {
-  GENERAL_LOAN_POLICY,
-  INCOME_CONTINGENT_POLICY,
+  evaluateLoanEligibilityCombinations,
+} from '../domain/loans/eligibility.js';
+import {
+  LOAN_POLICY_SNAPSHOT,
 } from '../policies/loans/2026.js';
 
 export function calculatePlan(profile, stress = {}) {
   return {
-    baselineScenarios: calculateAllScenarios(profile),
-    currentScenarios: calculateAllScenarios(profile, stress),
-    policySnapshotIds: [
-      INCOME_CONTINGENT_POLICY.id,
-      GENERAL_LOAN_POLICY.id,
-    ],
+    baselineScenarios: calculateAllScenarios(profile, {}, LOAN_POLICY_SNAPSHOT),
+    currentScenarios: calculateAllScenarios(
+      profile,
+      stress,
+      LOAN_POLICY_SNAPSHOT,
+    ),
+    loanEligibilityCombinations: evaluateLoanEligibilityCombinations({
+      applicant: profile,
+      policySnapshot: LOAN_POLICY_SNAPSHOT,
+    }),
+    policySnapshotIds: [LOAN_POLICY_SNAPSHOT.snapshotId],
   };
 }

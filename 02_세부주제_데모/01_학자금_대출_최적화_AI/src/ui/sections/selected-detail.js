@@ -10,10 +10,10 @@ const formatHours = (value) => Number(value).toLocaleString('ko-KR', {
 function formatLoanAssumption(assumption) {
   if (typeof assumption === 'string') return assumption;
   if (assumption?.type !== 'income-contingent-formula') return '계산 가정을 확인할 수 없습니다.';
-  return '연소득 ' + formatMoney(assumption.annualIncome)
-    + '에서 상환기준소득 ' + formatMoney(assumption.annualIncomeThreshold)
+  return '연간 총급여 환산액 ' + formatMoney(assumption.annualGrossIncome)
+    + '에서 총급여 환산 기준 ' + formatMoney(assumption.annualGrossIncomeThreshold)
     + '을 뺀 금액에 ' + Math.round(assumption.repaymentRate * 100)
-    + '%를 적용했습니다.';
+    + '%를 적용한 계획용 예상액입니다.';
 }
 
 export function renderSelectedDetail(state, scenario) {
@@ -30,22 +30,22 @@ export function renderSelectedDetail(state, scenario) {
       ${metric('대학 시절 월 생활비 여력',money(scenario.possibleCollegeSpend,1),`희망 ${formatMoney(state.profile.desiredCollegeSpend)} 대비 ${signedMoney(scenario.collegeSpendGap)}`)}
       ${metric('시나리오 주당 근로시간',`${formatHours(scenario.workHours)}<small>시간</small>`,workReductionNote)}
       ${metric('상환 후 월 생활비 여력',money(scenario.possibleCareerSpend,1),`희망 ${formatMoney(state.profile.desiredCareerSpend)} 대비 ${signedMoney(scenario.careerSpendGap)}`)}
-      ${metric('졸업 시 예상 대출잔액',money(loan.balanceAtGraduation,1),`신규 원금 ${formatMoney(scenario.newLoan,1)}`)}
+      ${metric('졸업 시 예상 대출잔액',money(loan.balanceAtGraduation,1),`등록금 ${formatMoney(scenario.loanComposition.totals.tuition,{digits:1})} · 생활비 ${formatMoney(scenario.loanComposition.totals.living,{digits:1})}`)}
     </div>
     <div class="loan-detail">
       <div><h4>${loanTypeLabel(state.profile.loanType)} · ${state.profile.loanType==='general'?'정해진 기간에 갚는 예상 상환액':'소득에 따라 달라지는 예상 의무상환액'}</h4></div>
       <dl>${state.profile.loanType==='general'?`
-        <div><dt>첫 달 납입액</dt><dd>${money(loan.firstMonthPayment,1)}</dd></div>
-        <div><dt>월평균 납입액</dt><dd>${money(loan.monthlyEquivalent,1)}</dd></div>
+        <div><dt>월 원리금균등 납입액</dt><dd>${money(loan.monthlyScheduledPayment,1)}</dd></div>
+        <div><dt>연간 약정 납입액</dt><dd>${money(loan.firstYearRepayment,1)}</dd></div>
         <div><dt>예상 총이자</dt><dd>${money(loan.totalInterest,1)}</dd></div>
-        <div><dt>취업 첫해 예상상환액</dt><dd>${money(loan.firstYearRepayment,1)}</dd></div>`:`
+        <div><dt>상환 방식</dt><dd>원리금균등</dd></div>`:`
         <div><dt>연간 예상 의무상환액</dt><dd>${money(loan.annualMandatoryRepayment,1)}</dd></div>
-        <div><dt>월 환산 참고값</dt><dd>${money(loan.monthlyEquivalent,1)}</dd></div>
-        <div><dt>적용 상환기준소득</dt><dd>${money(INCOME_CONTINGENT_POLICY.annualIncomeThreshold)}</dd></div>
+        <div><dt>월평균 환산액(참고)</dt><dd>${money(loan.monthlyAverageMandatoryRepayment,1)}</dd></div>
+        <div><dt>총급여 환산 기준</dt><dd>${money(INCOME_CONTINGENT_POLICY.annualIncomeThreshold)}</dd></div>
         <div><dt>취업 첫해 말 예상잔액</dt><dd>${money(loan.projectedBalance,1)}</dd></div>`}</dl>
       <ul>${loan.assumptions.map((item)=>`<li>${formatLoanAssumption(item)}</li>`).join('')}</ul>
     </div>
-    <p class="comparison-note"><strong>${scenario.name}을 고르면</strong> ${state.profile.loanType==='general'?`월평균 ${formatMoney(loan.monthlyEquivalent,{digits:1})}을 상환합니다.`:`연간 ${formatMoney(loan.annualMandatoryRepayment,{digits:1})}의 의무상환액이 예상됩니다.`} ${closestCollege.name}과 비교해 대학 생활비 여력은 ${signedMoney(scenario.possibleCollegeSpend-closestCollege.possibleCollegeSpend)} 차이입니다.</p>
+    <p class="comparison-note"><strong>${scenario.name}을 고르면</strong> ${state.profile.loanType==='general'?`매달 ${formatMoney(loan.monthlyScheduledPayment,{digits:1})}을 원리금균등으로 상환합니다.`:`연간 ${formatMoney(loan.annualMandatoryRepayment,{digits:1})}의 의무상환액이 예상됩니다.`} ${closestCollege.name}과 비교해 대학 생활비 여력은 ${signedMoney(scenario.possibleCollegeSpend-closestCollege.possibleCollegeSpend)} 차이입니다.</p>
   </section>`;
 }
 

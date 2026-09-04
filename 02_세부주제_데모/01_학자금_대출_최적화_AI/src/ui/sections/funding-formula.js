@@ -19,7 +19,8 @@ export function renderFundingFormula(state, scenario) {
       <div><dt>희망 생활비</dt><dd>${formatMoney(state.profile.desiredCollegeSpend)} × ${f.studyMonths}개월 <strong>${money(f.livingNeed)}</strong></dd></div>
       <div class="total"><dt>총필요자금</dt><dd><strong>${money(f.totalNeed)}</strong></dd></div>
       <div class="deduct"><dt>${scenario.name} 예상 실수령 근로소득</dt><dd><span>주당 ${formatHours(scenario.workHours)}시간 · 월 ${formatMoney(scenario.workMonthly, { digits: 1 })} × ${f.studyMonths}개월<small>${holidayCopy} · ${WORK_TAX_PRESETS[work.taxPreset].label}</small></span><strong>− ${money(scenario.workTotal)}</strong></dd></div>
-      <div class="deduct"><dt>신규 대출</dt><dd>− ${money(scenario.newLoan)}</dd></div>
+      <div class="deduct"><dt>등록금 대출</dt><dd>− ${money(scenario.loanComposition.totals.tuition)}</dd></div>
+      <div class="deduct"><dt>생활비 대출</dt><dd>− ${money(scenario.loanComposition.totals.living)}</dd></div>
       <div class="gap"><dt>아직 채워지지 않은 금액</dt><dd>${money(scenario.fundingGap,1)}</dd></div>
     </dl></div></section>`;
 }

@@ -1,23 +1,26 @@
 import { nonNegative } from '../shared/numbers.js';
 
-export function buildLoanDisbursementSchedule(principal, semesters, annualRate) {
-  const safePrincipal = nonNegative(principal);
-  const safeSemesters = Math.max(1, Math.round(nonNegative(semesters)));
+export function buildLoanDisbursementSchedule(
+  components,
+  studyMonths,
+  annualRate,
+) {
   const monthlyRate = nonNegative(annualRate) / 100 / 12;
-  const equalAmount = safePrincipal / safeSemesters;
-  const totalStudyMonths = safeSemesters * 6;
+  const safeStudyMonths = nonNegative(studyMonths);
 
-  return Array.from({ length: safeSemesters }, (_, index) => {
-    const monthsToGraduation = Math.max(0, totalStudyMonths - index * 6);
-    const balanceAtGraduation = equalAmount * ((1 + monthlyRate) ** monthsToGraduation);
+  return components.map((component) => {
+    const month = Math.max(0, (component.semester - 1) * 6);
+    const monthsToGraduation = Math.max(0, safeStudyMonths - month);
+    const principal = nonNegative(component.principal);
+    const balanceAtGraduation = principal * ((1 + monthlyRate) ** monthsToGraduation);
 
     return {
-      semester: index + 1,
-      amount: equalAmount,
-      month: index * 6,
+      ...component,
+      principal,
+      month,
       monthsToGraduation,
       balanceAtGraduation,
-      accruedInterest: Math.max(0, balanceAtGraduation - equalAmount),
+      accruedInterest: Math.max(0, balanceAtGraduation - principal),
     };
   });
 }

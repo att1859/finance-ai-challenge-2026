@@ -1,11 +1,19 @@
+import { LOAN_POLICY_SNAPSHOT } from '../../policies/loans/2026.js';
 import { calculateFundingSummary } from '../funding/calculate-funding.js';
 import { calculateMonthlyWorkIncome } from '../funding/work-income.js';
 import { calculateLoan } from '../loans/calculate-loan.js';
+import { evaluateLoanCompositionEligibility } from '../loans/eligibility.js';
+import { createLoanComposition } from '../loans/loan-composition.js';
 import { nonNegative } from '../shared/numbers.js';
 import { SCENARIO_DEFINITIONS } from './definitions.js';
 import { normalizeStress } from './normalize-stress.js';
 
-export function calculateScenario(profile, definition, stress = {}, policy) {
+export function calculateScenario(
+  profile,
+  definition,
+  stress = {},
+  policySnapshot = LOAN_POLICY_SNAPSHOT,
+) {
   const normalizedStress = normalizeStress(stress);
   const funding = calculateFundingSummary(profile, normalizedStress);
   const currentWorkHours = nonNegative(profile.currentWorkHours);
@@ -23,19 +31,42 @@ export function calculateScenario(profile, definition, stress = {}, policy) {
     0,
     funding.totalNeed - workTotal,
   );
-  const newLoan = Math.min(
+  const plannedPrincipal = Math.min(
     nonNegative(profile.loanCap) * definition.loanShare,
     needAfterWork,
   );
+  const tuitionPrincipal = Math.min(plannedPrincipal, funding.educationNeed);
+  const livingPrincipal = Math.max(0, plannedPrincipal - tuitionPrincipal);
+  const selectedProduct = profile.loanType === 'income-contingent'
+    ? 'income-contingent'
+    : 'general';
+  const draftLoanComposition = createLoanComposition({
+    policySnapshot,
+    principalByPurpose: {
+      tuition: tuitionPrincipal,
+      living: livingPrincipal,
+    },
+    productByPurpose: {
+      tuition: selectedProduct,
+      living: selectedProduct,
+    },
+    semesters: funding.semesters,
+  });
+  const loanComposition = evaluateLoanCompositionEligibility({
+    applicant: profile,
+    composition: draftLoanComposition,
+    policySnapshot,
+  });
   const loan = calculateLoan(
     profile,
-    newLoan,
+    loanComposition,
     funding,
     normalizedStress,
-    policy,
+    policySnapshot,
   );
+  const compositionPrincipal = loanComposition.totals.combined;
   const availableForLiving = workTotal
-    + newLoan
+    + compositionPrincipal
     - funding.educationNeed
     - loan.duringStudyPayment;
   const possibleCollegeSpend = funding.studyMonths > 0
@@ -46,13 +77,13 @@ export function calculateScenario(profile, definition, stress = {}, policy) {
     funding.totalNeed
       + loan.duringStudyPayment
       - workTotal
-      - newLoan,
+      - compositionPrincipal,
   );
   const adjustedSalary = nonNegative(profile.salary)
     * (1 - normalizedStress.salaryReductionRate);
-  const possibleCareerSpend = loan.monthlyEquivalent == null
+  const possibleCareerSpend = loan.monthlyBurdenForComparison == null
     ? null
-    : adjustedSalary - loan.monthlyEquivalent;
+    : adjustedSalary - loan.monthlyBurdenForComparison;
   const transitionGap = normalizedStress.employmentDelayMonths
     * nonNegative(profile.desiredCareerSpend);
   const minimumLivingLine = Math.min(
@@ -83,8 +114,7 @@ export function calculateScenario(profile, definition, stress = {}, policy) {
       0,
     ),
     workIncomeBreakdown,
-    newLoan,
-    totalLoanPrincipal: loan.principal,
+    loanComposition,
     possibleCollegeSpend,
     collegeSpendGap: possibleCollegeSpend == null
       ? null

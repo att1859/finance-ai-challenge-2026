@@ -6,19 +6,47 @@ import { amortizedLoan } from '../../src/domain/loans/amortized-loan.js';
 import { calculateLoan } from '../../src/domain/loans/calculate-loan.js';
 import { buildLoanDisbursementSchedule } from '../../src/domain/loans/disbursement-schedule.js';
 import {
+  createLoanComposition,
+  getLoanCompositionComponents,
+} from '../../src/domain/loans/loan-composition.js';
+import {
   calculateAllScenarios,
   calculateScenario,
 } from '../../src/domain/scenarios/calculate-scenario.js';
 import { SCENARIO_DEFINITIONS } from '../../src/domain/scenarios/definitions.js';
 import { DEFAULT_PROFILE, SAMPLE_PROFILE } from '../../src/data/sample-profile.js';
+import { LOAN_POLICY_SNAPSHOT } from '../../src/policies/loans/2026.js';
 
 const balance = SCENARIO_DEFINITIONS.find((item) => item.id === 'balance');
 const closeTo = (actual, expected) => assert.ok(Math.abs(actual - expected) < 1e-8);
+const compositionFor = (principal, funding, product = 'general') => (
+  createLoanComposition({
+    policySnapshot: LOAN_POLICY_SNAPSHOT,
+    principalByPurpose: { tuition: principal, living: 0 },
+    productByPurpose: { tuition: product, living: product },
+    semesters: funding.semesters,
+  })
+);
+const snapshotWithIncomeRepayment = ({ threshold, rate }) => ({
+  ...LOAN_POLICY_SNAPSHOT,
+  products: {
+    ...LOAN_POLICY_SNAPSHOT.products,
+    incomeContingent: {
+      ...LOAN_POLICY_SNAPSHOT.products.incomeContingent,
+      repayment: {
+        ...LOAN_POLICY_SNAPSHOT.products.incomeContingent.repayment,
+        annualGrossIncomeThreshold: threshold,
+        undergraduateRate: rate,
+      },
+    },
+  },
+});
 
-test('최초 프로필은 월 희망 생활비 80만 원과 연 1.7% 금리를 사용한다', () => {
+test('최초 프로필은 월 희망 생활비 80만 원을 사용하고 금리는 입력받지 않는다', () => {
   assert.equal(DEFAULT_PROFILE.desiredCollegeSpend, 80);
-  assert.equal(DEFAULT_PROFILE.annualRate, 1.7);
   assert.equal(SAMPLE_PROFILE.desiredCollegeSpend, 80);
+  assert.equal('annualRate' in DEFAULT_PROFILE, false);
+  assert.equal('repaymentMethod' in DEFAULT_PROFILE, false);
 });
 
 test('입력 프로필은 현재 근로시간만 보관한다', () => {
@@ -98,9 +126,16 @@ test('잔여기간 0.5·1·4년은 학기와 생활개월에 공통 반영된다
   });
 });
 
-test('학기별 실행액 합계는 신규 대출원금과 일치한다', () => {
+test('학기별 실행분 원금 합계는 대출 구성 원금과 일치한다', () => {
   [1, 2, 8].forEach((semesters) => {
-    const sum = buildLoanDisbursementSchedule(5000, semesters, 1.5).reduce((total, item) => total + item.amount, 0);
+    const funding = { semesters, studyMonths: semesters * 6 };
+    const composition = compositionFor(5000, funding);
+    const schedule = buildLoanDisbursementSchedule(
+      getLoanCompositionComponents(composition),
+      funding.studyMonths,
+      1.5,
+    );
+    const sum = schedule.reduce((total, item) => total + item.principal, 0);
     assert.ok(Math.abs(sum - 5000) < 1e-8);
   });
 });
@@ -108,47 +143,53 @@ test('학기별 실행액 합계는 신규 대출원금과 일치한다', () => 
 test('과거 프로필의 지원금 값은 시나리오 계산에 영향을 주지 않는다', () => {
   const withoutLegacyGrant = calculateScenario(SAMPLE_PROFILE, balance);
   const withLegacyGrant = calculateScenario({ ...SAMPLE_PROFILE, confirmedLivingGrantTotal: 600 }, balance);
-  assert.equal(withLegacyGrant.newLoan, withoutLegacyGrant.newLoan);
+  assert.deepEqual(withLegacyGrant.loanComposition, withoutLegacyGrant.loanComposition);
   assert.equal(withLegacyGrant.possibleCollegeSpend, withoutLegacyGrant.possibleCollegeSpend);
   assert.equal(withLegacyGrant.fundingGap, withoutLegacyGrant.fundingGap);
 });
 
-test('일반 상환의 원금균등과 원리금균등을 구분한다', () => {
+test('일반 상환은 입력의 과거 상환방식 값과 무관하게 원리금균등을 사용한다', () => {
   const funding = calculateFundingSummary(SAMPLE_PROFILE);
-  const equalPayment = calculateLoan({ ...SAMPLE_PROFILE, repaymentMethod: 'equal-payment' }, 3000, funding);
-  const equalPrincipal = calculateLoan({ ...SAMPLE_PROFILE, repaymentMethod: 'equal-principal' }, 3000, funding);
-  assert.equal(equalPayment.repaymentMethod, 'equal-payment');
-  assert.equal(equalPrincipal.repaymentMethod, 'equal-principal');
-  assert.ok(equalPrincipal.firstMonthPayment > equalPrincipal.monthlyEquivalent);
+  const composition = compositionFor(3000, funding);
+  const equalPayment = calculateLoan({ ...SAMPLE_PROFILE, repaymentMethod: 'equal-payment' }, composition, funding);
+  const equalPrincipal = calculateLoan({ ...SAMPLE_PROFILE, repaymentMethod: 'equal-principal' }, composition, funding);
+  assert.equal(equalPayment.repayments.general.repaymentMethod, 'equal-payment');
+  assert.equal(equalPrincipal.repayments.general.repaymentMethod, 'equal-payment');
+  assert.equal(equalPrincipal.monthlyScheduledPayment, equalPayment.monthlyScheduledPayment);
 });
 
 test('취업 후 상환은 기준소득 이하·경계·초과에서 예상 의무상환액을 계산한다', () => {
   const funding = calculateFundingSummary(SAMPLE_PROFILE);
-  const policy = { annualIncomeThreshold: 3037, repaymentRate: 0.2 };
-  const at = (annualIncome) => calculateLoan({ ...SAMPLE_PROFILE, loanType: 'income-contingent', salary: annualIncome / 12 }, 3000, funding, {}, policy);
+  const composition = compositionFor(3000, funding, 'income-contingent');
+  const policy = snapshotWithIncomeRepayment({ threshold: 3037, rate: 0.2 });
+  const at = (annualIncome) => calculateLoan({ ...SAMPLE_PROFILE, loanType: 'income-contingent', salary: annualIncome / 12 }, composition, funding, {}, policy);
   assert.equal(at(3000).annualMandatoryRepayment, 0);
   assert.equal(at(3037).annualMandatoryRepayment, 0);
   assert.ok(Math.abs(at(3600).annualMandatoryRepayment - 112.6) < 1e-8);
 });
 
 test('정책값이 없으면 취업 후 상환액을 임의 계산하지 않는다', () => {
-  const result = calculateLoan({ ...SAMPLE_PROFILE, loanType: 'income-contingent' }, 3000, calculateFundingSummary(SAMPLE_PROFILE), {}, {});
+  const funding = calculateFundingSummary(SAMPLE_PROFILE);
+  const composition = compositionFor(3000, funding, 'income-contingent');
+  const policy = snapshotWithIncomeRepayment({ threshold: undefined, rate: undefined });
+  const result = calculateLoan({ ...SAMPLE_PROFILE, loanType: 'income-contingent' }, composition, funding, {}, policy);
   assert.equal(result.calculationPossible, false);
-  assert.equal(result.monthlyEquivalent, null);
+  assert.equal(result.annualMandatoryRepayment, null);
+  assert.equal(result.monthlyAverageMandatoryRepayment, null);
 });
 
-test('졸업 지연은 재학기간에, 취업 지연은 졸업 후에만 반영된다', () => {
+test('졸업 지연은 재학기간에 반영하고 취업 지연은 일반 상환 약정을 옮기지 않는다', () => {
   const baseline = calculateScenario(SAMPLE_PROFILE, balance);
   const gradDelay = calculateScenario(SAMPLE_PROFILE, balance, { graduationDelayMonths: 12 });
   const jobDelay = calculateScenario(SAMPLE_PROFILE, balance, { employmentDelayMonths: 12 });
   assert.equal(gradDelay.funding.studyMonths, baseline.funding.studyMonths + 12);
   assert.equal(jobDelay.funding.studyMonths, baseline.funding.studyMonths);
   assert.equal(jobDelay.transitionGap, SAMPLE_PROFILE.desiredCareerSpend * 12);
-  assert.ok(jobDelay.loan.totalInterest > baseline.loan.totalInterest);
+  assert.equal(jobDelay.loan.totalInterest, baseline.loan.totalInterest);
 });
 
 test('대출상한과 음수 생활비 여력을 0으로 위장하지 않는다', () => {
   const scenarios = calculateAllScenarios({ ...SAMPLE_PROFILE, loanCap: 100, tuitionPerSemester: 2000 });
-  assert.ok(scenarios.every((item) => item.newLoan <= 100));
+  assert.ok(scenarios.every((item) => item.loanComposition.totals.combined <= 100));
   assert.ok(scenarios.some((item) => item.possibleCollegeSpend < 0));
 });

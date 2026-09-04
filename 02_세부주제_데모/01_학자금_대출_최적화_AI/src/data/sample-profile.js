@@ -12,10 +12,8 @@ export const DEFAULT_PROFILE = Object.freeze({
   graduationYears: 4,
   salary: 300,
   loanCap: 5000,
-  annualRate: 1.7,
   repaymentYears: 5,
   graceYears: 0,
-  repaymentMethod: 'equal-payment',
   loanType: 'general',
   existingLoanBalance: 0,
 });

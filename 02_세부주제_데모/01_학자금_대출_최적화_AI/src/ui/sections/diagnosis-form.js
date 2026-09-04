@@ -50,23 +50,21 @@ export function renderForm(p) {
         <details class="loan-explainer work-income-explainer"><summary>근로소득 계산 기준과 주의사항 ${icon('chevron')}</summary><div><p>주휴수당은 주 5일 근무, 소정근로일 개근, 계속근로를 가정해 간편 계산합니다. 연장·야간·휴일근로 가산수당은 포함하지 않습니다.</p><p>선택한 차감률은 비교를 위한 추정값으로 실제 세금·보험료와 다를 수 있습니다. <a href="https://www.moel.go.kr/mainpop2.do" target="_blank" rel="noopener">고용노동부 안내</a>와 <a href="https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=4&amp;cciNo=1&amp;cnpClsNo=1&amp;csmSeq=1381&amp;popMenu=ov" target="_blank" rel="noopener">찾기쉬운 생활법령정보</a>에서 조건을 확인할 수 있습니다.</p></div></details>
       </div>
       <div class="form-section">
-        <div class="form-section-title"><span>04</span><div><h3>대출 계획</h3><p>상환 방식에 따라 졸업 후 표시되는 금액이 달라져요.</p></div></div>
+        <div class="form-section-title"><span>04</span><div><h3>대출 계획</h3><p>대출상품에 따라 졸업 후 상환 방식과 표시 단위가 달라져요.</p></div></div>
         <fieldset class="loan-type-fieldset"><legend>학자금대출 유형</legend><div class="loan-type-grid">
           ${loanChoice('general','일반 상환','정한 거치·상환기간에 따라 매달 갚아요.',p.loanType)}
           ${loanChoice('income-contingent','취업 후 상환','연소득이 기준을 넘으면 의무상환액이 생겨요.',p.loanType)}
         </div></fieldset>
-        <details class="loan-explainer"><summary>두 대출 유형은 무엇이 다른가요? ${icon('chevron')}</summary><div><p><strong>일반 상환</strong>은 거치기간 뒤 정해진 기간 동안 원금과 이자를 갚습니다.</p><p><strong>취업 후 상환</strong>은 소득이 상환기준을 넘으면 초과분을 기준으로 의무상환액이 정해집니다. 실제 자격과 상환액은 공식 심사를 확인해야 합니다.</p></div></details>
-        <div class="form-grid three loan-common">
+        <details class="loan-explainer"><summary>두 대출 유형은 무엇이 다른가요? ${icon('chevron')}</summary><div><p><strong>일반 상환</strong>은 거치기간 뒤 정해진 기간 동안 원리금균등으로 매달 갚습니다.</p><p><strong>취업 후 상환</strong>은 소득이 상환기준을 넘으면 초과분을 기준으로 연간 의무상환액이 정해집니다. 월평균 환산액은 비교용 참고값이며 실제 월별 청구액이 아닙니다.</p><p>두 상품 모두 정책 스냅샷의 금리를 사용하며 실제 자격과 상환액은 공식 심사를 확인해야 합니다.</p></div></details>
+        <div class="form-grid loan-common">
           ${numberField('loanCap','신규 대출 한도',p.loanCap,'만 원')}
           ${numberField('existingLoanBalance','현재 학자금대출 잔액',p.existingLoanBalance,'만 원')}
-          ${numberField('annualRate','계산 금리',p.annualRate,'%', '0.1')}
         </div>
-        <div id="general-loan-fields" class="form-grid three ${p.loanType === 'general' ? '' : 'is-hidden'}">
+        <div id="general-loan-fields" class="form-grid ${p.loanType === 'general' ? '' : 'is-hidden'}">
           ${numberField('graceYears','졸업 후 거치기간',p.graceYears,'년','0.5')}
           ${numberField('repaymentYears','상환기간',p.repaymentYears,'년','0.5')}
-          <fieldset class="field"><legend>상환 방식</legend><div class="segmented"><label><input type="radio" name="repaymentMethod" value="equal-payment" ${p.repaymentMethod==='equal-payment'?'checked':''}><span>원리금균등</span></label><label><input type="radio" name="repaymentMethod" value="equal-principal" ${p.repaymentMethod==='equal-principal'?'checked':''}><span>원금균등</span></label></div></fieldset>
         </div>
-        <p id="icl-policy-note" class="policy-inline ${p.loanType === 'income-contingent' ? '' : 'is-hidden'}">${icon('info')} ${INCOME_CONTINGENT_POLICY.basisYear}년 상환기준소득 ${money(INCOME_CONTINGENT_POLICY.annualIncomeThreshold)}, 예상 의무상환율 ${INCOME_CONTINGENT_POLICY.repaymentRate*100}%를 사용합니다.</p>
+        <p id="icl-policy-note" class="policy-inline ${p.loanType === 'income-contingent' ? '' : 'is-hidden'}">${icon('info')} ${INCOME_CONTINGENT_POLICY.basisYear}년 총급여 환산 기준 ${money(INCOME_CONTINGENT_POLICY.annualIncomeThreshold)}, 예상 의무상환율 ${INCOME_CONTINGENT_POLICY.repaymentRate*100}%를 사용합니다.</p>
       </div>
       <div class="form-submit-row"><div><strong>입력값을 바꾸면 세 계획을 다시 계산합니다.</strong><p>간이 예상 결과이며 공식 심사·승인 결과가 아닙니다.</p></div><button class="button button-primary button-large" type="submit">세 가지 계획 비교하기 ${icon('arrow')}</button></div>
     </form>`;
@@ -104,7 +102,7 @@ export function toggleLoanFields(type) {
 
 export function readProfile(form) {
   const data = new FormData(form);
-  const numeric = ['tuitionPerSemester','desiredCollegeSpend','desiredCareerSpend','currentWorkHours','hourlyWage','graduationYears','salary','loanCap','annualRate','repaymentYears','graceYears','existingLoanBalance'];
+  const numeric = ['tuitionPerSemester','desiredCollegeSpend','desiredCareerSpend','currentWorkHours','hourlyWage','graduationYears','salary','loanCap','repaymentYears','graceYears','existingLoanBalance'];
   const profile = { ...DEFAULT_PROFILE };
   for (const [key, value] of data.entries()) if (!numeric.includes(key)) profile[key] = value;
   numeric.forEach((key) => {
@@ -117,7 +115,7 @@ export function validateProfile(profile) {
   const errors = {};
   if (!profile.school.trim()) errors.school = '학교명을 입력해 주세요.';
   if (profile.graduationYears < 0.5 || profile.graduationYears > 8 || (profile.graduationYears * 2) % 1 !== 0) errors.graduationYears = '0.5년 단위로 0.5~8년 사이를 입력해 주세요.';
-  ['tuitionPerSemester','desiredCollegeSpend','desiredCareerSpend','currentWorkHours','hourlyWage','salary','loanCap','annualRate','repaymentYears','graceYears','existingLoanBalance'].forEach((key) => {
+  ['tuitionPerSemester','desiredCollegeSpend','desiredCareerSpend','currentWorkHours','hourlyWage','salary','loanCap','repaymentYears','graceYears','existingLoanBalance'].forEach((key) => {
     if (!Number.isFinite(profile[key]) || profile[key] < 0) errors[key] = '0 이상의 숫자를 입력해 주세요.';
   });
   return errors;
