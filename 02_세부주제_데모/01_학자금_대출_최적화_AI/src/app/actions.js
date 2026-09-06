@@ -4,6 +4,8 @@ export function setProfile(state, profile) {
 }
 
 export function applyPlan(state, plan) {
+  state.baselineNoLoanComparison = plan.baselineNoLoanComparison;
+  state.currentNoLoanComparison = plan.currentNoLoanComparison;
   state.baselineScenarios = plan.baselineScenarios;
   state.currentScenarios = plan.currentScenarios;
   state.baselineRecommendations = plan.baselineRecommendations;

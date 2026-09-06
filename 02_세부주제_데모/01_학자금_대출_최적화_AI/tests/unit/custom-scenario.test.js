@@ -18,18 +18,18 @@ test('직접 입력은 대출 없음과 공식 최소·5만원·학기 한도를
  assert.equal(stepLivingAmount(200,1),200);
  assert.ok(validateCustomScenario({...config,livingBySemester:['']},SAMPLE_PROFILE,8)['semester-0']);
 });
-test('학기별 직접 입력은 실행분·생활비 월배분·상환 원금에 같은 금액으로 연결된다',()=>{
- const amounts=[0,10,100,125,200,50,75,150];
- const p=calculatePlan({...SAMPLE_PROFILE,customScenarios:[{...config,livingBySemester:amounts}]},{employmentDelayMonths:6,salaryReductionRate:.2});
+test('직접 입력은 이번 학기 실행분과 6개월 생활비 배분에만 연결된다',()=>{
+ const p=calculatePlan({...SAMPLE_PROFILE,customScenarios:[{...config,livingPerSemester:125}]},{employmentDelayMonths:6,salaryReductionRate:.2});
  const base=p.baselineScenarios.at(-1), changed=p.currentScenarios.at(-1);
- assert.equal(base.workHours,10); assert.equal(changed.workHours,10);
- assert.deepEqual(base.livingLoan.semesters.map(s=>s.principal),amounts);
- assert.deepEqual(changed.livingLoan.semesters.map(s=>s.principal),amounts);
- assert.equal(base.loanComposition.totals.living,710);
- near(base.loanComposition.livingComponents.reduce((sum,c)=>sum+c.principal,0),710);
- for(let m=0;m<48;m++) near(base.timeline.rows[m].living+base.timeline.rows[m].repayment,base.workMonthly+amounts[Math.floor(m/6)]/6);
+ assert.equal('workHours' in base,false);
+ assert.deepEqual(base.livingLoan.semesters.map(s=>s.principal),[125]);
+ assert.deepEqual(changed.livingLoan.semesters.map(s=>s.principal),[125]);
+ assert.equal(base.loanComposition.totals.living,125);
+ for(let m=0;m<6;m++) near(base.timeline.rows[m].living+base.timeline.rows[m].repayment,50+125/6);
+ for(let m=6;m<48;m++) near(base.timeline.rows[m].living+base.timeline.rows[m].repayment,50);
  assert.equal(changed.timeline.employmentMonth,54);
 });
+
 test('사용자별 상환기간과 상품은 독립적으로 유지되고 추천 자동선택으로 덮이지 않는다',()=>{
  const p=calculatePlan({...SAMPLE_PROFILE,supportBracket:10,customScenarios:[{...config,candidateId:'income-contingent:income-contingent'}, {...config,id:'custom-2',graceYears:2,repaymentYears:10}]});
  const first=p.currentScenarios.at(-2),second=p.currentScenarios.at(-1);
@@ -41,13 +41,15 @@ test('사용자별 상환기간과 상품은 독립적으로 유지되고 추천
  applyPlan(state,p);
  assert.equal(state.resultSelections.candidateByScenario['custom-1'],'income-contingent:income-contingent');
 });
-test('졸업 지연 시 추가 학기 기본금액과 누적 한도 조정을 명시한다',()=>{
+test('졸업 지연으로 새 학기 대출을 자동 생성하지 않는다',()=>{
  const p=calculatePlan({...SAMPLE_PROFILE,customScenarios:[{...config,livingPerSemester:200}]},{graduationDelayMonths:12});
  const s=p.currentScenarios.at(-1);
- assert.equal(s.livingLoan.semesters.length,10);
- assert.equal(s.livingLoan.principal,Math.min(2000,s.livingLoan.cumulativeLimit));
- if(s.livingLoan.cumulativeLimit<2000) assert.ok(s.livingLoan.semesters.some(row=>row.limitedByPolicy));
+ assert.equal(s.livingLoan.semesters.length,1);
+ assert.equal(s.livingLoan.principal,200);
+ assert.equal(s.funding.studyMonths,60);
+ assert.equal(s.loan.principal,p.baselineScenarios.at(-1).loan.principal);
 });
+
 test('조회 점은 학기·졸업·취업·상환 시점으로 이동하며 범위 밖으로 나가지 않는다',()=>{
  const p=calculatePlan({...SAMPLE_PROFILE,customScenarios:[config]},{employmentDelayMonths:6});
  const months=selectableMonths({...p,comparison:{ids:['balance','custom-1']}});

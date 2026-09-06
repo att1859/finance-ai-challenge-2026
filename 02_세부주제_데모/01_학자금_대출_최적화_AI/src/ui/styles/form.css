@@ -58,3 +58,12 @@
 .policy-inline svg { flex: 0 0 auto; margin-top: .25em; }
 .form-submit-row { display: flex; align-items: center; justify-content: space-between; gap: 30px; padding: 32px 0; }
 .form-submit-row p { margin: 2px 0 0; color: var(--muted); font-size: .86rem; }
+
+#diagnosis-form { margin-top:24px; }
+.compact-profile { padding:24px 0; gap:24px 32px; }
+.contribution-field { position:relative; min-width:0; }
+.contribution-field .field > span:first-child { padding-right:44px; min-height:24px; }
+.info-button { position:absolute; right:0; top:-10px; width:44px; min-height:44px; font-family:serif; }
+.field-help { margin:8px 0 0; padding:14px; background:var(--paper-2); border:1px solid var(--line); color:var(--muted); font-size:.85rem; }
+.field-help[hidden] { display:none; }
+@media(max-width:580px) { .compact-profile { grid-template-columns:1fr; } }

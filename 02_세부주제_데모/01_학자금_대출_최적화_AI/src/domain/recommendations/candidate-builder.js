@@ -42,17 +42,9 @@ function calculateSafety(profile, loan, stress) {
     * (1 - normalizeStress(stress).salaryReductionRate);
   const possibleCareerSpend = adjustedSalary
     - loan.monthlyBurdenForComparison;
-  const minimumLivingLine = Math.min(
-    180,
-    nonNegative(profile.desiredCareerSpend) * 0.72,
-  );
   const safety = possibleCareerSpend < 0
     ? 'deficit'
-    : possibleCareerSpend < minimumLivingLine
-      ? 'at-risk'
-      : possibleCareerSpend < nonNegative(profile.desiredCareerSpend)
-        ? 'watch'
-        : 'safe';
+    : 'safe';
 
   return Object.freeze({ possibleCareerSpend, safety });
 }
@@ -116,7 +108,6 @@ export function buildLoanCandidates({
       fundingGoalMet: scenario.unmetLivingGap === 0,
       scenarioGoalMet: scenario.unmetLivingGap === 0,
       possibleCareerSpend: safety.possibleCareerSpend,
-      desiredCareerSpend: nonNegative(profile.desiredCareerSpend),
       safety: safety.safety,
       interestExemptionApplied: components.some(({ interestExemptions = [] }) => (
         interestExemptions.some(({ status }) => status === 'applied')

@@ -66,6 +66,7 @@ function renderEligibilityFields(state, candidate) {
   const usesIncomeContingent = candidate.tuitionProduct === 'income-contingent'
     || candidate.livingProduct === 'income-contingent';
   if (usesIncomeContingent) {
+    fields.push(`<label class="field"><span>학자금 지원구간</span><select name="supportBracket"><option value="">모름 / 확인 필요</option>${Array.from({ length: 10 }, (_, i) => `<option value="${i + 1}" ${selected(profile.supportBracket, String(i + 1))}>${i + 1}구간</option>`).join('')}</select><small>취업 후 상환의 생활비 자격과 이자면제 판정에 사용합니다. 일반 상환에는 지원구간에 따른 국가 이자면제를 적용하지 않습니다.</small></label>`);
     fields.push(`<label class="condition-check"><input name="isMultiChildHousehold" type="checkbox" ${checked(profile.isMultiChildHousehold)}><span><strong>다자녀가구 학생이에요</strong><small>생활비 자격 예외와 이자면제를 다시 판정합니다.</small></span></label>`);
     fields.push(`<label class="condition-check"><input name="isCareLeaver" type="checkbox" ${checked(profile.isCareLeaver)}><span><strong>자립준비청년이에요</strong><small>생활비 자격 예외와 이자면제를 다시 판정합니다.</small></span></label>`);
     fields.push(`<label class="condition-check"><input name="isBasicOrNearPoverty" type="checkbox" ${checked(profile.isBasicOrNearPoverty)}><span><strong>기초·차상위 대상이에요</strong><small>취업 후 상환 이자면제를 다시 판정합니다.</small></span></label>`);
@@ -115,7 +116,7 @@ export function renderLoanOptions(state, scenario) {
     <p id="condition-update-status" class="sr-only" role="status" aria-live="polite"></p>
     <fieldset class="loan-candidate-group"><legend>가능한 상품 구성</legend><div class="loan-candidates">${recommendation.candidates.map((item) => renderCandidate(item, selectedId)).join('')}</div></fieldset>
     <div class="living-choice-row">
-      <label class="condition-check condition-check-wide"><input name="includeLivingLoan" type="checkbox" ${checked(state.resultSelections.includeLivingByScenario[scenario.id])}><span><strong>생활비 대출 포함</strong><small>제외하면 근로시간 감소량과 생활비 미충족액을 다시 계산합니다.</small></span></label>
+      <label class="condition-check condition-check-wide"><input name="includeLivingLoan" type="checkbox" ${checked(state.resultSelections.includeLivingByScenario[scenario.id])}><span><strong>생활비 대출 포함</strong><small>제외하면 생활비 여력과 미충족액을 다시 계산합니다.</small></span></label>
       <details><summary>풀대출 상한 보기 ${icon('chevron')}</summary><p>추천액과 별개로 ${fullCap.semesters}학기 동안 생활비 대출은 최대 ${formatMoney(fullCap.livingPrincipal)}입니다. 학기 ${formatMoney(fullCap.semesterLimit)}와 누적 ${formatMoney(fullCap.cumulativeLimit)} 중 먼저 닿는 한도를 적용합니다.</p></details>
     </div>
     ${renderRepaymentTerms(state, candidate, scenario)}

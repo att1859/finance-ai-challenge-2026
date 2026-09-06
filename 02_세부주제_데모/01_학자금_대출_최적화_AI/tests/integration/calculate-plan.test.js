@@ -7,8 +7,8 @@ import { SAMPLE_PROFILE } from '../../src/data/sample-profile.js';
 test('전체 계획 계산은 기준안과 위험 조건 적용안을 같은 세 시나리오로 반환한다', () => {
   const result = calculatePlan(SAMPLE_PROFILE, { graduationDelayMonths: 12 });
 
-  assert.deepEqual(result.baselineScenarios.map(({ id }) => id), ['minimum-loan', 'balance', 'maximum-use']);
-  assert.deepEqual(result.currentScenarios.map(({ id }) => id), ['minimum-loan', 'balance', 'maximum-use']);
+  assert.deepEqual(result.baselineScenarios.map(({ id }) => id), ['maximum-use', 'balance', 'minimum-loan']);
+  assert.deepEqual(result.currentScenarios.map(({ id }) => id), ['maximum-use', 'balance', 'minimum-loan']);
   assert.equal(result.baselineScenarios[1].funding.studyMonths, 48);
   assert.equal(result.currentScenarios[1].funding.studyMonths, 60);
   assert.equal('supportPrograms' in result, false);
@@ -61,26 +61,12 @@ test('과거 지원금 값은 전체 계획의 시나리오에 영향을 주지 
   assert.deepEqual(legacy.currentScenarios, baseline.currentScenarios);
 });
 
-test('간편 차감률이 높아지면 실수령 근로소득이 줄고 필요한 대출액이 늘어난다', () => {
-  const simple = calculatePlan({
-    ...SAMPLE_PROFILE,
-    desiredCollegeSpend: 130,
-    workTaxPreset: 'simple-3.3',
-  });
-  const social = calculatePlan({
-    ...SAMPLE_PROFILE,
-    desiredCollegeSpend: 130,
-    workTaxPreset: 'social-9.5',
-  });
-  const simpleBalance = simple.currentScenarios.find(({ id }) => id === 'minimum-loan');
-  const socialBalance = social.currentScenarios.find(({ id }) => id === 'minimum-loan');
-
-  assert.ok(socialBalance.workMonthly < simpleBalance.workMonthly);
-  assert.ok(
-    socialBalance.loanComposition.totals.combined
-      > simpleBalance.loanComposition.totals.combined,
-  );
-  assert.equal(socialBalance.workIncomeBreakdown.taxRate, 0.095);
+test('현재 월소득이 늘면 균형 생활비 대출이 줄고 과거 근로조건은 무시한다', () => {
+ const low=calculatePlan({...SAMPLE_PROFILE,currentMonthlyIncome:50});
+ const high=calculatePlan({...SAMPLE_PROFILE,currentMonthlyIncome:70});
+ assert.ok(high.currentScenarios[1].livingLoan.principal < low.currentScenarios[1].livingLoan.principal);
+ const legacy=calculatePlan({...SAMPLE_PROFILE,currentWorkHours:80,hourlyWage:100000,workTaxPreset:'social-9.5',desiredCareerSpend:9999});
+ assert.deepEqual(legacy.currentScenarios,low.currentScenarios);
 });
 
 test('전체 계획은 선택 상품에 맞는 상환 단위와 정책 방식을 반환한다', () => {
@@ -130,7 +116,7 @@ test('결과 선택은 상품·생활비 포함·상환기간을 같은 계산 �
   assert.equal(selected.loan.type, 'mixed');
   assert.equal(selected.loan.repayments.general.repaymentTerms.repaymentYears, 5);
   assert.ok(selected.loan.repayments.incomeContingent.principal > 0);
-  assert.equal(withoutLiving.workHours, SAMPLE_PROFILE.currentWorkHours);
+  assert.equal('workHours' in withoutLiving,false);
   assert.equal(withoutLiving.loanComposition.totals.living, 0);
   assert.ok(withoutLiving.unmetLivingGap > 0);
 });

@@ -109,7 +109,7 @@ export function calculateIncomeContingentLoan(
     minimumAnnualMandatoryRepayment: policy.minimumAnnualMandatoryRepayment,
     policy,
     assumptions: [
-      '등록금·생활비 대출은 용도별로 나눠 남은 학기마다 같은 금액으로 실행한다고 가정했습니다.',
+      '등록금·생활비 대출은 이번 학기에만 실행하며 남은 학기는 졸업과 이자·거치기간 계산에 사용합니다.',
       {
         type: 'income-contingent-formula',
         annualGrossIncome,

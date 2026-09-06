@@ -121,7 +121,7 @@ export function calculateGeneralLoan(profile, loanComposition, funding, policy) 
     repaymentMethod,
     calculationPossible: true,
     assumptions: [
-      '등록금·생활비 대출은 용도별로 나눠 남은 학기마다 같은 금액으로 실행한다고 가정했습니다.',
+      '등록금·생활비 대출은 이번 학기에만 실행하며 남은 학기는 졸업과 이자·거치기간 계산에 사용합니다.',
       '각 학기 실행분은 실행일부터 거치이자를 내고 약정 시작일부터 원리금균등으로 따로 상환합니다.',
       terms.repaymentYears + '년 동안 원리금균등 방식으로 상환합니다.',
     ],

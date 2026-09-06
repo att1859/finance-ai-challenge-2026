@@ -21,12 +21,6 @@ export function explainCandidate(candidate, { lowerTenYearBurden = false } = {})
   ) {
     reasonCodes.push('LOW_INITIAL_MANDATORY_PAYMENT');
   }
-  if (
-    general
-    && candidate.possibleCareerSpend >= candidate.desiredCareerSpend
-  ) {
-    reasonCodes.push('GENERAL_PAYMENT_AFFORDABLE');
-  }
   if (lowerTenYearBurden) reasonCodes.push('LOWER_TEN_YEAR_BURDEN');
   if ((incomeContingent?.currentValueComparison?.endingBalance ?? 0) > 0) {
     warningCodes.push('RESIDUAL_BALANCE_WARNING');

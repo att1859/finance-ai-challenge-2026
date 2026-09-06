@@ -26,6 +26,7 @@ function renderComposition(candidate) {
 function missingFieldLabel(field) {
   if (field.startsWith('commonEligibility.')) return '공통 신청요건';
   return {
+    supportBracket: '학자금 지원구간',
     academicLevel: '학부·대학원',
     age: '현재 만 나이',
     studentStatus: '학적 구분',
@@ -45,13 +46,7 @@ function renderRecommendationExplanation(candidate, scenario) {
     : candidate.isPendingConfirmation
       ? '조건 확인 후 추천을 확정할 수 있어요'
       : '선택한 구성의 특징';
-  const workEffect = scenario.custom ? `직접 정한 주당 ${formatHours(scenario.workHours)}시간 근로와 학기별 생활비 대출 총 ${formatMoney(scenario.livingLoan.principal)}을 반영했습니다. 희망 생활비보다 많거나 적을 수 있습니다.` : scenario.livingLoan.principal > 0
-    ? scenario.workHoursReduced > 0
-      ? `남은 재학기간의 생활비 대출은 총 ${formatMoney(scenario.livingLoan.principal, { digits: 1 })}입니다. 현재보다 주당 ${formatHours(scenario.workHoursReduced)}시간 덜 일할 때의 생활비 부족분을 채웁니다.`
-      : `현재 근로시간을 유지해도 부족한 생활비를 채우기 위해, 남은 재학기간에 총 ${formatMoney(scenario.livingLoan.principal, { digits: 1 })}을 빌리는 계산입니다.`
-    : scenario.workHoursReduced > 0
-      ? `주당 ${formatHours(scenario.workHours)}시간 일할 때의 근로소득으로 희망 생활비를 채웁니다. 생활비 대출 없이 현재보다 주당 ${formatHours(scenario.workHoursReduced)}시간 줄일 수 있습니다.`
-      : '생활비 대출 없이 현재 근로시간을 유지하는 계산입니다.';
+  const workEffect = `이번 학기 생활비 대출 ${formatMoney(scenario.livingLoan.principal)}을 6개월로 나눠 현재 월소득에 더합니다. 이후 학기에는 신규 대출을 반복하지 않습니다.`;
   const missing = [...new Set(candidate.eligibility.missingFields.map(missingFieldLabel))];
   const usesVariableRate = candidate.loan.repayments.incomeContingent != null;
   const reasons = description.reasons.filter(
@@ -63,7 +58,7 @@ function renderRecommendationExplanation(candidate, scenario) {
       ? ['취업 후 상환은 변동금리 상품입니다. 실제 금리가 바뀌면 이자와 남은 잔액도 달라집니다.']
       : []),
     ...(scenario.unmetLivingGap > 0
-      ? [`현재 대출 선택과 한도를 반영하면 남은 재학기간의 생활비가 총 ${formatMoney(scenario.unmetLivingGap, { digits: 1 })} 부족합니다. 생활비 대출 포함 여부와 처음 입력한 생활비·근로시간을 확인해 주세요.`]
+      ? [`현재 대출 선택과 한도를 반영하면 이번 학기 생활비가 총 ${formatMoney(scenario.unmetLivingGap, { digits: 1 })} 부족합니다. 생활비 대출 포함 여부와 처음 입력한 생활비·현재 월소득을 확인해 주세요.`]
       : []),
   ];
 
@@ -112,7 +107,7 @@ function renderRepayment(loan) {
 
 function renderExecutionLedger(candidate) {
   const entries = candidate.calculationTrace.steps.loanDisbursements.entries;
-  return `<details class="execution-ledger"><summary>학기별 대출 실행과 계산 순서 ${icon('chevron')}</summary><div><p>대출 실행일은 실제로 대출을 받는 날을 뜻합니다. 아래 날짜는 이번 계획의 예상 일정입니다.</p>${entries.length ? `<ol>${entries.map((entry) => `<li><span>이번 계획의 ${entry.semester}번째 학기 · ${entry.purpose === 'tuition' ? '등록금' : '생활비'} · ${entry.product === 'general' ? '일반 상환' : '취업 후 상환'}</span><strong>${formatMoney(entry.principal, { digits: 1 })}</strong><small>예상 실행일 ${entry.disbursementDate}</small></li>`).join('')}</ol>` : '<p>이번 계획에서 새로 받을 대출은 없습니다.</p>'}<p>학비·생활비에서 대출 없이 낼 등록금과 근로소득을 먼저 뺍니다. 부족분에 신청 단위와 한도를 적용해 학기별 대출액을 정하고, 거치이자와 상환액을 계산합니다.</p></div></details>`;
+  return `<details class="execution-ledger"><summary>학기별 대출 실행과 계산 순서 ${icon('chevron')}</summary><div><p>대출 실행일은 실제로 대출을 받는 날을 뜻합니다. 아래 날짜는 이번 계획의 예상 일정입니다.</p>${entries.length ? `<ol>${entries.map((entry) => `<li><span>이번 계획의 ${entry.semester}번째 학기 · ${entry.purpose === 'tuition' ? '등록금' : '생활비'} · ${entry.product === 'general' ? '일반 상환' : '취업 후 상환'}</span><strong>${formatMoney(entry.principal, { digits: 1 })}</strong><small>예상 실행일 ${entry.disbursementDate}</small></li>`).join('')}</ol>` : '<p>이번 계획에서 새로 받을 대출은 없습니다.</p>'}<p>등록금은 부족분·중간값·전액 중 시나리오 규칙으로 정합니다. 생활비는 월 부족분과 학기 한도로 정하고, 거치이자와 상환액은 별도로 계산합니다.</p></div></details>`;
 }
 
 function renderPolicyBasis(candidate) {
@@ -136,20 +131,19 @@ export function renderSelectedDetail(state, scenario) {
   const delta = (key) => state.comparison.view === 'changed'
     && Number.isFinite(summary[key]) && Number.isFinite(baseline.timeline.summary[key])
     ? ` · 기본 대비 ${signedMoney(summary[key] - baseline.timeline.summary[key])}` : '';
-  const workReductionNote = scenario.workHoursReduced === 0
-    ? '현재 근로시간 유지'
-    : scenario.workHoursReduced < 0 ? `현재보다 주당 ${formatHours(-scenario.workHoursReduced)}시간 더 일하는 계획` : `현재보다 주당 ${formatHours(scenario.workHoursReduced)}시간 덜 일할 수 있어요`;
 
   return `<section class="selected-detail" aria-labelledby="detail-title">
     <div class="detail-heading"><div><h3 id="detail-title">${safe(scenario.name)}</h3><p>${state.comparison.view === 'baseline' ? '기본 조건' : '그래프와 같은 변경 조건'} · ${safe(scenario.summary)}</p></div>${scenario.custom ? `<div class="custom-actions"><button type="button" class="${quietButton}" data-action="edit-custom" data-id="${scenario.id}">내 시나리오 수정</button><button type="button" class="${quietButton}" data-action="delete-custom" data-id="${scenario.id}">삭제</button></div>` : ''} </div>
     ${scenario.custom && scenario.livingLoan.semesters.some(s=>s.limitedByPolicy) ? '<p role="status">누적 대출 한도로 일부 학기 금액이 줄었습니다. 자금 계산 내역에서 실제 반영액을 확인하세요.</p>' : ''}
     <div class="detail-metrics">
-      ${metric('재학 중 월평균 생활비 여력', moneyOrPending(summary.collegeLiving), '희망 생활비 차감 전' + delta('collegeLiving'))}
-      ${metric('시나리오 주당 근로시간', `${formatHours(scenario.workHours)}<small>시간</small>`, workReductionNote)}
+      ${metric('이번 학기 월평균 생활비 여력', moneyOrPending(summary.collegeLiving), '이자·상환 차감 전' + delta('collegeLiving'))}
+      ${metric('생활비 보완에 필요한 추가 알바', `월 약 ${Math.round(scenario.monthlyWorkHours)}<small>시간</small>`, `생활비 부족 ${formatMoney(scenario.monthlyLivingGap)} / 월 · 최저시급 단순 환산`)}
       ${metric('졸업 시 예상 대출잔액', moneyOrPending(summary.graduationBalance), '졸업할 때 남아 있는 금액' + delta('graduationBalance'))}
-      ${metric('취업 첫해 월평균 상환 부담', moneyOrPending(summary.careerRepayment), '취업 후 상환은 연간액의 월평균 환산 · 실제 월 청구액 아님' + delta('careerRepayment'))}
-      ${metric('취업 첫해 월평균 생활비 여력', moneyOrPending(summary.careerLiving), '희망 생활비 차감 전' + delta('careerLiving'))}
+      ${metric('상환 기준기간 월평균 부담', moneyOrPending(summary.careerRepayment), '취업 후 상환은 연간액의 월평균 환산 · 실제 월 청구액 아님' + delta('careerRepayment'))}
+      ${metric('상환 후 남는 월소득', moneyOrPending(summary.careerLiving), `현재부터 ${scenario.timeline.repaymentReferenceMonth}~${scenario.timeline.repaymentReferenceMonth+12}개월 · 예상 월소득 − 상환부담` + delta('careerLiving'))}
     </div>
+    <p class="tuition-resources">이번 학기 등록금 대출 ${formatMoney(scenario.tuitionFunding.principal)} · 실제 사용할 자기자금 ${formatMoney(scenario.tuitionFunding.contributionPerSemester)} · 남겨두는 자기자금 ${formatMoney(scenario.tuitionFunding.retainedContribution)}. 남겨두는 돈은 생활비에 자동 합산하지 않습니다.</p>
+    <p>이번 학기 이자·상환 부담 월평균 ${formatMoney(scenario.currentSemesterPayment / scenario.funding.fundingMonths, {digits:1})}은 별도입니다. 이를 낸 뒤 생활비 여력은 ${formatMoney(scenario.collegeAfterRepayment, {digits:1})}입니다.</p>
     <details class="detail-disclosure" data-detail="loans"><summary>대출 구성 및 상환 일정</summary>
     ${renderLoanOptions(state, scenario)}
     ${renderComposition(candidate)}
@@ -160,7 +154,7 @@ export function renderSelectedDetail(state, scenario) {
     </details>
     <details class="detail-disclosure" data-detail="funding"><summary>자금 계산 내역</summary>
     ${renderFundingFormula(state, scenario)}
-    <p>재학 중 생활비 여력 = 월 근로소득 + 해당 학기 생활비 대출의 월 배분 − 해당 월 상환부담. 취업 후에는 월소득에서 상환부담을 뺍니다.</p></details>
+    <p>이번 학기 생활비 막대 = 현재 월소득 + 생활비 대출의 월 배분. 이자·상환부담은 별도로 확인합니다. 취업 후에는 월소득에서 상환부담을 뺍니다.</p></details>
     <details class="detail-disclosure" data-detail="sources"><summary>계산 가정 및 출처</summary>
     <p>소득·생활비·금리·상환기준소득을 고정합니다. 세금·물가·추가 차입은 예측하지 않습니다. 취업 후 상환의 월 부담은 연간 예상액 ÷ 12이며, 취업 이후 잔액은 연간 결산 시점에 갱신합니다.</p>
     ${renderPolicyBasis(candidate)}

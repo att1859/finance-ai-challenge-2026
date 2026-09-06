@@ -13,7 +13,9 @@ export function buildScenarioTimeline(scenario, endMonth) {
     annualGrossIncome: scenario.adjustedSalary * 12,
   }).annualSchedule[0] : null;
   const generalRows = new Map((general?.monthlyRepaymentSchedule ?? []).map(row => [row.globalMonth, row]));
-  const rows = Array.from({ length: endMonth + 1 }, (_, month) => {
+  const principalStart = general?.monthlyRepaymentSchedule.find(row => row.principalPayment > 0)?.globalMonth;
+  const repaymentReferenceMonth = Math.max(employmentMonth, principalStart ?? employmentMonth);
+  const rows = Array.from({ length: Math.max(endMonth + 1, repaymentReferenceMonth + 12) }, (_, month) => {
     const phase = month < graduationMonth ? 'study' : month < employmentMonth ? 'transition' : 'career';
     const common = { month, phase, calculationPossible: scenario.calculationPossible };
     if (!scenario.calculationPossible) return { ...common, living: null, repayment: null, balance: null };
@@ -37,17 +39,18 @@ export function buildScenarioTimeline(scenario, endMonth) {
     }
     const semester = scenario.livingLoan.semesters[Math.floor(month / 6)];
     const resources = phase === 'study'
-      ? scenario.workMonthly + (semester ? semester.principal / semester.monthCount : 0)
+      ? scenario.currentMonthlyIncome + (semester ? semester.principal / semester.monthCount : 0)
       : phase === 'career' ? scenario.adjustedSalary : 0;
     return { ...common, living: resources - repayment, repayment, balance, monthlyAverage: Boolean(icl), annualBalance: Boolean(icl && phase === 'career') };
   });
   const average = (selected, key) => selected.length && selected.every(row => Number.isFinite(row[key]))
     ? selected.reduce((sum, row) => sum + row[key], 0) / selected.length : null;
-  const firstYear = rows.filter(row => row.month >= employmentMonth && row.month < employmentMonth + 12);
+  const firstYear = rows.filter(row => row.month >= repaymentReferenceMonth && row.month < repaymentReferenceMonth + 12);
   return {
-    graduationMonth, employmentMonth, endMonth, rows,
+    graduationMonth, employmentMonth, endMonth, repaymentReferenceMonth, rows: rows.slice(0, endMonth + 1),
     summary: {
-      collegeLiving: average(rows.filter(row => row.month < graduationMonth), 'living'),
+      collegeLiving: scenario.calculationPossible ? scenario.possibleCollegeSpend : null,
+      collegeAfterRepayment: average(rows.filter(row => row.month < funding.fundingMonths), 'living'),
       graduationBalance: scenario.calculationPossible ? loan.balanceAtGraduation : null,
       careerLiving: average(firstYear, 'living'),
       careerRepayment: average(firstYear, 'repayment'),

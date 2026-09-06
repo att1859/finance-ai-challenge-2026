@@ -1,4 +1,4 @@
-import { renderForm } from './diagnosis-form.js';
+import { renderDiagnosisSection } from './diagnosis-form.js';
 import { renderSmoothingExplainer } from './smoothing-explainer.js';
 import { renderLoanIntroduction } from './loan-introduction.js';
 
@@ -24,17 +24,7 @@ export function renderShell(state) {
         <span><b>3</b> 부담 비교</span>
       </section>
 
-      <section class="diagnosis-section" id="diagnosis" aria-labelledby="diagnosis-title">
-        <div class="section-heading">
-          <h2 id="diagnosis-title">계산에 필요한 정보를 입력해 주세요.</h2>
-          <p>현재 확인할 수 있는 학비, 생활비와 근로조건만 입력해 주세요.</p>
-        </div>
-        <div class="input-mode" aria-label="입력 방식">
-          <button class="mode-option is-active" type="button" data-action="manual"><span>직접 입력</span><small>내 상황에 맞게 값을 바꿔요</small></button>
-          <button class="mode-option" type="button" data-action="sample"><span>예시 정보로 시작하기</span><small>가상 정보가 입력돼요</small></button>
-        </div>
-        ${renderForm(state.profile)}
-      </section>
+      ${renderDiagnosisSection(state.profile, state.ui.inputMode)}
       <div id="result-root" tabindex="-1"></div>
     </main>
     <footer>

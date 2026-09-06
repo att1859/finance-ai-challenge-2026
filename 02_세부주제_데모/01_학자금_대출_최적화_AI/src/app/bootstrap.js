@@ -20,7 +20,6 @@ import { formatMoney } from '../ui/formatters/money.js';
 import {
   readProfile,
   renderDiagnosisSection,
-  renderWorkIncomeSummaryContent,
   validateProfile,
 } from '../ui/sections/diagnosis-form.js';
 import {
@@ -46,8 +45,6 @@ const selectedScenario = () => findSelectedScenario(state);
 function bindShell() {
   const form = document.querySelector('#diagnosis-form');
   const smoothingDialog = document.querySelector('#smoothing-dialog');
-  form.elements.academicYear.value = state.profile.academicYear;
-  form.elements.supportBracket.value = state.profile.supportBracket;
   app.addEventListener('click', handleClick);
   smoothingDialog?.addEventListener('click', (event) => {
     if (event.target === smoothingDialog) smoothingDialog.close();
@@ -61,6 +58,11 @@ function handleClick(event) {
   const trigger = event.target.closest('[data-action]');
   if (!trigger) return;
   const action = trigger.dataset.action;
+  if (action === 'tuition-help') {
+    const help = document.querySelector('#tuition-help');
+    help.hidden = !help.hidden;
+    trigger.setAttribute('aria-expanded', String(!help.hidden));
+  }
   if (action === 'sample') loadSample();
   if (action === 'manual') document.querySelector('#diagnosis-form input')?.focus();
   if (action === 'open-smoothing') openSmoothingDialog();
@@ -92,20 +94,7 @@ function openSmoothingDialog() {
   dialog.querySelector('.smoothing-dialog-body').scrollTop = 0;
 }
 
-function handleFormInput(event) {
-  const form = event.currentTarget;
-  if (event.target.name === 'graduationYears') {
-    const years = Number(event.target.value) || 0;
-    document.querySelector('#graduation-equivalent').textContent = `${years}년 = ${years * 2}학기 · ${years * 12}개월`;
-  }
-  if (['currentWorkHours','hourlyWage','workTaxPreset'].includes(event.target.name)) {
-    document.querySelector('#work-income-summary').innerHTML = renderWorkIncomeSummaryContent({
-      currentWorkHours: form.elements.currentWorkHours.value,
-      hourlyWage: form.elements.hourlyWage.value,
-      workTaxPreset: form.elements.workTaxPreset.value,
-    });
-  }
-}
+function handleFormInput() {}
 
 function showErrors(errors) {
   document.querySelectorAll('.error').forEach((item) => { item.textContent = ''; });
@@ -146,8 +135,6 @@ function loadSample() {
     state.ui.inputMode,
   );
   const form = document.querySelector('#diagnosis-form');
-  form.elements.academicYear.value = state.profile.academicYear;
-  form.elements.supportBracket.value = state.profile.supportBracket;
   form.addEventListener('submit', handleSubmit);
   form.addEventListener('input', handleFormInput);
   form.addEventListener('change', handleFormInput);
@@ -192,14 +179,14 @@ function renderResults() {
   const openDetails = [...(root?.querySelectorAll('details[open]') ?? [])].map(el => el.dataset.detail).filter(Boolean);
   if (!root || !state.ui.calculated) return;
   if (state.ui.loading) {
-    root.innerHTML = `<section class="result-loading" aria-live="polite"><span class="loader" aria-hidden="true"></span><h2>세 가지 계획을 계산하고 있어요.</h2><p>학비, 생활비, 근로시간과 가능한 대출 구성을 함께 비교합니다.</p></section>`;
+    root.innerHTML = `<section class="result-loading" aria-live="polite"><span class="loader" aria-hidden="true"></span><h2>세 가지 계획을 계산하고 있어요.</h2><p>이번 학기 등록금, 생활비와 가능한 대출 구성을 함께 비교합니다.</p></section>`;
     return;
   }
   const current = selectedScenario();
   root.innerHTML = `
     <section class="results" aria-labelledby="result-title">
       <div class="result-intro">
-        <div><h2 id="result-title">내게 맞는 대학 생활 계획을 비교해 보세요.</h2><p>${safe(state.profile.school)} · 졸업까지 ${state.profile.graduationYears}년 · 현재 조건 기준</p></div>
+        <div><h2 id="result-title">내게 맞는 대학 생활 계획을 비교해 보세요.</h2><p>이번 학기 포함 ${state.profile.remainingSemesters}학기 남음 · 현재 조건 기준</p></div>
         <aside>${icon('info')}<p><strong>간이 예상 결과입니다.</strong> 실제 대출 자격·승인은 한국장학재단이 최종 판단합니다.</p></aside>
       </div>
       <p id="selection-status" class="sr-only" role="status" aria-live="polite"></p>
@@ -238,7 +225,7 @@ function bindResultEvents() {
       point.setAttribute('visibility', Number.isFinite(value) ? 'visible' : 'hidden');
       if (Number.isFinite(value)) {
         point.setAttribute('cx', x);
-        point.setAttribute('cy', 295 - (value - Number(svg.dataset.low)) / (Number(svg.dataset.high) - Number(svg.dataset.low)) * 225);
+        point.setAttribute('cy', Number(svg.dataset.bottom) - (value - Number(svg.dataset.low)) / (Number(svg.dataset.high) - Number(svg.dataset.low)) * Number(svg.dataset.height));
       }
     });
   };
@@ -320,7 +307,7 @@ function handleResultOptionChange(event) {
     recalculateResultOption(
       name,
       null,
-      '생활비 대출 선택을 반영해 근로시간과 대출 실행·상환 결과를 다시 계산했습니다.',
+      '생활비 대출 선택을 반영해 생활비 여력과 대출 실행·상환 결과를 다시 계산했습니다.',
     );
     return;
   }
@@ -379,13 +366,14 @@ function handleResultOptionChange(event) {
 function announceSelection() {
   window.requestAnimationFrame(()=>{
     const status=document.querySelector('#selection-status'); const scenario=selectedScenario();
-    if(status&&scenario) status.textContent=`${scenario.name} 선택. 대학 생활비 여력 ${formatMoney(scenario.possibleCollegeSpend,{digits:1})}, 주당 근로 ${scenario.workHours}시간, 상환 후 생활비 여력 ${formatMoney(scenario.possibleCareerSpend,{digits:1})}.`;
+    if(status&&scenario) status.textContent=`${scenario.name} 선택. 대학 생활비 여력 ${formatMoney(scenario.possibleCollegeSpend,{digits:1})}, 상환 후 생활비 여력 ${formatMoney(scenario.possibleCareerSpend,{digits:1})}.`;
   });
 }
 
 export function bootstrapApp() {
   app.innerHTML = renderShell(state);
   bindShell();
+  window.matchMedia('(max-width: 580px)').addEventListener('change', () => { if (state.ui.calculated) renderResults(); });
 }
 
 function openCustomEditor(id) {
@@ -393,7 +381,8 @@ function openCustomEditor(id) {
   const existing = state.customScenarios.find(item => item.id === id);
   const amounts = scenario.livingLoan.semesters.map(row => row.principal);
   const draft = existing ? structuredClone(existing) : {
-    name: `내 시나리오 ${state.nextCustomId}`, workHours: scenario.workHours,
+    name: `내 시나리오 ${state.nextCustomId}`,
+    tuitionStrategy: scenario.custom?.tuitionStrategy ?? scenario.strategy,
     livingPerSemester: amounts[0] ?? 0,
     livingBySemester: amounts.every(v => v === amounts[0]) ? null : amounts,
     graceYears: scenario.custom?.graceYears ?? state.resultSelections.graceYears,
@@ -407,10 +396,8 @@ function openCustomEditor(id) {
   const form = dialog.querySelector('form');
   const read = () => ({
     ...draft, name: form.elements['custom-name'].value.trim(),
-    workHours: form.elements['custom-hours'].value === '' ? NaN : Number(form.elements['custom-hours'].value),
     livingPerSemester: form.elements['custom-amount'].value,
-    livingBySemester: form.elements['individual-semesters'].checked
-      ? Array.from({length:count},(_,i)=>form.elements[`semester-${i}`].value) : null,
+    livingBySemester: null,
     graceYears: Number(form.elements['custom-grace'].value),
     repaymentYears: Number(form.elements['custom-repayment'].value),
     candidateId: `${form.elements['custom-tuition'].value}:${form.elements['custom-living'].value}`,
@@ -418,7 +405,6 @@ function openCustomEditor(id) {
   const preview = () => {
     const config = read();
     dialog.querySelector('#custom-error').textContent = '';
-    dialog.querySelector('#semester-fields').hidden = !config.livingBySemester;
     dialog.querySelectorAll('[data-field-error]').forEach(el => {
       const input = form.elements[el.dataset.fieldError];
       const error = validateLivingAmount(input.value);
@@ -432,12 +418,7 @@ function openCustomEditor(id) {
       : '실행 가능한 금액을 입력하면 합계를 표시합니다.';
   };
   form.addEventListener('input', preview);
-  form.addEventListener('change', event => {
-    if (event.target.name === 'individual-semesters' && event.target.checked && !draft.livingBySemester) {
-      for (let i=0;i<count;i++) form.elements[`semester-${i}`].value = form.elements['custom-amount'].value;
-    }
-    preview();
-  });
+  form.addEventListener('change', preview);
   form.addEventListener('click', event => {
     if (event.target.closest('[data-close-editor]')) { dialog.close(); return; }
     const step = event.target.closest('[data-amount-step]');
@@ -459,7 +440,7 @@ function openCustomEditor(id) {
     if (Object.keys(errors).length) {
       dialog.querySelector('#custom-error').textContent = [...new Set(Object.values(errors))].join(' ');
       const key = Object.keys(errors)[0];
-      const fieldName = {name:'custom-name',workHours:'custom-hours',livingPerSemester:'custom-amount'}[key] ?? key;
+      const fieldName = {name:'custom-name',livingPerSemester:'custom-amount'}[key] ?? key;
       form.elements[fieldName]?.focus();
       return;
     }

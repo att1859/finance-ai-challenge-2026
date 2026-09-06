@@ -23,7 +23,6 @@ export function requestedLivingAmounts(config, semesters) {
 export function validateCustomScenario(config, profile, semesters, policy = LOAN_POLICY_SNAPSHOT) {
   const errors = {};
   if (!String(config.name ?? '').trim() || String(config.name).length > 40) errors.name = '이름을 1~40자로 입력해 주세요.';
-  if (!Number.isFinite(Number(config.workHours)) || Number(config.workHours) < 0 || Number(config.workHours) > 80 || Number(config.workHours) % .5) errors.workHours = '근로시간은 주 0~80시간, 0.5시간 단위로 입력해 주세요.';
   const defaultError = validateLivingAmount(config.livingPerSemester, policy);
   if (defaultError) errors.livingPerSemester = defaultError;
   const amounts = requestedLivingAmounts(config, semesters);

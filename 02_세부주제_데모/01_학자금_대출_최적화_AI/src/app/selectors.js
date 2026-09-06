@@ -51,22 +51,11 @@ export function buildScenarioComparison(state) {
       })),
     },
     {
-      id: 'work',
-      label: '주당 근로시간',
-      unit: '시간/주',
-      referenceLabel: '현재',
-      reference: nonNegative(profile.currentWorkHours),
-      values: currentScenarios.map(({ id, workHours }) => ({
-        id,
-        value: workHours,
-      })),
-    },
-    {
       id: 'career',
       label: '상환 후 월 생활비 여력',
       unit: '만 원/월',
-      referenceLabel: '희망',
-      reference: nonNegative(profile.desiredCareerSpend),
+      referenceLabel: '예상 월소득',
+      reference: nonNegative(profile.salary),
       values: currentScenarios.map(({ id, possibleCareerSpend }) => ({
         id,
         value: possibleCareerSpend,

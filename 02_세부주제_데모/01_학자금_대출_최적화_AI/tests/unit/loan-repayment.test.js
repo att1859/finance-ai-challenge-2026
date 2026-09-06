@@ -161,10 +161,10 @@ test('일반 상환의 요청 기간은 공식 거치·상환 상한을 넘지 �
   assert.equal(first.appliedGraduationPreparationYears, 2);
 });
 
-test('졸업 지연은 기존 실행분의 상환 시작일을 옮기지 않고 추가 학기만 새 일정을 만든다', () => {
+test('졸업 지연에도 기존 약정은 유지하며 추가 대출을 생성하지 않는다', () => {
   const profile = {
     ...SAMPLE_PROFILE,
-    graduationYears: 2,
+    remainingSemesters: 4,
     graceYears: 0,
     repaymentYears: 10,
   };
@@ -186,7 +186,7 @@ test('졸업 지연은 기존 실행분의 상환 시작일을 옮기지 않고 
 
   assert.equal(delayedFirst.repaymentStartDate, baselineFirst.repaymentStartDate);
   assert.equal(delayedFirst.scheduledGraduationMonth, 24);
-  assert.equal(delayedAdditional.scheduledGraduationMonth, 36);
+  assert.equal(delayedAdditional, undefined);
   assert.ok(delayed.loan.duringStudyPayment > baseline.loan.duringStudyPayment);
   assert.ok(delayed.loan.balanceAtGraduation < delayed.loan.principal);
 });
@@ -207,7 +207,6 @@ test('현재 기준 10년 일반 상환 비교는 120개월 동안 현재 금리
   assert.equal(comparison.monthlyLivingCost, SAMPLE_PROFILE.desiredCareerSpend);
   assert.deepEqual(comparison.assumptions, {
     incomeGrowthRate: 0,
-    livingCostGrowthRate: 0,
     thresholdGrowthRate: 0,
     interestRateChange: 0,
   });

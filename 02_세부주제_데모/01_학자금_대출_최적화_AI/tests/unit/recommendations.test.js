@@ -97,7 +97,7 @@ test('최초 정보 부족 후보는 네 조합을 유지하지만 추천 배지
   const recommendation = calculatePlan({
     ...SAMPLE_PROFILE,
     desiredCollegeSpend: 130,
-  }).currentRecommendations.find(({ scenarioId }) => scenarioId === 'minimum-loan');
+  }).currentRecommendations.find(({ scenarioId }) => scenarioId === 'maximum-use');
 
   assert.equal(recommendation.status, 'confirmation-required');
   assert.equal(recommendation.candidates.length, 4);
@@ -109,7 +109,7 @@ test('최초 정보 부족 후보는 네 조합을 유지하지만 추천 배지
 });
 
 test('자격 확인 뒤 각 시나리오는 추천 조합과 구체적 이유 코드를 반환한다', () => {
-  const recommendations = calculatePlan(COMPLETE_PROFILE).currentRecommendations;
+  const recommendations = calculatePlan({...COMPLETE_PROFILE,isBasicOrNearPoverty:true}).currentRecommendations;
 
   assert.equal(recommendations.length, 3);
   assert.ok(recommendations.every(({ status }) => status === 'recommended'));
@@ -129,7 +129,7 @@ test('확정적으로 불가능한 생활비 상품 조합만 제외 목록으�
   const recommendation = calculatePlan({
     ...COMPLETE_PROFILE,
     supportBracket: 10,
-  }).currentRecommendations.find(({ scenarioId }) => scenarioId === 'minimum-loan');
+  }).currentRecommendations.find(({ scenarioId }) => scenarioId === 'maximum-use');
 
   assert.equal(recommendation.candidates.length, 2);
   assert.equal(recommendation.excludedCandidates.length, 2);
@@ -140,7 +140,7 @@ test('확정적으로 불가능한 생활비 상품 조합만 제외 목록으�
 
 test('혼합 추천 후보는 두 상품의 금리·상환 기준과 공식 출처를 함께 보존한다', () => {
   const recommendation = calculatePlan(COMPLETE_PROFILE)
-    .currentRecommendations.find(({ scenarioId }) => scenarioId === 'minimum-loan');
+    .currentRecommendations.find(({ scenarioId }) => scenarioId === 'maximum-use');
   const mixed = recommendation.candidates.find(
     ({ id }) => id === 'general:income-contingent',
   );

@@ -137,7 +137,6 @@ export function calculateLoan(
       label: '현재 기준 10년 단순 비교',
       periodMonths: 120,
       monthlyIncome: adjustedMonthlyIncome,
-      monthlyLivingCost: nonNegative(profile.desiredCareerSpend),
       general: generalCurrentValueComparison,
       incomeContingent: incomeContingentCurrentValueComparison,
       totalPayment: sumResults(comparisonParts, 'totalPayment'),
@@ -145,7 +144,6 @@ export function calculateLoan(
       endingBalance: sumResults(comparisonParts, 'endingBalance'),
       assumptions: {
         incomeGrowthRate: 0,
-        livingCostGrowthRate: 0,
         thresholdGrowthRate: 0,
         interestRateChange: 0,
       },

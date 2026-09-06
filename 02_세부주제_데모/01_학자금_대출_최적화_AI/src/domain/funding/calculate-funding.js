@@ -3,20 +3,13 @@ import { normalizeStress } from '../scenarios/normalize-stress.js';
 
 export function calculateFundingSummary(profile, stress = {}) {
   const normalizedStress = normalizeStress(stress);
-  const remainingYears = Math.max(0.5, numberOrZero(profile.graduationYears));
-  const baseStudyMonths = Math.max(6, Math.round(remainingYears * 12));
+  const remainingSemesters = Math.max(1, numberOrZero(profile.remainingSemesters ?? profile.graduationYears * 2));
+  const baseStudyMonths = remainingSemesters * 6;
   const studyMonths = baseStudyMonths + normalizedStress.graduationDelayMonths;
-  const semesters = Math.ceil(studyMonths / 6);
-  const educationNeed = nonNegative(profile.tuitionPerSemester) * semesters;
-  const livingNeed = nonNegative(profile.desiredCollegeSpend) * studyMonths;
-  const totalNeed = educationNeed + livingNeed;
-
-  return {
-    baseStudyMonths,
-    studyMonths,
-    semesters,
-    educationNeed,
-    livingNeed,
-    totalNeed,
-  };
+  // This plan funds only the current semester; graduation is a separate clock.
+  const fundingMonths = 6;
+  const semesters = 1;
+  const educationNeed = nonNegative(profile.tuitionPerSemester);
+  const livingNeed = nonNegative(profile.desiredCollegeSpend) * fundingMonths;
+  return { remainingSemesters, baseStudyMonths, studyMonths, fundingMonths, semesters, educationNeed, livingNeed, totalNeed: educationNeed + livingNeed };
 }

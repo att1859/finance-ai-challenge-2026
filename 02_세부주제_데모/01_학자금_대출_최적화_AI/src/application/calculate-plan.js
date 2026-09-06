@@ -1,3 +1,4 @@
+import { calculateNoLoanComparison } from '../domain/funding/no-loan-comparison.js';
 import { buildScenarioTimeline } from '../domain/scenarios/timeline.js';
 import {
   calculateAllScenarios,
@@ -43,6 +44,8 @@ export function calculatePlan(profile, stress = {}) {
   return {
     baselineScenarios,
     currentScenarios,
+    baselineNoLoanComparison: calculateNoLoanComparison(profile),
+    currentNoLoanComparison: calculateNoLoanComparison(profile, stress),
     baselineRecommendations: recommendationsFor(profile, baselineScenarios, {}),
     currentRecommendations: recommendationsFor(profile, currentScenarios, stress),
     baselineFullLoanCapView: calculateFullLoanCapView(

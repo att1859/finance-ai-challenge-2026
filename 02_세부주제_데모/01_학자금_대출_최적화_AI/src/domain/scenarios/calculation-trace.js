@@ -61,7 +61,6 @@ export function buildCalculationTrace({
 }) {
   const funding = scenario.funding;
   const tuitionFunding = scenario.tuitionFunding;
-  const work = scenario.workIncomeBreakdown;
 
   return {
     unit: 'KRW_10K',
@@ -69,7 +68,7 @@ export function buildCalculationTrace({
     policyReferences,
     order: [
       'funding-need',
-      'work-income',
+      'current-income',
       'living-loan-by-semester',
       'loan-disbursements',
       'grace-interest',
@@ -81,9 +80,10 @@ export function buildCalculationTrace({
         policyReferenceIds: ['tuition-limit', 'living-limit'],
         inputs: {
           tuitionPerSemester: tuitionFunding.billedPerSemester,
-          tuitionContributionPerSemester: tuitionFunding.contributionPerSemester,
+          tuitionContributionPerSemester: tuitionFunding.availableContribution,
           desiredCollegeSpend: profile.desiredCollegeSpend,
           studyMonths: funding.studyMonths,
+          fundingMonths: funding.fundingMonths,
           semesters: funding.semesters,
         },
         outputs: {
@@ -91,30 +91,15 @@ export function buildCalculationTrace({
           tuitionContributionTotal: tuitionFunding.contributionPerSemester
             * funding.semesters,
           tuitionLoanNeed: tuitionFunding.principal,
+          retainedTuitionResources: tuitionFunding.retainedContribution,
           livingNeed: funding.livingNeed,
           grossTotalNeed: funding.totalNeed,
         },
       },
-      workIncome: {
-        id: 'work-income',
-        inputs: {
-          weeklyHours: scenario.workHours,
-          hourlyWage: profile.hourlyWage,
-          taxPreset: profile.workTaxPreset,
-          studyMonths: funding.studyMonths,
-        },
-        outputs: {
-          monthlyWeeks: work.monthlyWeeks,
-          weeklyHolidayEligible: work.weeklyHolidayEligible,
-          weeklyHolidayHours: work.weeklyHolidayHours,
-          baseMonthly: work.baseMonthly,
-          holidayMonthly: work.holidayMonthly,
-          grossMonthly: work.grossMonthly,
-          taxRate: work.taxRate,
-          deductionMonthly: work.deductionMonthly,
-          netMonthly: work.netMonthly,
-          totalDuringStudy: scenario.workTotal,
-        },
+      currentIncome: {
+        id: 'current-income',
+        inputs: { currentMonthlyIncome: profile.currentMonthlyIncome, fundingMonths: funding.fundingMonths },
+        outputs: { monthly: scenario.currentMonthlyIncome, total: scenario.currentIncomeTotal },
       },
       livingLoanBySemester: {
         id: 'living-loan-by-semester',
