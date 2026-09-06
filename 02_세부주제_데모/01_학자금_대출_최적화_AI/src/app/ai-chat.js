@@ -34,7 +34,9 @@ export function mountAiAssistant(appState) {
       : state.error || (connection === 'missing' ? 'AI 연결 준비 중 · 계산 결과 미리보기는 이용할 수 있어요.'
         : connection === 'offline' ? 'AI 서버에 연결하지 못했어요. 연결 확인을 눌러 주세요.'
           : connection === 'checking' ? 'AI 연결 상태를 확인하고 있어요…'
-            : notice || (connection === 'ready' ? 'AI 연결 설정 준비됨' : ''));
+            : state.summary || state.messages.some(message => message.role === 'assistant')
+              ? 'Gemini 응답 확인됨 · FAQ와 현재 시나리오로 답변해요.'
+              : notice || (connection === 'ready' ? 'API 키 설정됨 · 첫 답변으로 연결을 확인해 주세요.' : ''));
   }
   function scheduleSummary() {
     clearTimeout(summaryTimer);

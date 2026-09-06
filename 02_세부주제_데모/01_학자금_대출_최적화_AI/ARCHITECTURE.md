@@ -117,8 +117,12 @@ bootstrap은 mountAiAssistant로 body에 독립 패널을 붙이고 renderResult
 
 app/ai-session.js는 DOM 없이 대화·맥락 버전·취소·재시도를 관리한다. app/ai-chat.js는 패널과 health/chat 요청을 조립한다. ui/sections/ai-assistant.js와 ui/styles/ai-assistant.css는 기존 토큰·공통 버튼을 사용한다.
 
-server/index.js는 루프백 HTTP 서버와 스키마·Host/Origin·크기·분당/동시 요청 한도를 담당한다. server/ai-provider.js만 Gemini 키와 generateContent 계약을 안다. server/knowledge.js는 제품 의미만 보관하며 자격 판정 엔진을 대체하지 않는다. 공급자 호출은 테스트에서 주입 가능하다.
+server/index.js는 루프백 HTTP 서버와 스키마·Host/Origin·크기·분당/동시 요청 한도를 담당한다. server/ai-provider.js만 Gemini 키와 generateContent 계약을 안다. server/knowledge.js는 제품·정책 FAQ 19개의 질문·답·범위·학기·출처·확인일을 보관하고 systemInstruction에 전체를 포함한다. 별도 검색 DB는 없으며 자격 판정 엔진을 대체하지 않는다. 개인 수치는 app/ai-context.js의 계산 facts를 사용한다. 공급자 호출은 테스트에서 주입 가능하다.
+
+server/index.js의 --check(npm run ai:check)는 임시 루프백 포트에서 기존 API를 열고 기본 가상 프로필을 calculatePlan/buildAiContext로 변환해 /api/chat을 호출한 뒤 종료한다. 화면 데이터나 개인 입력을 읽지 않는다. 성공은 실제 Google 생성·응답 형식 검증을 뜻하며 일반 테스트에서는 공급자를 가상 응답으로 주입한다. 키 존재 여부만 확인하는 health와 구별한다. FAQ·키 변경 후에는 서버를 재시작한다.
 
 scripts/dev.js는 Vite와 API를 함께 시작하고 종료한다. Node 24에서 검증하며 native config loader를 사용한다. Vite /api 프록시는 AI_PORT(기본 8787)를 따른다. 키는 서버 환경 변수 또는 Git에서 제외된 .env.local에만 둔다. AI_SETUP.md에 실행과 검증 경계를 기록한다.
+
+Vercel에서는 api/chat.js와 api/health.js가 공통 createApiHandler({ hosting: 'vercel' })를 내보낸다. 로컬 createApiServer도 같은 핸들러를 사용하며 계산·FAQ·공급자 코드를 복제하지 않는다. Vercel의 파싱된 req.body와 로컬 원문 스트림 모두 크기·JSON·스키마를 검증한다. 배포 호스트는 공식 production 도메인, VERCEL_URL·VERCEL_PROJECT_PRODUCTION_URL 및 명시한 HTTPS 출처로 제한하고 임의의 *.vercel.app를 허용하지 않는다. 분당·동시 호출 제한은 인스턴스별 메모리 범위이며 분산 전체 한도나 사용자 인증이 아니다. api/chat.js의 최대 실행 시간은 60초이며 공급자 타임아웃은 30초를 유지한다.
 
 첫 화면의 다섯 안내 본문은 2026-09-06 사용자 제공 문구를 사용한다. 3번의 주택담보대출 4.48% 뒤에는 작은 i 아이콘으로 “2026년7월 가중평균금리 기준”을 표시하며, 마지막 문장 뒤의 i 아이콘은 고정·변동금리 설명을 연다. native popover로 클릭·호버·터치·키보드 및 Escape/바깥 클릭 닫기를 지원한다. 학자금 금리는 기존 정책 스냅샷을 사용한다.

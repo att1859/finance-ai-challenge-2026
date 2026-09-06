@@ -28,6 +28,13 @@ function describeScenario(state, scenario) {
         ? `현재부터 ${scenario.timeline.repaymentReferenceMonth}~${scenario.timeline.repaymentReferenceMonth + 12}개월` : '확인 필요'),
       fact('등록금 자격 상태 · 실제 승인 아님', purposes?.tuition?.eligibilityLabel ?? '확인 필요'),
       fact('생활비 자격 상태 · 실제 승인 아님', purposes?.living?.eligibilityLabel ?? '확인 필요'),
+      fact('이번 학기 실제 납부 등록금', money(scenario.tuitionFunding?.billedPerSemester)),
+      fact('대출 없이 낼 수 있는 등록금 금액', money(scenario.tuitionFunding?.availableContribution)),
+      fact('최소 등록금 대출', money(scenario.tuitionFunding?.minimumLoan)),
+      fact('실제 사용하는 등록금 자기자금', money(scenario.tuitionFunding?.contributionPerSemester)),
+      fact('현재 월소득 · 추가 알바 제외', money(scenario.currentMonthlyIncome)),
+      fact('생활비 희망 부족분 · 대출 전 / 학기', money(scenario.livingLoan?.rawRequired)),
+      fact('생활비 대출 한도 적용', scenario.livingLoan?.semesters?.[0]?.limitedByPolicy ? '요청액보다 적게 실행됨' : '요청액에 한도 차감 없음'),
     ],
   };
 }

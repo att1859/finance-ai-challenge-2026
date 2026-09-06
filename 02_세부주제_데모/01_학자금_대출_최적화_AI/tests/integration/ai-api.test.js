@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { request as httpRequest } from 'node:http';
-import { createApiServer } from '../../server/index.js';
+import { createApiServer, checkApiConnection } from '../../server/index.js';
 import { generateAnswer } from '../../server/ai-provider.js';
+import { FAQ } from '../../server/knowledge.js';
 
 const body = () => ({
   mode: 'chat', contextVersion: 1,
@@ -63,9 +64,66 @@ test('제공사 요청은 키를 헤더에만 두고 서버 지침과 JSON 응�
   const data = JSON.parse(captured.init.body);
   assert.equal(data.store, false);
   assert.ok(data.systemInstruction.parts[0].text.includes('다시 계산'));
+  assert.ok(data.systemInstruction.parts[0].text.includes('항상 알바 0시간인 것은 아니다'));
+  for (const item of FAQ) assert.ok(data.systemInstruction.parts[0].text.includes(item.id));
+  assert.deepEqual(JSON.parse(data.contents[0].parts[0].text), body());
+});
+
+test('실행 진단은 실제 앱 계산 맥락을 HTTP/API 경로로 전달한다', async () => {
+  let captured;
+  const result = await checkApiConnection({ env: {}, answer: async request => { captured = request; return { answer: '가상 응답' }; } });
+  assert.equal(result.answer, '가상 응답');
+  assert.equal(captured.context.selected.facts.find(item => item.label === '이번 학기 생활비 대출').value, '180만 원');
+  assert.ok(captured.context.comparison.length === 2);
+  await assert.rejects(checkApiConnection({ env: {} }), error => error.code === 'NOT_CONFIGURED');
+});
+
+test('Google 인증·모델·요청 오류를 분리하며 제공사 원문과 키는 노출하지 않는다', async () => {
+  for (const [status, code] of [[400, 'PROVIDER_REQUEST'], [401, 'PROVIDER_AUTH'], [403, 'PROVIDER_AUTH'], [404, 'PROVIDER_MODEL']]) {
+    await assert.rejects(generateAnswer(body(), { apiKey: 'private-test-key', fetchImpl: async () => ({ ok: false, status }) }),
+      error => error.code === code && !error.message.includes('private-test-key'));
+  }
 });
 test('제공사 할당량·잘린 응답·형식 오류를 정상 답변으로 표시하지 않는다', async () => {
   await assert.rejects(generateAnswer(body(), { apiKey:'test', fetchImpl: async () => ({ ok:false, status:429 }) }), error => error.status === 429);
   await assert.rejects(generateAnswer(body(), { apiKey:'test', fetchImpl: async () => ({ ok:true, json:async () => ({ candidates:[{finishReason:'MAX_TOKENS'}] }) }) }), error => error.code === 'INCOMPLETE');
   await assert.rejects(generateAnswer(body(), { apiKey:'test', fetchImpl: async () => ({ ok:true, json:async () => ({ candidates:[{finishReason:'STOP', content:{parts:[{text:'{}'}]}}] }) }) }), error => error.code === 'INVALID_RESPONSE');
+});
+
+// Test the Vercel entrypoints without network calls or deployment credentials.
+async function invokeHandler(handler, { path = '/api/chat', origin, host = 'finance-ai-challenge-2026-three.vercel.app', parsedBody = body(), method = 'POST' } = {}) {
+  const { EventEmitter } = await import('node:events');
+  const req = { url: path, method, headers: { host, 'content-type': 'application/json', ...(origin ? { origin } : {}) }, body: parsedBody };
+  const res = new EventEmitter();
+  res.writeHead = (status, headers) => { res.status = status; res.headers = headers; };
+  res.end = data => { res.data = JSON.parse(data); res.writableEnded = true; };
+  await handler(req, res);
+  return res;
+}
+
+test('Vercel handler reuses schema and provider with trusted production/preview hosts', async () => {
+  const { createApiHandler } = await import('../../server/index.js');
+  let forwarded;
+  const handler = createApiHandler({ hosting: 'vercel', env: { VERCEL_URL: 'slow-preview.vercel.app' }, answer: async request => { forwarded = request; return { answer: '테스트 응답' }; } });
+  const response = await invokeHandler(handler, { origin: 'https://finance-ai-challenge-2026-three.vercel.app' });
+  assert.equal(response.status, 200);
+  assert.deepEqual(forwarded, body());
+  assert.equal((await invokeHandler(handler, { host: 'slow-preview.vercel.app', origin: 'https://slow-preview.vercel.app' })).status, 200);
+  assert.equal((await invokeHandler(handler, { host: 'attacker.vercel.app' })).status, 403);
+  assert.equal((await invokeHandler(handler, { origin: 'https://attacker.vercel.app' })).status, 403);
+  assert.equal((await invokeHandler(handler, { parsedBody: '{bad json' })).status, 400);
+  assert.equal((await invokeHandler(handler, { parsedBody: { text: '가'.repeat(30_000) } })).status, 413);
+  assert.equal((await invokeHandler(handler, { parsedBody: { ...body(), mode: 'admin' } })).status, 400);
+});
+
+test('Vercel route files load without listening and expose health or validated chat', async () => {
+  const { default: health } = await import('../../api/health.js');
+  const { default: chat, config } = await import('../../api/chat.js');
+  const result = await invokeHandler(health, { path: '/api/health', method: 'GET' });
+  assert.equal(result.status, 200);
+  assert.equal(result.data.provider, 'Gemini');
+  assert.equal(typeof result.data.configured, 'boolean');
+  assert.equal(result.data.GEMINI_API_KEY, undefined);
+  assert.equal((await invokeHandler(chat, { parsedBody: {} })).status, 400);
+  assert.equal(config.maxDuration, 60);
 });

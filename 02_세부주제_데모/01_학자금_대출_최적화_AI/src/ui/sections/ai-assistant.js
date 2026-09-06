@@ -17,7 +17,7 @@ export function renderAiAssistant() {
       <div class="ai-bottom">
         <p id="ai-status" role="status" aria-live="polite"></p>
         <div class="ai-actions"><button class="${quietButton}" type="button" data-ai="retry" hidden>다시 시도</button><button class="${quietButton}" type="button" data-ai="reset" hidden>대화 초기화</button><button class="${quietButton}" type="button" data-ai="connection">연결 확인</button></div>
-        <div class="ai-prompts"><button class="${quietButton}" type="button" data-question="다른 안과 무엇이 달라요?">다른 안과 비교</button><button class="${quietButton}" type="button" data-question="거치기간이 뭐예요?">거치기간이란?</button></div>
+        <div class="ai-prompts"><button class="${quietButton}" type="button" data-question="현재 중시, 균형, 미래 중시는 어떻게 다른가요?">세 시나리오 차이</button><button class="${quietButton}" type="button" data-question="균형이면 알바를 안 해도 되나요? 내 생활비 부족분도 설명해 주세요.">균형이면 알바 0시간?</button><button class="${quietButton}" type="button" data-question="일반 상환과 취업 후 상환은 어떻게 다른가요?">상환 방식 차이</button></div>
         <form id="ai-form"><label class="sr-only" for="ai-question">SLOW 봇에게 질문하세요</label><textarea id="ai-question" rows="2" maxlength="1000" placeholder="SLOW 봇에게 질문하세요" aria-describedby="ai-input-note"></textarea><button class="${primaryButton} ai-send" type="submit" aria-label="질문 보내기">${icon('arrow')}</button></form>
         <p class="ai-footnote" id="ai-input-note">AI 답변은 참고용이며 실제 대출 승인이 아닙니다.</p>
       </div>

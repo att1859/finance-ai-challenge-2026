@@ -46,7 +46,7 @@
 #ai-status { font-size: 11px; line-height: 1.6; color: var(--blue); margin: 0 0 5px; }
 .ai-actions { display: flex; flex-wrap: wrap; gap: 4px; }
 .ai-actions button { min-height: 30px; padding: 4px 8px; font-size: 11px; }
-.ai-prompts { display: flex; gap: 6px; margin: 7px 0; }
+.ai-prompts { display: flex; flex-wrap: wrap; gap: 6px; margin: 7px 0; }
 .ai-prompts button { padding: 6px 10px; font-size: 11px; min-height: 32px; border: 1px solid var(--line); border-radius: 7px; background: var(--white); }
 #ai-form { display: flex; align-items: flex-end; border: 1px solid var(--line-strong); border-radius: 8px; padding: 6px; gap: 6px; }
 #ai-question { flex: 1; min-width: 0; width: 100%; resize: none; font: inherit; font-size: 13px; line-height: 1.5; border: 0; background: transparent; padding: 7px; color: var(--ink); }

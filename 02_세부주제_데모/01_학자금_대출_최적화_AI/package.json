@@ -7,6 +7,7 @@
     "dev": "node --env-file-if-exists=.env.local scripts/dev.js",
     "dev:ui": "vite --host 127.0.0.1 --configLoader native",
     "dev:api": "node --env-file-if-exists=.env.local server/index.js",
+    "ai:check": "node --env-file-if-exists=.env.local server/index.js --check",
     "test": "node --test",
     "test:ui": "playwright test",
     "build": "vite build --configLoader native",
