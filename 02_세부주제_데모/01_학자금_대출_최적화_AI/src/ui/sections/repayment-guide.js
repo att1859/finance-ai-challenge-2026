@@ -1,5 +1,5 @@
 import { LOAN_POLICY_SNAPSHOT } from '../../policies/loans/2026.js';
-import { primaryButton } from '../shared/controls.js';
+
 
 export function renderRepaymentGuide() {
  const {general, incomeContingent}=LOAN_POLICY_SNAPSHOT.products;
@@ -11,7 +11,6 @@ export function renderRepaymentGuide() {
  </div>
  <p class="guide-assumption">아래 계산은 현재 금리가 유지된다고 가정해요. ICL의 미래 금리 변화는 예측하지 않아요.</p>
  <p>처음에는 등록금·생활비 모두 <strong>일반 상환</strong>으로 비교해요. 그래프 아래에서 추가 정보를 확인한 뒤 각 안의 상품을 바꿀 수 있어요.</p>
- <a class="${primaryButton}" href="#comparison-title">그래프 보기 ↓</a>
  <small class="guide-sources">2026년 2학기 기준 · <a href="https://www.kosaf.go.kr/ko/tuition.do?pg=tuition04_02_01&ttab1=0" target="_blank" rel="noreferrer">일반 상환 안내</a> · <a href="https://www.kosaf.go.kr/ko/tuition.do?pg=tuition04_01_01&ttab1=0" target="_blank" rel="noreferrer">ICL 안내</a></small>
  </section>`;
 }

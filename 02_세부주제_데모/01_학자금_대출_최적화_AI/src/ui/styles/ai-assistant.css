@@ -31,9 +31,11 @@
 .ai-facts > div { border-bottom: 1px solid var(--line); padding: 10px 0; display: grid; gap: 4px; }
 .ai-facts dt { color: var(--muted); font-size: 12px; }
 .ai-facts dd { margin: 0; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.ai-consent { padding-top: 14px; }
-.ai-consent p { color: var(--muted); font-size: 11px; line-height: 1.7; }
-.ai-consent button { width: 100%; border-radius: 7px; }
+.ai-consent { padding-block: 4px 10px; }
+.ai-consent p { color: var(--ink); font-size: 12px; line-height: 1.7; margin: 0 0 10px; }
+.ai-consent button { width: 100%; min-height: 44px; border-radius: 7px; }
+.ai-header, .ai-context, .ai-bottom { flex-shrink: 0; }
+#ai-status:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
 .ai-summary-part { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 16px; }
 .ai-summary-part h4 { font-size: 12px; color: var(--blue); margin: 0 0 6px; }
 .ai-summary-part:last-child h4 { color: var(--amber); }

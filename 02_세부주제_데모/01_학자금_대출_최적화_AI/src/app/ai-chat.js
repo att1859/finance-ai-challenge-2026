@@ -10,13 +10,14 @@ export function mountAiAssistant(appState) {
   const input = host.querySelector('#ai-question'), form = host.querySelector('#ai-form');
   const log = host.querySelector('#ai-messages'), scroll = host.querySelector('.ai-scroll');
   const overview = host.querySelector('#ai-overview');
+  const status = host.querySelector('#ai-status');
   let open = false, connection = 'unknown', healthVersion = 0, summaryTimer, notice = '', overviewHtml = '', renderedMessages = [];
   const session = createAiSession({ onChange: render });
   function render() {
     const state = session.state;
     host.querySelector('#ai-scenario').textContent = state.context?.selected.name ?? '아직 선택한 안이 없어요';
     host.querySelector('#ai-view').textContent = state.context?.view ?? '';
-    const next = renderAiOverview(state, connection);
+    const next = renderAiOverview(state);
     if (next !== overviewHtml) { overview.innerHTML = next; overviewHtml = next; }
     const hasPrefix = renderedMessages.every((value, i) => value === JSON.stringify(state.messages[i]));
     if (!hasPrefix) { log.replaceChildren(); renderedMessages = []; }
@@ -25,6 +26,10 @@ export function mountAiAssistant(appState) {
       renderedMessages.push(JSON.stringify(message));
     });
     const canChat = Boolean(state.context && state.consent && connection === 'ready' && !state.busy);
+    host.querySelector('.ai-consent').hidden = !state.context || state.consent;
+    host.querySelector('[data-ai="consent"]').disabled = connection !== 'ready' || state.busy;
+    host.querySelector('.ai-prompts').hidden = !state.context || !state.consent;
+    form.hidden = !state.context || !state.consent;
     input.disabled = !canChat;
     form.querySelector('button').disabled = !canChat || !input.value.trim();
     host.querySelectorAll('[data-question]').forEach(button => { button.disabled = !canChat; });
@@ -37,6 +42,19 @@ export function mountAiAssistant(appState) {
             : state.summary || state.messages.some(message => message.role === 'assistant')
               ? 'Gemini 응답 확인됨 · FAQ와 현재 시나리오로 답변해요.'
               : notice || (connection === 'ready' ? 'API 키 설정됨 · 첫 답변으로 연결을 확인해 주세요.' : ''));
+  }
+  async function runWithFocus(request) {
+    status.focus({ preventScroll: true });
+    let moved = false;
+    const trackFocus = event => { if (event.target !== status) moved = true; };
+    document.addEventListener('focusin', trackFocus);
+    const version = session.state.version;
+    try {
+      await request();
+      if (open && !moved && document.activeElement === status && version === session.state.version) {
+        if (!session.state.error && !input.disabled) input.focus({ preventScroll: true });
+      }
+    } finally { document.removeEventListener('focusin', trackFocus); }
   }
   function scheduleSummary() {
     clearTimeout(summaryTimer);
@@ -69,8 +87,8 @@ export function mountAiAssistant(appState) {
     if (action === 'toggle') setOpen(!open);
     if (action === 'close') setOpen(false);
     if (action === 'connection') checkConnection();
-    if (action === 'consent') { session.allow(); session.send('summary'); }
-    if (action === 'retry') session.retry();
+    if (action === 'consent') runWithFocus(() => { session.allow(); return session.send('summary'); });
+    if (action === 'retry') runWithFocus(() => session.retry());
     if (action === 'reset') { session.reset(); input.value = ''; notice = '대화를 초기화했어요.'; scheduleSummary(); render(); }
     if (button.dataset.question) { input.value = button.dataset.question; form.requestSubmit(); }
   });
@@ -87,10 +105,10 @@ export function mountAiAssistant(appState) {
     if (input.disabled || !text || text.length > 1000) return;
     input.value = ''; notice = '';
     clearTimeout(summaryTimer);
-    const pending = session.send('chat', text);
+    const pending = runWithFocus(() => session.send('chat', text));
     scroll.scrollTop = scroll.scrollHeight;
     await pending;
-    if (open) { scroll.scrollTop = scroll.scrollHeight; if (!input.disabled) input.focus({ preventScroll: true }); }
+    if (open) scroll.scrollTop = scroll.scrollHeight;
   });
   render();
   return {

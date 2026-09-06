@@ -3,6 +3,33 @@ import assert from 'node:assert/strict';
 import { createAiSession } from '../../src/app/ai-session.js';
 const response = (version, answer = '설명') => ({ ok: true, json: async () => ({ contextVersion: version, answer, summary: '요약', benefits: [], cautions: [] }) });
 
+test('HTML·빈 응답·잘못된 JSON은 안내로 바꾸고 재시도하면 질문 중복 없이 복구한다', async () => {
+  for (const raw of ['<html>Bad Gateway</html>', '', '{broken', 'null', '[]']) {
+    let calls = 0;
+    const session = createAiSession({ request: async body => ++calls === 1
+      ? new Response(raw, { status: 502 }) : response(body.contextVersion) });
+    session.setContext({ selected: 'A' }); session.allow();
+    await session.send('chat', '생활비를 설명해줘');
+    assert.equal(session.state.error, 'AI 답변을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.');
+    assert.equal(session.state.busy, false);
+    await session.retry();
+    assert.equal(session.state.error, '');
+    assert.deepEqual(session.state.messages.map(item => item.role), ['user', 'assistant']);
+  }
+});
+
+test('응답 본문 읽기 중 중단과 네트워크 실패도 기존 안내를 유지한다', async () => {
+  for (const [error, message] of [
+    [new DOMException('aborted', 'AbortError'), '답변이 늦어지고 있어요. 다시 시도해 주세요.'],
+    [new TypeError('network'), 'AI 서버에 연결하지 못했어요. 다시 시도해 주세요.'],
+  ]) {
+    const session = createAiSession({ request: async () => ({ json: async () => { throw error; } }) });
+    session.setContext({ selected: 'A' }); session.allow();
+    await session.send('summary');
+    assert.equal(session.state.error, message);
+  }
+});
+
 test('동의 전에는 호출하지 않고 조건 변경 전의 늦은 답변을 버린다', async () => {
   const pending = [];
   const session = createAiSession({ request: body => new Promise(resolve => pending.push({ body, resolve })) });

@@ -1,7 +1,7 @@
 import { beginEligibility, updateEligibilityDraft, completeEligibility, createEligibilityWorkflow, ALL_PRODUCT_CONTEXT } from './eligibility-draft.js';
 import { renderEligibilityWorkflow, renderEligibilityGraphStatus } from '../ui/sections/eligibility-workflow.js';
 import { commonConfirmations } from '../ui/sections/eligibility-intake.js';
-import { applyControls } from '../ui/shared/controls.js';
+import { applyControls, bindChoiceMenu, focusControl } from '../ui/shared/controls.js';
 import { mountAiAssistant } from './ai-chat.js';
 import { renderRepaymentGuide } from '../ui/sections/repayment-guide.js';
 import { selectableMonths, nearestMonth, moveSelectedMonth } from './chart-selection.js';
@@ -234,7 +234,7 @@ function recalculateResultOption(name, value, message) {
     } else if (preservePosition) {
       window.scrollTo({top: previousScroll, behavior: 'instant'});
     }
-    nextField?.focus({ preventScroll: true });
+    focusControl(nextField);
     const status = document.querySelector('#condition-update-status');
     if (status) status.textContent = message;
   });
@@ -270,7 +270,7 @@ function bindResultEvents() {
   const restore = (name, value) => {
     renderResults();
     const controls = [...document.querySelectorAll('[name]')];
-    controls.find(el => el.name === name && ((el.type !== 'radio' && el.getAttribute('role') !== 'radio') || el.value === value))?.focus({ preventScroll: true });
+    focusControl(controls.find(el => el.name === name && ((el.type !== 'radio' && el.getAttribute('role') !== 'radio') || el.value === value)));
   };
   document.querySelectorAll('[name^="comparison-"], [name="condition-view"]').forEach(input => input.addEventListener('change', event => {
     const { name, value } = event.target;
@@ -360,26 +360,11 @@ function refreshEligibility(name, value) {
 function bindEligibilityEvents() {
   const form=document.querySelector('#eligibility-form');
   if(!form) return;
-  form.querySelectorAll('.eligibility-select').forEach(menu=>{
-    const options=[...menu.querySelectorAll('[role="option"]')];
-    menu.addEventListener('click',event=>{
-      const option=event.target.closest('[data-choice-value]');
-      if(!option) return;
-      const name=menu.dataset.choice,value=option.dataset.choiceValue;
-      updateEligibilityDraft(state,{[name]:value});
-      refreshEligibility(name,value);
-    });
-    menu.addEventListener('keydown',event=>{
-      if(event.key==='Escape') {event.preventDefault();menu.open=false;menu.querySelector('summary').focus();}
-      if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)) {
-        event.preventDefault();menu.open=true;
-        const index=options.indexOf(document.activeElement);
-        const next=event.key==='Home'?0:event.key==='End'?options.length-1:index<0?0:(index+(event.key==='ArrowDown'?1:-1)+options.length)%options.length;
-        options[next]?.focus();
-      }
-    });
-    menu.addEventListener('focusout',()=>requestAnimationFrame(()=>{if(!menu.contains(document.activeElement))menu.open=false;}));
-  });
+  form.querySelectorAll('.eligibility-select').forEach(menu => bindChoiceMenu(menu, value => {
+    const name = menu.dataset.choice;
+    updateEligibilityDraft(state, {[name]:value});
+    refreshEligibility(name,value);
+  }));
   form.addEventListener('change',event=>{
     const field=event.target, {name,value,checked}=field;
     if(!name) return;

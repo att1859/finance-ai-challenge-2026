@@ -15,7 +15,8 @@ export function renderAiAssistant() {
         <div id="ai-messages" role="log" aria-label="SLOW 봇 대화" aria-live="polite" aria-relevant="additions"></div>
       </div>
       <div class="ai-bottom">
-        <p id="ai-status" role="status" aria-live="polite"></p>
+        <p id="ai-status" role="status" aria-live="polite" tabindex="-1"></p>
+        <div class="ai-consent" hidden><p id="ai-consent-note">AI 설명을 시작하면 선택·비교 시나리오의 금액, 상품, 자격 상태와 질문·최근 대화를 Google Gemini에 전달합니다. SLOW는 대화를 저장하지 않으며, Google의 처리는 해당 서비스 정책을 따릅니다.</p><button type="button" class="${primaryButton}" data-ai="consent" aria-describedby="ai-consent-note" disabled>동의하고 AI 설명 시작</button></div>
         <div class="ai-actions"><button class="${quietButton}" type="button" data-ai="retry" hidden>다시 시도</button><button class="${quietButton}" type="button" data-ai="reset" hidden>대화 초기화</button><button class="${quietButton}" type="button" data-ai="connection">연결 확인</button></div>
         <div class="ai-prompts"><button class="${quietButton}" type="button" data-question="현재 중시, 균형, 미래 중시는 어떻게 다른가요?">세 시나리오 차이</button><button class="${quietButton}" type="button" data-question="균형이면 알바를 안 해도 되나요? 내 생활비 부족분도 설명해 주세요.">균형이면 알바 0시간?</button><button class="${quietButton}" type="button" data-question="일반 상환과 취업 후 상환은 어떻게 다른가요?">상환 방식 차이</button></div>
         <form id="ai-form"><label class="sr-only" for="ai-question">SLOW 봇에게 질문하세요</label><textarea id="ai-question" rows="2" maxlength="1000" placeholder="SLOW 봇에게 질문하세요" aria-describedby="ai-input-note"></textarea><button class="${primaryButton} ai-send" type="submit" aria-label="질문 보내기">${icon('arrow')}</button></form>
@@ -25,12 +26,12 @@ export function renderAiAssistant() {
     <button class="${primaryButton} ai-launcher" type="button" data-ai="toggle" aria-expanded="false" aria-controls="ai-panel"><span class="ai-launcher-heading">${bot}<span>SLOW 봇</span></span><span class="ai-launcher-greeting">내 시나리오의 숫자들,<br>쉽게 풀어 드릴게요.</span></button>
   </div>`;
 }
-export function renderAiOverview(state, connection) {
+export function renderAiOverview(state) {
   if (!state.context) return '<div class="ai-welcome"><p class="ai-eyebrow">안녕하세요, SLOW 봇이에요</p><h3>숫자 너머의 의미를<br>함께 살펴볼까요?</h3><p>먼저 내 정보를 입력하고 시나리오를 계산해 주세요. 선택한 안의 특징과 주의점을 여기에서 설명해 드릴게요.</p></div>';
   const summary = state.summary;
   if (summary) return `<div class="ai-summary"><span class="ai-eyebrow">AI가 읽어드리는 내 선택</span><h3>선택한 안을 살펴보면</h3><p>${safe(summary.summary)}</p>${[['장점', summary.benefits], ['주의점', summary.cautions]].map(([label, items]) => `<div class="ai-summary-part"><h4>${label}</h4><ul>${items.map(item => `<li>${safe(item)}</li>`).join('')}</ul></div>`).join('')}</div>`;
   return `<div class="ai-summary"><span class="ai-eyebrow">계산 결과 미리보기 · AI 생성 아님</span><h3>이번 학기, 이렇게 달라져요</h3><dl class="ai-facts">${state.context.selected.facts.filter((_, index) => [0,1,4].includes(index)).map(({label,value}) => `<div><dt>${safe(label)}</dt><dd>${safe(value)}</dd></div>`).join('')}</dl>
-    ${!state.consent ? `<div class="ai-consent"><p>AI 설명을 시작하면 선택·비교 시나리오의 금액, 상품, 자격 상태와 질문·최근 대화를 Google Gemini에 전달합니다. SLOW는 대화를 저장하지 않으며, Google의 처리는 해당 서비스 정책을 따릅니다.</p><button type="button" class="${primaryButton}" data-ai="consent" ${connection !== 'ready' ? 'disabled' : ''}>동의하고 AI 설명 시작</button></div>` : '<p class="ai-help">선택한 안의 장점과 주의점을 짧게 정리해 드릴게요.</p>'}
+    ${state.consent ? '<p class="ai-help">선택한 안의 장점과 주의점을 짧게 정리해 드릴게요.</p>' : ''}
     </div>`;
 }
 export function renderAiMessage(message) {

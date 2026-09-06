@@ -31,7 +31,13 @@ export function createAiSession({ request = (body, signal) => fetch('/api/chat',
       const response = await request({ mode, contextVersion: version, context: state.context,
         messages: mode === 'chat' ? state.messages.map(({ role, content }) => ({ role, content })) : [],
       }, currentController.signal);
-      const data = await response.json();
+      let data;
+      try { data = await response.json(); }
+      catch (error) {
+        if (error.name === 'AbortError' || error instanceof TypeError) throw error;
+        throw new Error('AI 답변을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.');
+      }
+      if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('AI 답변을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.');
       if (id !== serial || version !== state.version) return;
       if (!response.ok) throw new Error(data.error?.message || 'AI 연결을 확인해 주세요.');
       if (data.contextVersion !== version) throw new Error('조건이 바뀌었어요. 다시 시도해 주세요.');

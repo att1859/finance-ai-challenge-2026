@@ -111,7 +111,7 @@ tbody th small { display: block; color: var(--muted); font-weight: 400; }
 .safety-deficit b, .safety-at-risk b { color: #ffb19f; }
 .detail-metrics { display: grid; grid-template-columns: repeat(4, 1fr); border-block: 1px solid #374651; }
 .detail-metrics > div { min-width: 0; padding: 23px 18px; }
-.detail-metrics > div + div { border-left: 1px solid #374651; }
+
 .detail-metrics > div > span { display: block; min-height: 3em; color: #aeb8be; font-size: .76rem; }
 .detail-metrics strong { display: block; margin: 5px 0 6px; font-family: var(--font-display); font-size: clamp(1.35rem, 2.4vw, 2.1rem); letter-spacing: -.04em; }
 .detail-metrics strong small { margin-left: 3px; font-family: var(--font-body); font-size: .72rem; }
@@ -153,7 +153,7 @@ tbody th small { display: block; color: var(--muted); font-weight: 400; }
 .ten-year-ledger dl > div + div { border-left: 1px solid #43515b; }
 .ten-year-ledger dt { color: #aeb8be; font-size: .72rem; }
 .ten-year-ledger dd { margin: 4px 0 0; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; }
-.execution-ledger, .policy-basis { margin-top: 18px; border-bottom: 1px solid #43515b; }
+.execution-ledger, .policy-basis { margin-top: 24px; }
 .execution-ledger summary, .policy-basis summary { min-height: 52px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; color: #d5dadd; font-size: .82rem; font-weight: 700; list-style: none; }
 .execution-ledger summary::-webkit-details-marker, .policy-basis summary::-webkit-details-marker { display: none; }
 .execution-ledger[open] summary svg, .policy-basis[open] summary svg { transform: rotate(180deg); }
@@ -359,7 +359,7 @@ tbody th small { display: block; color: var(--muted); font-weight: 400; }
 .loan-extra-options > summary { min-height:48px; padding-top:12px; cursor:pointer; font-weight:700; }
 .loan-extra-options .result-subsection > small { display:block; margin-top:8px; color:var(--muted); }
 .choice-control { border-radius:var(--radius-control); }
-.choice-control > span, .choice-control > button { border-radius:var(--seed-radius-r1); }
+
 .scenario-options { border:0; gap:12px; overflow:visible; }
 .scenario-option, .scenario-option + .scenario-option { border:1px solid var(--line-strong); border-radius:10px; }
 .scenario-option.is-selected { box-shadow:inset 0 0 0 1px var(--ink); border-color:var(--ink); }
@@ -426,7 +426,7 @@ input[type="radio"]:disabled, input[type="checkbox"]:disabled { opacity:.45; cur
  .composition-ledger tbody th { font-size:16px; background:#182936; }
 }
 
-:is(.selected-detail,.loan-options) :is(small,li,summary,a,em,dt,dd,td,th,caption) { font-size:14px !important; }
+:is(.selected-detail,.loan-options) :is(small,li,a,em,dt,dd,td,th,caption) { font-size:14px !important; }
 :is(.selected-detail,.loan-options) p { font-size:16px !important; }
 .loan-options .condition-check strong { font-size:14px; }
 .selected-detail .source-grid article > span { font-size: 14px; }
@@ -500,4 +500,45 @@ input[type="radio"]:disabled, input[type="checkbox"]:disabled { opacity:.45; cur
  .eligibility-workflow-heading { align-items:flex-start; flex-direction:column; gap:16px; }
  .eligibility-workflow-heading h3 { font-size:22px; }
  .eligibility-completion button { width:100%; }
+}
+
+/* Result hierarchy: existing surfaces, consistent reading and disclosure rhythm. */
+.chart-toolbar > strong { font-size:20px; }
+.chart-condition { font-size:14px; font-weight:400; margin:12px 0 8px; }
+#metric-note, .timeline-boundary, .chart-assumptions > p { max-width:720px; font-size:16px; line-height:1.7; color:var(--ink-2); }
+#metric-note { margin:8px 0; }
+.chart-assumptions { margin:8px 0 20px; }
+.chart-assumptions > summary { display:flex; align-items:center; gap:8px; min-height:44px; width:fit-content; font-size:16px; color:var(--ink-2); cursor:pointer; }
+.chart-assumptions > summary::before { content:'▸'; }
+.chart-assumptions[open] > summary::before { content:'▾'; }
+.chart-assumptions > summary::marker { content:''; }
+.chart-assumptions > summary::-webkit-details-marker { display:none; }
+.timeline-boundary { margin:8px 0 16px; }
+.repayment-completion { display:flex; flex-wrap:wrap; gap:8px 24px; margin:16px 0 24px; font-size:16px; }
+.timeline-readout { text-align:left; font-size:16px; line-height:1.65; }
+.timeline-readout > strong { display:block; font-size:16px; font-weight:600; margin-bottom:16px; }
+.timeline-readout > div { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); justify-content:start; gap:12px 24px; margin-top:12px; font-size:16px; }
+.timeline-readout > .scenario-work-hours { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.timeline-readout b, .timeline-readout p strong { font-weight:400; }
+.timeline-readout p { margin:12px 0; font-size:16px; }
+.timeline-readout > small { display:block; max-width:720px; margin-top:20px; color:var(--ink-2); font-size:14px; line-height:1.65; }
+.selected-detail .detail-metrics { gap:16px; }
+.selected-detail .detail-metrics > div { border:0; }
+.selected-detail .detail-metrics + p { margin-top:24px; }
+.selected-detail > p { margin-bottom:24px; }
+.selected-detail > .detail-disclosure { padding:24px 0; border-top:1px solid #52616b; }
+.selected-detail .detail-disclosure > summary, .selected-detail .execution-ledger > summary { font-size:21px; line-height:1.5; min-height:48px; gap:16px; font-weight:600; }
+.selected-detail .detail-disclosure[open] > summary, .selected-detail .execution-ledger[open] > summary { margin-bottom:20px; }
+.selected-detail .execution-ledger { border-bottom:0; }
+.eligibility-select { min-width:0; font-size:16px; }
+.eligibility-select > summary { font-weight:400; font-size:16px; }
+.eligibility-select [role="option"] { min-height:44px; }
+.eligibility-select [role="option"]:disabled, .eligibility-select summary[aria-disabled="true"] { color:var(--muted); background:var(--paper-2); cursor:not-allowed; }
+.eligibility-select summary:focus-visible, .eligibility-select [role="option"]:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+select[data-enhanced][hidden] { display:none; }
+.required-mark { color:var(--rose); font-style:normal; font-weight:700; margin-left:4px; }
+@media(max-width:580px) {
+ .timeline-readout > div, .timeline-readout > .scenario-work-hours { grid-template-columns:1fr; gap:8px; }
+ .selected-detail .detail-metrics { gap:8px; }
+ .repayment-completion { flex-direction:column; }
 }

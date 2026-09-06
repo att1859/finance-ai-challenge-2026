@@ -1,3 +1,5 @@
+import { requiredMark } from '../shared/controls.js';
+import { eligibilityRequirements } from '../../app/eligibility-draft.js';
 import { escapeHtml as safe } from '../shared/escape-html.js';
 export const COMMON_LABELS = {
  SUPPORTED_INSTITUTION:'학자금대출 지원 대상 대학에 재학·입학 예정입니다',
@@ -20,7 +22,7 @@ function persistentQuestion(name,label,value,reason='') {
 }
 function choice(name,label,value,options,error='') {
  const selected=options.find(([id])=>id===value);
- return `<div class="field" id="elig-${name}"><span id="label-${name}">${label} <em class="required-label">필수</em></span><details class="eligibility-select" data-choice="${name}"><summary name="${name}" ${error?`aria-invalid="true" aria-describedby="error-${name}"`:''} aria-labelledby="label-${name} value-${name}"><span id="value-${name}">${selected?selected[1]:label+' 선택'}</span><span aria-hidden="true">⌄</span></summary><div role="listbox" aria-labelledby="label-${name}">${options.map(([id,text])=>`<button type="button" role="option" aria-selected="${id===value}" data-choice-value="${id}">${text}</button>`).join('')}</div></details>${error?`<small id="error-${name}" class="eligibility-error" role="alert">${safe(error)}</small>`:''}</div>`;
+ return `<div class="field" id="elig-${name}"><span id="label-${name}">${label} ${requiredMark}</span><details class="eligibility-select" data-choice="${name}"><summary aria-haspopup="listbox" aria-expanded="false" name="${name}" ${error?`aria-invalid="true" aria-describedby="error-${name}"`:''} aria-labelledby="label-${name} value-${name}"><span id="value-${name}">${selected?selected[1]:label+' 선택'}</span><span aria-hidden="true">⌄</span></summary><div role="listbox" aria-required="true" aria-labelledby="label-${name}">${options.map(([id,text])=>`<button type="button" role="option" tabindex="-1" aria-selected="${id===value}" data-choice-value="${id}">${text}</button>`).join('')}</div></details>${error?`<small id="error-${name}" class="eligibility-error" role="alert">${safe(error)}</small>`:''}</div>`;
 }
 export function commonConfirmations(profile, scenario) {
  const general=Boolean(scenario.loan.repayments.general),icl=Boolean(scenario.loan.repayments.incomeContingent);
@@ -36,6 +38,7 @@ export function commonConfirmations(profile, scenario) {
 }
 export function renderEligibilityIntake(state,scenario) {
  const p=state.profile;
+ const ageRequired=eligibilityRequirements(p,false).some(item=>item.name==='age');
  const common=commonConfirmations(p,scenario);
  const hasAgeFailure=common.some(f=>f.name.startsWith('age') && f.value===false);
  const creditReason=!p.studentStatus?'학적을 먼저 선택해 주세요.':p.studentStatus!=='continuing'?'입학 시 직전 학기 학점 기준 제외':p.academicLevel==='graduate'?'대학원생은 이수학점 기준 제외':p.isDisabled===true?'장애학생은 이수학점 기준 제외':'';
@@ -58,6 +61,6 @@ export function renderEligibilityIntake(state,scenario) {
  ${persistentQuestion('hasEmergencyLivelihood','9구간 긴급생계곤란 예외에 해당하나요?',p.hasEmergencyLivelihood,String(p.supportBracket)==='9'&&p.academicLevel==='undergraduate'?'':'학부 9구간일 때 확인')}</div><p>지원구간은 생활비 대출 자격에 사용합니다. 이자면제는 별도 조건이며, 혜택 기본값은 아니요이며, 해당하는 경우 네로 변경해 주세요. 일반 상환에는 ICL 이자면제를 적용하지 않으며, 입력한 정보는 ICL 선택 시에도 사용합니다.</p></fieldset></fieldset>
  ${state.resultSelections.hasExistingLoan && (p.existingLoanProduct??p.loanType)==='income-contingent'?`<fieldset><legend>기존 ICL 대출의 이자면제</legend><p>이번 학기 혜택과 별도로, 기존 대출 잔액에 앞으로 적용할 면제를 확인합니다.</p><div class="form-grid">${tri('existingExemptionEligible','기존 대출 실행 당시 이자면제 대상이었나요?',p.existingExemptionEligible)}${tri('existingExemptionActive','기존 대출은 현재 이자면제가 적용되고 있나요?',p.existingExemptionActive)}</div></fieldset>`:''}
  <fieldset class="common-confirmations"><legend>2. 공통 요건 확인</legend><label class="common-check check-all"><input type="checkbox" name="confirmAll" data-confirm-all ${common.filter(f=>!f.disabled).every(f=>f.value===true)?'checked':''}><span>모두 체크</span></label><p>맞는 항목을 체크해 주세요. 개별 체크를 해제하면 미충족으로 반영되며, 체크하지 않은 항목도 마지막 확인을 거쳐 미충족으로 제출할 수 있습니다.</p><div class="common-list">${common.map(f=>`<label class="common-check" id="elig-${f.name}"><input type="checkbox" name="${f.name}" data-common-check ${f.disabled?'disabled':''} ${f.value===true?'checked':''}><span>${safe(f.label)}</span></label>`).join('')}</div></fieldset>
- ${hasAgeFailure?`<div class="form-grid"><label class="field" id="elig-age"><span>예외 확인을 위한 현재 만 나이</span><input type="number" name="age" min="0" max="100" value="${p.age??''}" ${state.eligibility.errors.age?'aria-invalid="true" aria-describedby="error-age"':''}>${state.eligibility.errors.age?`<small class="eligibility-error" id="error-age" role="alert">${safe(state.eligibility.errors.age)}</small>`:''}</label>${p.ageGeneralConfirmed===false?tri('enteredByAge55AndContinuouslyEnrolled','만 55세 이전 입학 후 중단 없이 학업을 이어가고 있나요?',p.enteredByAge55AndContinuouslyEnrolled):''}${p.ageIclUndergraduateConfirmed===false?tri('qualifyingEmployedUndergraduateProgram','ICL 만 45세 이하 재직자 특별전형 등 연령 예외 요건에 해당하나요?',p.qualifyingEmployedUndergraduateProgram):''}</div>`:''}
+ ${hasAgeFailure?`<div class="form-grid"><label class="field" id="elig-age"><span>예외 확인을 위한 현재 만 나이 ${ageRequired?requiredMark:''}</span><input type="number" name="age" aria-required="${ageRequired}" min="0" max="100" value="${p.age??''}" ${state.eligibility.errors.age?'aria-invalid="true" aria-describedby="error-age"':''}>${state.eligibility.errors.age?`<small class="eligibility-error" id="error-age" role="alert">${safe(state.eligibility.errors.age)}</small>`:''}</label>${p.ageGeneralConfirmed===false?tri('enteredByAge55AndContinuouslyEnrolled','만 55세 이전 입학 후 중단 없이 학업을 이어가고 있나요?',p.enteredByAge55AndContinuouslyEnrolled):''}${p.ageIclUndergraduateConfirmed===false?tri('qualifyingEmployedUndergraduateProgram','ICL 만 45세 이하 재직자 특별전형 등 연령 예외 요건에 해당하나요?',p.qualifyingEmployedUndergraduateProgram):''}</div>`:''}
  <a href="https://www.kosaf.go.kr/ko/tuition.do?pg=tuition05_07" target="_blank" rel="noreferrer">한국장학재단 이자면제 기준</a></section>`;
 }

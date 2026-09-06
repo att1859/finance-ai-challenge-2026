@@ -71,7 +71,7 @@ function renderRecommendationExplanation(candidate, scenario) {
 
   return `<section class="recommendation-explanation" aria-labelledby="recommendation-reason-title"><div><h4 id="recommendation-reason-title">${title}</h4><p>${workEffect}</p></div><div>
     ${reasons.length ? `<ul class="reason-list">${reasons.map(({ message }) => `<li>${safe(message)}</li>`).join('')}</ul>` : '<p class="reason-empty">다른 구성의 대출액과 상환부담도 함께 비교해 보세요.</p>'}
-    ${missing.length ? `<p class="current-value-notice"><strong>추천 전에 확인할 정보</strong> ${safe(missing.join(', '))}. 그래프 아래 ‘내 조건으로 상품 확인’에서 입력하면 다시 계산됩니다.</p>` : ''}
+    ${missing.length ? `<p class="current-value-notice"><strong>추천 전에 확인할 정보</strong> ${safe(missing.join(', '))}. 그래프 아래 ‘추가정보 입력’에서 입력하면 다시 계산됩니다.</p>` : ''}
     ${notices.length ? `<h5 class="notice-heading">선택 전에 확인하세요</h5><ul class="warning-list">${notices.map((message) => `<li>${safe(message)}</li>`).join('')}</ul>` : ''}
   </div></section>`;
 }

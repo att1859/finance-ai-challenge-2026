@@ -5,8 +5,6 @@
   .form-section { grid-template-columns: 210px 1fr; }
   .form-grid.three { grid-template-columns: repeat(2,1fr); }
   .detail-metrics { grid-template-columns: repeat(2,1fr); }
-  .detail-metrics > div:nth-child(3) { border-left: 0; border-top: 1px solid #374651; }
-  .detail-metrics > div:nth-child(4) { border-top: 1px solid #374651; }
   .source-grid { grid-template-columns: repeat(2,1fr); }
   .source-grid .assumption { grid-column: 1/-1; }
 }
@@ -112,7 +110,6 @@
   .hero h1 { font-size: 2.4rem; }
   .comparison-figure, .selected-detail { margin-left: -15px; margin-right: -15px; }
   .detail-metrics { grid-template-columns: 1fr; }
-  .detail-metrics > div + div { border-left: 0; border-top: 1px solid #374651; }
   .bar-line { grid-template-columns: 80px minmax(0,1fr); }
   .reference-marker { left: calc(80px + 9px + var(--left) * ((100% - 89px) / 100)); }
 }
