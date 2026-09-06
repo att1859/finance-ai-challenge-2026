@@ -131,3 +131,5 @@ Vercel에서는 api/chat.js와 api/health.js가 공통 createApiHandler({ hostin
 공통 선택 메뉴는 ui/shared/controls.js의 bindChoiceMenu가 지원구간과 전체 드롭다운의 방향키·Home/End·Escape·선택 동작을 담당한다. applyControls는 기존 select를 폼 값·change 이벤트의 단일 경계로 보존하고 화면에 eligibility-select 메뉴를 연결한다. 선택값을 별도 앱 상태로 복제하지 않는다. focusControl은 재렌더링 후 기존 제어의 시각적 메뉴로 포커스를 복원한다. 필수 별표는 requiredMark를 공유하고 조건부 나이는 eligibilityRequirements의 실제 검증 목록을 재사용한다.
 
 AI 패널 동의/복구 보완(2026-09-07): ai-assistant.js의 기존 ai-bottom에 정적 동의 영역을 두고 ai-chat.js가 세션 consent/context와 연결 상태에 따라 동의·질문 영역을 전환한다. 별도 동의 상태나 패널은 추가하지 않는다. 요청 시 기존 ai-status로 포커스를 이동하고 focusin·맥락 버전·열림 상태를 확인해 완료 시 사용자 포커스를 덮어쓰지 않는다. ai-session.js는 비 JSON 응답과 잘못된 최상위 JSON을 일반 오류 안내로 정규화하며, AbortError/TypeError는 기존 중단/연결 안내를 유지한다. tests/unit/ai-session.test.js에서 비정상 응답과 재시도 복구를 검증한다.
+
+scenario-comparison.js의 renderChartContext가 막대와 선 그래프의 제목·조건·지표 설명·가정·상환 완료를 포함한 범례·단위를 공통 렌더링한다. 별도 완료 시점 행과 중복 범례는 제거했으며 계산 원장과 시나리오 상태는 그대로 재사용한다. 계산 기준과 가정의 펼침 상태는 기존 data-detail 보존 경계에 연결한다.
