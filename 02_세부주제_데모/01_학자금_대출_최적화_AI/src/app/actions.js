@@ -21,7 +21,8 @@ export function applyPlan(state, plan) {
     const available = recommendation.candidates.some(({ id }) => id === currentSelection);
     if (!available && !state.customScenarios?.some(s => s.id === scenarioId)) {
       state.resultSelections.candidateByScenario[scenarioId]
-        = recommendation.recommendedCandidateIds[0]
+        = recommendation.candidates.find(({ id }) => id === 'general:general')?.id
+        ?? recommendation.recommendedCandidateIds[0]
         ?? recommendation.pendingCandidateIds[0]
         ?? recommendation.candidates[0]?.id
         ?? null;

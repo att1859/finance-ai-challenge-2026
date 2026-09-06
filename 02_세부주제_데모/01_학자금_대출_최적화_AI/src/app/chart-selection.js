@@ -7,6 +7,8 @@ export function selectableMonths(state) {
     for(let m=s.timeline.graduationMonth;m<=end;m+=12) months.add(m);
     months.add(s.timeline.graduationMonth);
     months.add(s.timeline.employmentMonth);
+    if (s.timeline.repaymentEndMonth != null) months.add(s.timeline.repaymentEndMonth);
+    for(let m=s.timeline.employmentMonth;m<=end;m+=12) months.add(m);
     s.loan.componentRepaymentSchedules.forEach(component => {
       months.add(component.repaymentStartMonth);
       months.add(component.repaymentEndMonth);

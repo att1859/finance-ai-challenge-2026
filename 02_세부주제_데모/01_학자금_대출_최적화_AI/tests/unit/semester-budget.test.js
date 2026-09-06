@@ -1,3 +1,5 @@
+import { createInitialState } from '../../src/app/store.js';
+import { applyPlan, selectLoanCandidate } from '../../src/app/actions.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { calculateNoLoanComparison } from '../../src/domain/funding/no-loan-comparison.js';
@@ -96,3 +98,40 @@ test('상환 기준기간은 일반 원금 상환 시작 뒤이며 상품별 선
  const delayed=calculatePlan({...profile,loanType:'general'},{employmentDelayMonths:24}).currentScenarios[0];
  assert.equal(delayed.timeline.repaymentReferenceMonth,72);
 });
+
+
+test('잔액 그래프는 10년 이후도 해마다 결산하고 각 안의 완납까지 확장한다', () => {
+ const plan=calculatePlan({...DEFAULT_PROFILE,loanType:'income-contingent',salary:270,tuitionPerSemester:420,tuitionContributionPerSemester:200,currentMonthlyIncome:60,desiredCollegeSpend:80});
+ const [present,balance]=plan.currentScenarios;
+ assert.ok(present.timeline.endMonth>168);
+ assert.ok(present.timeline.repaymentEndMonth>balance.timeline.repaymentEndMonth);
+ for(const s of [present,balance]) {
+  assert.equal(s.timeline.rows[s.timeline.repaymentEndMonth].balance,0);
+  assert.equal(s.timeline.rows.at(-1).balance,0);
+  const start=s.timeline.employmentMonth;
+  assert.ok(s.timeline.rows[start+132].balance<s.timeline.rows[start+120].balance);
+ }
+ const general=calculatePlan({...DEFAULT_PROFILE,loanType:'general'}).currentScenarios[0];
+ assert.equal(general.timeline.rows.at(-1).balance,0);
+});
+
+test('소득 부족으로 완납하지 못하면 관찰 한도를 명시하고 잔액을 보존한다', () => {
+ const s=calculatePlan({...DEFAULT_PROFILE,loanType:'income-contingent',salary:0}).currentScenarios[0];
+ assert.equal(s.timeline.projectionLimited,true);
+ assert.equal(s.timeline.repaymentEndMonth,null);
+ assert.ok(s.timeline.rows.at(-1).balance>0);
+ assert.ok(s.timeline.endMonth>=s.timeline.employmentMonth+600);
+});
+
+
+test('첫 결과는 일반+일반으로 시작하고 사용자가 바꾼 상품은 유지한다', () => {
+ const state=createInitialState();
+ applyPlan(state,calculatePlan(state.profile));
+ assert.ok(Object.values(state.resultSelections.candidateByScenario).every(id=>id==='general:general'));
+ selectLoanCandidate(state,'balance','income-contingent:income-contingent');
+ applyPlan(state,calculatePlan(state.profile));
+ assert.equal(state.resultSelections.candidateByScenario.balance,'income-contingent:income-contingent');
+ assert.equal(state.resultSelections.candidateByScenario['maximum-use'],'general:general');
+});
+
+

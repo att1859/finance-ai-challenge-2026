@@ -7,11 +7,8 @@ export function buildScenarioTimeline(scenario, endMonth) {
   const employmentMonth = graduationMonth + stress.employmentDelayMonths;
   const general = loan.repayments.general;
   const icl = loan.repayments.incomeContingent;
-  const nextYear = icl?.calculationPossible ? calculateIncomeContingentCurrentValueComparison({
-    ...icl.policy,
-    balanceAtEmployment: icl.currentValueComparison.endingBalance,
-    annualGrossIncome: scenario.adjustedSalary * 12,
-  }).annualSchedule[0] : null;
+  const projection = scenarioRepaymentProjection(scenario);
+  const annualSchedule = projection.annualSchedule;
   const generalRows = new Map((general?.monthlyRepaymentSchedule ?? []).map(row => [row.globalMonth, row]));
   const principalStart = general?.monthlyRepaymentSchedule.find(row => row.principalPayment > 0)?.globalMonth;
   const repaymentReferenceMonth = Math.max(employmentMonth, principalStart ?? employmentMonth);
@@ -30,10 +27,10 @@ export function buildScenarioTimeline(scenario, endMonth) {
         balance += icl.disbursementSchedule.reduce((sum, item) => sum + (item.month <= month ? item.principal * (1 + rate) ** (month - item.month) : 0), 0);
       } else {
         const elapsed = month - employmentMonth;
-        const year = icl.currentValueComparison.annualSchedule[Math.floor(elapsed / 12)] ?? nextYear;
+        const year = annualSchedule[Math.floor(elapsed / 12)];
         // Only annual balances exist after employment. Carry the latest settled
         // balance until the next annual settlement, rather than interpolate it.
-        balance += year?.openingBalance ?? icl.currentValueComparison.endingBalance;
+        balance += year?.openingBalance ?? annualSchedule.at(-1)?.closingBalance ?? 0;
         repayment += year ? year.mandatoryRepayment / 12 : 0;
       }
     }
@@ -47,7 +44,7 @@ export function buildScenarioTimeline(scenario, endMonth) {
     ? selected.reduce((sum, row) => sum + row[key], 0) / selected.length : null;
   const firstYear = rows.filter(row => row.month >= repaymentReferenceMonth && row.month < repaymentReferenceMonth + 12);
   return {
-    graduationMonth, employmentMonth, endMonth, repaymentReferenceMonth, rows: rows.slice(0, endMonth + 1),
+    graduationMonth, employmentMonth, endMonth, repaymentReferenceMonth, repaymentEndMonth: projection.repaymentEndMonth, projectionLimited: projection.projectionLimited, rows: rows.slice(0, endMonth + 1),
     summary: {
       collegeLiving: scenario.calculationPossible ? scenario.possibleCollegeSpend : null,
       collegeAfterRepayment: average(rows.filter(row => row.month < funding.fundingMonths), 'living'),
@@ -56,4 +53,22 @@ export function buildScenarioTimeline(scenario, endMonth) {
       careerRepayment: average(firstYear, 'repayment'),
     },
   };
+}
+
+// The fixed 10-year recommendation ledger stays separate from payoff visualization.
+export function scenarioRepaymentProjection(scenario) {
+  const employment = scenario.funding.studyMonths + scenario.stress.employmentDelayMonths;
+  const general = scenario.loan.repayments.general;
+  const icl = scenario.loan.repayments.incomeContingent;
+  const generalEnd = (general?.monthlyRepaymentSchedule ?? []).filter(r => r.totalPayment > 0).at(-1)?.globalMonth;
+  const annualSchedule = icl?.calculationPossible ? calculateIncomeContingentCurrentValueComparison({
+    ...icl.policy, balanceAtEmployment: icl.balanceAtEmployment,
+    annualGrossIncome: scenario.adjustedSalary * 12, comparisonYears: 50,
+  }).annualSchedule : [];
+  const paidYear = annualSchedule.findIndex(r => r.closingBalance <= 1e-8);
+  const projectionLimited = Boolean(icl && paidYear < 0 && icl.principal > 0);
+  const iclEnd = icl?.principal > 0 ? employment + (paidYear < 0 ? 50 : paidYear + 1) * 12 : 0;
+  const end = Math.max(generalEnd == null ? 0 : generalEnd + 1, iclEnd);
+  return { annualSchedule, projectionLimited, repaymentEndMonth: projectionLimited ? null : end,
+    endMonth: Math.max(employment + 12, end + (projectionLimited ? 0 : 12)) };
 }

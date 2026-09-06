@@ -1,6 +1,5 @@
 import { quietButton } from '../shared/seed-controls.js';
 import { selectedLoanCandidate } from '../../app/selectors.js';
-import { renderLoanOptions } from './loan-options.js';
 import { renderFundingFormula } from './funding-formula.js';
 import { renderSources } from './sources.js';
 import { formatMoney, moneyHtml, signedMoney } from '../formatters/money.js';
@@ -139,13 +138,12 @@ export function renderSelectedDetail(state, scenario) {
       ${metric('이번 학기 월평균 생활비 여력', moneyOrPending(summary.collegeLiving), '이자·상환 차감 전' + delta('collegeLiving'))}
       ${metric('생활비 보완에 필요한 추가 알바', `월 약 ${Math.round(scenario.monthlyWorkHours)}<small>시간</small>`, `생활비 부족 ${formatMoney(scenario.monthlyLivingGap)} / 월 · 최저시급 단순 환산`)}
       ${metric('졸업 시 예상 대출잔액', moneyOrPending(summary.graduationBalance), '졸업할 때 남아 있는 금액' + delta('graduationBalance'))}
-      ${metric('상환 기준기간 월평균 부담', moneyOrPending(summary.careerRepayment), '취업 후 상환은 연간액의 월평균 환산 · 실제 월 청구액 아님' + delta('careerRepayment'))}
-      ${metric('상환 후 남는 월소득', moneyOrPending(summary.careerLiving), `현재부터 ${scenario.timeline.repaymentReferenceMonth}~${scenario.timeline.repaymentReferenceMonth+12}개월 · 예상 월소득 − 상환부담` + delta('careerLiving'))}
+      ${metric('상환 기준기간 월평균 부담', moneyOrPending(summary.careerRepayment), (loan.repayments.incomeContingent ? 'ICL은 연간액의 월평균 환산 · 실제 월 청구액 아님' : '일반 상환 약정 월납입액 기준') + delta('careerRepayment'))}
+      ${metric('상환기간 생활비', moneyOrPending(summary.careerLiving), `현재부터 ${scenario.timeline.repaymentReferenceMonth}~${scenario.timeline.repaymentReferenceMonth+12}개월 · 예상 월소득 − 상환부담` + delta('careerLiving'))}
     </div>
     <p class="tuition-resources">이번 학기 등록금 대출 ${formatMoney(scenario.tuitionFunding.principal)} · 실제 사용할 자기자금 ${formatMoney(scenario.tuitionFunding.contributionPerSemester)} · 남겨두는 자기자금 ${formatMoney(scenario.tuitionFunding.retainedContribution)}. 남겨두는 돈은 생활비에 자동 합산하지 않습니다.</p>
     <p>이번 학기 이자·상환 부담 월평균 ${formatMoney(scenario.currentSemesterPayment / scenario.funding.fundingMonths, {digits:1})}은 별도입니다. 이를 낸 뒤 생활비 여력은 ${formatMoney(scenario.collegeAfterRepayment, {digits:1})}입니다.</p>
-    <details class="detail-disclosure" data-detail="loans"><summary>대출 구성 및 상환 일정</summary>
-    ${renderLoanOptions(state, scenario)}
+    <details class="detail-disclosure" data-detail="loans"><summary>상환 일정과 계산 내역</summary>
     ${renderComposition(candidate)}
     ${renderRecommendationExplanation(candidate, scenario)}
     ${renderRepayment(loan)}

@@ -82,9 +82,9 @@ function renderRepaymentTerms(state, candidate, scenario) {
   const hasGeneral = candidate.loan.repayments.general != null;
   if (!hasGeneral) return '';
   return `<fieldset class="result-subsection"><legend>일반 상환 기간</legend><div class="form-grid">
-    <label class="field"><span>졸업 후 준비기간</span><select name="graceYears"><option value="0" ${selected(terms.graceYears, '0')}>0년</option><option value="1" ${selected(terms.graceYears, '1')}>1년</option><option value="2" ${selected(terms.graceYears, '2')}>2년</option></select></label>
+    <label class="field"><span>졸업 후 준비기간</span><select name="graceYears"><option value="0" ${selected(terms.graceYears, '0')}>0년</option><option value="1" ${selected(terms.graceYears, '1')}>1년</option><option value="2" ${selected(terms.graceYears, '2')}>2년</option><option value="3" ${selected(terms.graceYears, '3')}>3년</option></select></label>
     <label class="field"><span>상환기간</span><select name="repaymentYears">${Array.from({ length: 10 }, (_, index) => `<option value="${index + 1}" ${selected(terms.repaymentYears, String(index + 1))}>${index + 1}년</option>`).join('')}</select></label>
-  </div></fieldset>`;
+  </div><small>준비기간은 비교용 가정입니다. 실제 가능한 거치기간은 학제·연령과 전체 대출기간에 따라 달라져요.</small></fieldset>`;
 }
 
 function renderExistingLoan(state) {
@@ -111,11 +111,11 @@ export function renderLoanOptions(state, scenario) {
   const fullCap = state.comparison?.view === 'baseline' ? state.baselineFullLoanCapView : state.currentFullLoanCapView;
 
   return `<section class="loan-options" aria-labelledby="loan-options-title">
-    <div class="section-heading compact"><h3 id="loan-options-title">${safe(scenario.name)}의 대출 구성을 확인하세요.</h3><p>${statusCopy} 추천은 선택한 계획 안에서 상품을 비교한 결과입니다. 상품과 아래 조건을 바꾸면 대출액과 상환 결과가 바로 갱신됩니다.</p></div>
+    <div class="section-heading compact"><h3 id="loan-options-title">${safe(scenario.name)}의 상환상품 바꾸기</h3><p>등록금과 생활비의 상품을 함께 골라주세요. 이 선택은 <strong>${safe(scenario.name)}</strong>의 그래프에만 반영됩니다.</p></div>
     ${scenario.custom && recommendation.excludedCandidates.some(c=>c.id===selectedId) ? `<p class="current-value-notice"><strong>직접 선택한 구성은 현재 자격 조건에 맞지 않습니다.</strong> 가정한 금액을 계산한 결과이며, 아래 제외 사유를 확인해 주세요. 상품을 자동으로 바꾸지 않았습니다.</p>` : ''}
     <p id="condition-update-status" class="sr-only" role="status" aria-live="polite"></p>
     <fieldset class="loan-candidate-group"><legend>가능한 상품 구성</legend><div class="loan-candidates">${recommendation.candidates.map((item) => renderCandidate(item, selectedId)).join('')}</div></fieldset>
-    <div class="living-choice-row">
+    <details class="loan-extra-options" data-detail="loan-extra"><summary>기간·생활비 포함·자격 조건 조정</summary><div class="living-choice-row">
       <label class="condition-check condition-check-wide"><input name="includeLivingLoan" type="checkbox" ${checked(state.resultSelections.includeLivingByScenario[scenario.id])}><span><strong>생활비 대출 포함</strong><small>제외하면 생활비 여력과 미충족액을 다시 계산합니다.</small></span></label>
       <details><summary>풀대출 상한 보기 ${icon('chevron')}</summary><p>추천액과 별개로 ${fullCap.semesters}학기 동안 생활비 대출은 최대 ${formatMoney(fullCap.livingPrincipal)}입니다. 학기 ${formatMoney(fullCap.semesterLimit)}와 누적 ${formatMoney(fullCap.cumulativeLimit)} 중 먼저 닿는 한도를 적용합니다.</p></details>
     </div>
@@ -123,6 +123,7 @@ export function renderLoanOptions(state, scenario) {
     <details class="eligibility-panel" ${state.resultSelections.eligibilityDetailsOpen ? 'open' : ''}><summary>현재 판정에 필요한 자격 조건 ${icon('chevron')}</summary><div><p>선택한 구성에 필요한 항목만 확인합니다. 이 정보는 브라우저 세션에만 남습니다.</p>${renderEligibilityFields(state, candidate)}</div></details>
     ${renderExistingLoan(state)}
     ${recommendation.excludedCandidates.length ? `<details class="excluded-options"><summary>제외된 선택지와 이유 ${icon('chevron')}</summary><ul>${recommendation.excludedCandidates.map((item) => `<li><strong>${safe(item.label)}</strong>${item.compositionDescription.exclusionReasons.map(({ message }) => `<span>${safe(message)}</span>`).join('')}</li>`).join('')}</ul></details>` : ''}
+    </details>
   </section>`;
 }
 

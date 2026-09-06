@@ -69,16 +69,16 @@ test('일반 상환은 졸업 후 준비 1년·상환 10년을 기본값으로 �
   )));
 });
 
-test('일반 상환은 졸업 후 준비기간 0·1·2년을 실행분별 시작일에 반영한다', () => {
+test('일반 상환은 졸업 후 준비기간 0·1·2·3년을 실행분별 시작일에 반영한다', () => {
   const funding = calculateFundingSummary(SAMPLE_PROFILE);
   const composition = compositionFor(3000, funding);
-  const startDates = [0, 1, 2].map((graceYears) => calculateLoan(
+  const startDates = [0, 1, 2, 3].map((graceYears) => calculateLoan(
     { ...SAMPLE_PROFILE, graceYears },
     composition,
     funding,
   ).repayments.general.repaymentStartDate);
 
-  assert.deepEqual(startDates, ['2030-07-01', '2031-07-01', '2032-07-01']);
+  assert.deepEqual(startDates, ['2030-07-01', '2031-07-01', '2032-07-01', '2033-07-01']);
 });
 
 test('학기별 실행일에서 거치이자와 원리금균등 일정을 만들고 같은 달에 합산한다', () => {

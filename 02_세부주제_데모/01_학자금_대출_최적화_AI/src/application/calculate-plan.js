@@ -1,5 +1,5 @@
 import { calculateNoLoanComparison } from '../domain/funding/no-loan-comparison.js';
-import { buildScenarioTimeline } from '../domain/scenarios/timeline.js';
+import { buildScenarioTimeline, scenarioRepaymentProjection } from '../domain/scenarios/timeline.js';
 import {
   calculateAllScenarios,
   calculateFullLoanCapView,
@@ -37,7 +37,7 @@ export function calculatePlan(profile, stress = {}) {
     true,
   );
 
-  const endMonth = baselineScenarios[0].funding.studyMonths + 120;
+  const endMonth = Math.max(...[...baselineScenarios, ...currentScenarios].map(s => scenarioRepaymentProjection(s).endMonth));
   for (const scenario of [...baselineScenarios, ...currentScenarios]) {
     scenario.timeline = buildScenarioTimeline(scenario, endMonth);
   }

@@ -73,6 +73,7 @@ export function calculateIncomeContingentCurrentValueComparison({
   annualGrossIncomeThreshold,
   repaymentRate,
   minimumAnnualMandatoryRepayment,
+  comparisonYears = 10,
 }) {
   const incomeBasedRepayment = Math.max(
     0,
@@ -83,7 +84,7 @@ export function calculateIncomeContingentCurrentValueComparison({
     : 0;
   const rate = nonNegative(annualRate) / 100;
   let balance = nonNegative(balanceAtEmployment);
-  const annualSchedule = Array.from({ length: 10 }, (_, index) => {
+  const annualSchedule = Array.from({ length: comparisonYears }, (_, index) => {
     const openingBalance = balance;
     const interest = openingBalance * rate;
     const balanceBeforePayment = openingBalance + interest;
@@ -105,7 +106,7 @@ export function calculateIncomeContingentCurrentValueComparison({
   });
 
   return {
-    periodMonths: CURRENT_VALUE_COMPARISON_MONTHS,
+    periodMonths: comparisonYears * 12,
     annualRate,
     annualGrossIncome,
     annualGrossIncomeThreshold,

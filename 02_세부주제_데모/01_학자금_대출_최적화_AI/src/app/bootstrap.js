@@ -1,3 +1,4 @@
+import { renderRepaymentGuide } from '../ui/sections/repayment-guide.js';
 import { selectableMonths, nearestMonth, moveSelectedMonth } from './chart-selection.js';
 import { calculatePlan } from '../application/calculate-plan.js';
 import { renderCustomEditor } from '../ui/sections/custom-scenario-editor.js';
@@ -122,8 +123,8 @@ function handleSubmit(event) {
   window.setTimeout(() => {
     updateUi(state, { loading: false });
     recalculate(false);
-    document.querySelector('#result-root')?.focus({ preventScroll: true });
-    document.querySelector('#result-root')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelector('#repayment-guide')?.focus({ preventScroll: true });
+    document.querySelector('#repayment-guide')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 360);
 }
 
@@ -185,13 +186,11 @@ function renderResults() {
   const current = selectedScenario();
   root.innerHTML = `
     <section class="results" aria-labelledby="result-title">
-      <div class="result-intro">
-        <div><h2 id="result-title">내게 맞는 대학 생활 계획을 비교해 보세요.</h2><p>이번 학기 포함 ${state.profile.remainingSemesters}학기 남음 · 현재 조건 기준</p></div>
-        <aside>${icon('info')}<p><strong>간이 예상 결과입니다.</strong> 실제 대출 자격·승인은 한국장학재단이 최종 판단합니다.</p></aside>
-      </div>
+      ${renderRepaymentGuide()}
       <p id="selection-status" class="sr-only" role="status" aria-live="polite"></p>
       ${renderComparisonFigure(state, current)}
       ${renderScenarioSelector(state)}
+      ${renderLoanOptions(state, current)}
       ${renderSelectedDetail(state, current)}
     </section>`;
   bindResultEvents();

@@ -7,9 +7,9 @@ import { visibleScenarios } from '../../app/selectors.js';
 import { renderStressControls } from './stress-controls.js';
 export const METRICS = {
  living: { label: '대학 생활비', unit: '만 원/월', summaryKey: 'collegeLiving', note: '현재 월소득 + 생활비 대출의 월 배분액입니다. 이자·상환 차감 전이며 추가 알바 소득은 포함하지 않습니다.' },
- careerLiving: { label: '상환 후 월소득', unit: '만 원/월', summaryKey: 'careerLiving', note: '일반 상환은 원금 상환 시작과 취업 중 늦은 시점부터 12개월, 취업 후 상환만 있으면 취업 첫 12개월을 봅니다. 예상 월소득에서 해당 기간의 월평균 상환액을 뺍니다.' },
+ careerLiving: { label: '상환기간 생활비', unit: '만 원/월', summaryKey: 'careerLiving', note: '일반 상환은 원금 상환 시작과 취업 중 늦은 시점부터 12개월, 취업 후 상환만 있으면 취업 첫 12개월을 봅니다. 예상 월소득에서 해당 기간의 월평균 상환액을 뺍니다.' },
  repayment: { label: '상환 부담', unit: '만 원/월', note: '일반 상환은 해당 월 약정액, 취업 후 상환은 연간 예상액의 월평균 환산액입니다.' },
- balance: { label: '대출잔액', unit: '만 원', note: '월 시작 잔액. 취업 후 상환의 취업 이후 잔액은 연간 결산값을 유지합니다.' },
+ balance: { label: '대출잔액', unit: '만 원', note: '월 시작 잔액. 각 안의 상환 완료까지 비교하며 취업 후 상환은 연간 결산값입니다. 소득·금리 고정 가정으로, 50년 내 완료되지 않으면 잔액을 남겨 표시합니다.' },
 };
 
 const chartLayout = () => globalThis.matchMedia?.('(max-width: 580px)').matches
@@ -20,8 +20,18 @@ const styleFor = id => styles[id] ?? ['var(--blue)', Number(id.split('-').at(-1)
 const val = v => Number.isFinite(v) ? v.toLocaleString('ko-KR', {minimumFractionDigits:1,maximumFractionDigits:1}) : '계산 불가';
 const time = m => m === 0 ? '현재' : m < 12 ? `${m}개월 후` : `${Math.floor(m/12)}년${m%12 ? ` ${m%12}개월` : ''} 후`;
 const pair = state => state.comparison.ids.map(id => visibleScenarios(state).find(s => s.id === id));
+function renderComparedProducts(state) {
+ return `<div class="compared-products" aria-label="비교 중인 시나리오의 상환방식">${pair(state).map((s,i)=>{
+  const components=getLoanCompositionComponents(s.loanComposition);
+  const product=(purpose)=>{
+   const part=components.find(c=>c.purpose===purpose && c.principal>0);
+   return !part?'대출 없음':part.product==='general'?'일반 상환 · 고정금리':'취업 후 상환(ICL) · 변동금리';
+  };
+  return `<div><strong>${i?'B':'A'} · ${safe(s.name)}</strong><span>등록금: ${product('tuition')}</span><span>생활비: ${product('living')}</span></div>`;
+ }).join('')}</div>`;
+}
 export function renderScenarioSelector(state) {
- return `<fieldset class="scenario-selector"><legend>선택한 시나리오 자세히 보기</legend><div class="scenario-options">${pair(state).map(s => `<label class="scenario-option ${s.id===state.selectedScenarioId?'is-selected':''}"><input type="radio" name="scenario" value="${s.id}" ${s.id===state.selectedScenarioId?'checked':''}><span class="scenario-option-copy"><strong>${safe(s.name)}</strong><small>${safe(s.summary)}</small><span>등록금 대출 ${val(s.tuitionFunding.principal)}만 원 · 생활비 월 ${val(s.livingLoan.principal / s.funding.fundingMonths)}만 원 · 추가 알바 ${Math.round(s.monthlyWorkHours)}시간/월</span></span></label>`).join('')}</div></fieldset>`;
+ return `<fieldset class="scenario-selector"><legend>상품을 바꾸거나 자세히 볼 안 선택</legend><div class="scenario-options">${pair(state).map(s => `<label class="scenario-option ${s.id===state.selectedScenarioId?'is-selected':''}"><input type="radio" name="scenario" value="${s.id}" ${s.id===state.selectedScenarioId?'checked':''}><span class="scenario-option-copy"><strong>${safe(s.name)}</strong><small>${safe(s.summary)}</small><span>등록금 대출 ${val(s.tuitionFunding.principal)}만 원 · 생활비 월 ${val(s.livingLoan.principal / s.funding.fundingMonths)}만 원 · 추가 알바 ${Math.round(s.monthlyWorkHours)}시간/월</span></span></label>`).join('')}</div></fieldset>`;
 }
 export function renderPointReadout(state) {
  if (METRICS[state.comparison.metric].summaryKey) return renderBarReadout(state);
@@ -47,11 +57,11 @@ export function renderComparisonFigure(state) {
  for(const [m,label] of [[ss[0].timeline.graduationMonth,'졸업'],[ss[0].timeline.employmentMonth,'취업']]) events.set(m,[...(events.get(m)??[]),label]);
  const eventSvg=[...events].map(([m,labels],i)=>`<line x1="${x(m)}" x2="${x(m)}" y1="60" y2="${layout.bottom}" stroke="var(--line-strong)" stroke-dasharray="4 4"/><text class="timeline-event-label" x="${x(m)}" y="${22+i*32}" text-anchor="middle">${labels.join('·')} · ${m}개월</text>`).join('');
  const condition=state.comparison.view==='baseline'?'기본 조건':`변경 조건 · 취업 ${state.stress.employmentDelayMonths}개월 지연 · 초봉 ${state.stress.salaryReductionRate*100}% 감소${state.stress.graduationDelayMonths?' · 졸업 1년 지연':''}`;
- return `<figure class="comparison-figure seed-surface" aria-labelledby="comparison-title"><figcaption><h3 id="comparison-title">시나리오 비교</h3></figcaption>
+ return `<figure class="comparison-figure seed-surface" aria-labelledby="comparison-title"><figcaption><h3 id="comparison-title" tabindex="-1">시나리오 비교</h3></figcaption>
  <div class="comparison-controls">${ids.map((id,side)=>`<label class="field"><span>비교할 시나리오 ${side?'B':'A'}</span><select name="comparison-${side}">${state.currentScenarios.map(s=>`<option value="${s.id}" ${s.id===id?'selected':''} ${s.id===ids[1-side]?'disabled':''}>${safe(s.name)}</option>`).join('')}</select></label>`).join('')}<button type="button" class="${quietButton}" data-action="add-custom">+ 내 시나리오 추가</button></div>
- ${renderStressControls(state)}<div class="chart-toolbar"><strong>${info.label}</strong>${segmented('comparison-metric','표시 지표',Object.entries(METRICS).map(([value,m])=>[value,m.label]),metric)}</div><p class="chart-condition">${condition} · ${info.unit}</p><p id="metric-note">${info.note}</p>
+ ${renderComparedProducts(state)}${renderStressControls(state)}<div class="chart-toolbar"><strong>${info.label}</strong>${segmented('comparison-metric','표시 지표',Object.entries(METRICS).map(([value,m])=>[value,m.label]),metric)}</div><p class="chart-condition">${condition} · ${info.unit}</p><p id="metric-note">${info.note}</p>
  <details class="chart-assumptions"><summary>계산 기준</summary><p class="timeline-boundary">재학 생활비 대출은 학기 금액을 해당 학기 개월에 배분합니다. 취업 지연 중 소득·추가 차입은 0이며 생활비 충족을 뜻하지 않습니다. 일반 상환 약정은 유지됩니다. 취업 후 상환이 포함된 생활비 여력도 월평균 환산액 기준입니다.</p></details>
- <div class="timeline-key">${ss.map((s,i)=>`<span><svg width="40" height="12" viewBox="0 0 40 12" aria-hidden="true"><line x1="0" x2="40" y1="6" y2="6" stroke="${styleFor(s.id)[0]}" stroke-width="3" stroke-dasharray="${styleFor(s.id)[1]}"/></svg>${i?'B':'A'} · ${safe(s.name)}</span>`).join('')}</div>
+ <p class="repayment-completion">${ss.map(s=>`${safe(s.name)}: ${s.timeline.projectionLimited?'취업 후 50년 내 상환 미완료':s.timeline.repaymentEndMonth===0?'대출 없음':`${time(s.timeline.repaymentEndMonth)} 상환 완료`}`).join(' · ')}</p><div class="timeline-key">${ss.map((s,i)=>`<span><svg width="40" height="12" viewBox="0 0 40 12" aria-hidden="true"><line x1="0" x2="40" y1="6" y2="6" stroke="${styleFor(s.id)[0]}" stroke-width="3" stroke-dasharray="${styleFor(s.id)[1]}"/></svg>${i?'B':'A'} · ${safe(s.name)}</span>`).join('')}</div>
  <svg class="timeline-chart" tabindex="0" data-end="${end}" data-left="95" data-span="765" data-low="${low}" data-high="${high}" data-bottom="${layout.bottom}" data-height="${layout.plotHeight}" viewBox="0 0 920 ${layout.height}" role="img" aria-label="${info.label} 시간축 그래프. 점을 클릭하거나 좌우 방향키로 조회 시점을 고정하세요." aria-describedby="metric-note">
  ${ticks.map(v=>{return `<line x1="75" x2="880" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text class="axis-value" x="65" y="${y(v)+5}" text-anchor="end">${v.toLocaleString('ko-KR', {maximumFractionDigits: 2})}</text>`;}).join('')}
  ${low<0?`<line x1="75" x2="880" y1="${y(0)}" y2="${y(0)}" stroke="var(--ink)"/>`:''}${eventSvg}${lines}
@@ -71,7 +81,7 @@ function barEntries(state) {
 function renderBarReadout(state) {
  const entries=barEntries(state), college=state.comparison.metric==='living';
  const noLoan=state.comparison.view === 'baseline' ? state.baselineNoLoanComparison : state.currentNoLoanComparison;
- return `<strong>${college?'이번 학기 월평균 · 상환 차감 전':'상환 기준기간 월평균'} · 만 원/월</strong><div>${entries.map(e=>`<span>${safe(e.name)}: <b>${val(e.value)}</b></span>`).join('')}</div>${!college?`<div>${pair(state).map(s=>`<span>${safe(s.name)} · ${getLoanCompositionComponents(s.loanComposition).map(c=>`${c.purpose==='tuition'?'등록금':'생활비'} ${c.product==='general'?'일반 상환':'취업 후 상환'}`).join(' + ') || '신규 대출 없음'} · 현재부터 ${s.timeline.repaymentReferenceMonth}~${s.timeline.repaymentReferenceMonth+12}개월 · 월 상환 ${val(s.timeline.summary.careerRepayment)}만 원</span>`).join('')}</div><small>취업 후 상환은 소득이 같으면 초기 상환액도 같을 수 있습니다. 대출액 차이는 잔액과 상환 완료 시점에서 확인하세요. 연간액을 12로 나눈 값이며 실제 고정 월납입액은 아닙니다.</small>`:''}${college?`<div class="scenario-work-hours">${pair(state).map(s=>`<span>${safe(s.name)} · 생활비 부족 ${val(s.monthlyLivingGap)}만 원/월 · <b>추가 알바 월 약 ${Math.round(s.monthlyWorkHours)}시간</b></span>`).join('')}</div>`:''}${college&&noLoan?`<p class="no-loan-hours">NO 대출 · 생활비를 채우려면 <strong>추가 알바 월 약 ${Math.round(noLoan.monthlyHours)}시간</strong>이 필요해요.</p><p class="no-loan-tuition">${noLoan.tuitionGap>0?`NO 대출은 등록금 ${val(noLoan.tuitionGap)}만 원을 납부 전에 별도로 마련해야 합니다.`:'NO 대출도 등록금은 보유 자기자금으로 납부할 수 있습니다.'}</p><small>2026년 최저시급 10,320원 단순 환산 · 주휴수당·세금 제외 · 등록금은 분할 납부나 미래 알바로 충당한다고 가정하지 않습니다.</small>`:''}`;
+ return `<strong>${college?'이번 학기 월평균 · 상환 차감 전':'상환 기준기간 월평균'} · 만 원/월</strong><div>${entries.map(e=>`<span>${safe(e.name)}: <b>${val(e.value)}</b></span>`).join('')}</div>${!college?`<div>${pair(state).map(s=>`<span>${safe(s.name)} · ${getLoanCompositionComponents(s.loanComposition).map(c=>`${c.purpose==='tuition'?'등록금':'생활비'} ${c.product==='general'?'일반 상환':'취업 후 상환'}`).join(' + ') || '신규 대출 없음'} · 현재부터 ${s.timeline.repaymentReferenceMonth}~${s.timeline.repaymentReferenceMonth+12}개월 · 월 상환 ${val(s.timeline.summary.careerRepayment)}만 원</span>`).join('')}</div>${pair(state).some(s=>s.loan.repayments.incomeContingent)?`<small>취업 후 상환은 소득·상환율이 같으면 초기 의무상환액도 같습니다. 소액 차이는 일반 상환 혼합이나 완납하는 해의 잔액 한도 때문일 수 있습니다. 대출액 차이는 잔액과 상환 완료 시점에서 확인하세요. 연간액을 12로 나눈 값이며 실제 고정 월납입액은 아닙니다.</small>`:'<small>일반 상환 약정 월납입액을 기준으로 계산합니다.</small>'}`:''}${college?`<div class="scenario-work-hours">${pair(state).map(s=>`<span>${safe(s.name)} · 생활비 부족 ${val(s.monthlyLivingGap)}만 원/월 · <b>추가 알바 월 약 ${Math.round(s.monthlyWorkHours)}시간</b></span>`).join('')}</div>`:''}${college&&noLoan?`<p class="no-loan-hours">NO 대출 · 생활비를 채우려면 <strong>추가 알바 월 약 ${Math.round(noLoan.monthlyHours)}시간</strong>이 필요해요.</p><p class="no-loan-tuition">${noLoan.tuitionGap>0?`NO 대출은 등록금 ${val(noLoan.tuitionGap)}만 원을 납부 전에 별도로 마련해야 합니다.`:'NO 대출도 등록금은 보유 자기자금으로 납부할 수 있습니다.'}</p><small>2026년 최저시급 10,320원 단순 환산 · 주휴수당·세금 제외 · 등록금은 분할 납부나 미래 알바로 충당한다고 가정하지 않습니다.</small>`:''}`;
 
 }
 function renderBarComparison(state) {
@@ -81,11 +91,11 @@ function renderBarComparison(state) {
  const {low,high,ticks}=chartAxis([...values,...entries.map(e=>e.value),...(college?[target]:[])]);
  const layout=chartLayout();
  const y=v=>layout.bottom-(v-low)/(high-low)*layout.plotHeight;
- return `<figure class="comparison-figure seed-surface" aria-labelledby="comparison-title"><figcaption><h3 id="comparison-title">시나리오 비교</h3></figcaption>
+ return `<figure class="comparison-figure seed-surface" aria-labelledby="comparison-title"><figcaption><h3 id="comparison-title" tabindex="-1">시나리오 비교</h3></figcaption>
  <div class="comparison-controls">${ids.map((id,side)=>`<label class="field"><span>비교할 시나리오 ${side?'B':'A'}</span><select name="comparison-${side}">${state.currentScenarios.map(s=>`<option value="${s.id}" ${s.id===id?'selected':''} ${s.id===ids[1-side]?'disabled':''}>${safe(s.name)}</option>`).join('')}</select></label>`).join('')}<button type="button" class="${quietButton}" data-action="add-custom">+ 내 시나리오 추가</button></div>
- ${renderStressControls(state)}<div class="chart-toolbar"><strong>${info.label}</strong>${segmented('comparison-metric','표시 지표',Object.entries(METRICS).map(([value,m])=>[value,m.label]),metric)}</div><p class="chart-condition">${state.comparison.view==='baseline'?'기본 조건':'변경 조건'} · ${info.unit}</p><p id="metric-note">${info.note}</p>
+ ${renderComparedProducts(state)}${renderStressControls(state)}<div class="chart-toolbar"><strong>${info.label}</strong>${segmented('comparison-metric','표시 지표',Object.entries(METRICS).map(([value,m])=>[value,m.label]),metric)}</div><p class="chart-condition">${state.comparison.view==='baseline'?'기본 조건':'변경 조건'} · ${info.unit}</p><p id="metric-note">${info.note}</p>
  <details class="chart-assumptions"><summary>계산 기준</summary><p>NO 대출은 기존·신규 대출이 모두 없는 비교 기준입니다. 등록금 부족분은 납부 전에 별도로 마련해야 하며 월 알바 시간에는 포함하지 않습니다. 추가 알바를 했다고 가정해 막대를 높이지 않습니다. 다음 학기 신규 대출은 이 결과에 포함하지 않습니다.</p></details>
- <div class="timeline-key">${entries.map(e=>`<span>${safe(e.name)}</span>`).join('')}</div>
+ <p class="repayment-completion">${pair(state).map(s=>`${safe(s.name)}: ${s.timeline.projectionLimited?'취업 후 50년 내 상환 미완료':s.timeline.repaymentEndMonth===0?'대출 없음':`${time(s.timeline.repaymentEndMonth)} 상환 완료`}`).join(' · ')}</p><div class="timeline-key">${entries.map(e=>`<span>${safe(e.name)}</span>`).join('')}</div>
  <svg class="bar-chart" viewBox="0 0 920 ${layout.height}" role="img" aria-label="${info.label}, 선택한 두 시나리오와 NO 대출 막대 비교" aria-describedby="metric-note">
  ${ticks.map(v=>`<line x1="75" x2="880" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text class="axis-value" x="65" y="${y(v)+5}" text-anchor="end">${v.toLocaleString('ko-KR',{maximumFractionDigits:2})}</text>`).join('')}
  <line x1="75" x2="880" y1="${y(0)}" y2="${y(0)}" stroke="var(--ink)"/>

@@ -16,7 +16,7 @@ export function createInitialState() {
     currentFullLoanCapView: null,
     policySnapshotIds: [],
     resultSelections: {
-      candidateByScenario: {},
+      candidateByScenario: { 'maximum-use': 'general:general', balance: 'general:general', 'minimum-loan': 'general:general' },
       includeLivingByScenario: {},
       graceYears: DEFAULT_PROFILE.graceYears,
       repaymentYears: DEFAULT_PROFILE.repaymentYears,
