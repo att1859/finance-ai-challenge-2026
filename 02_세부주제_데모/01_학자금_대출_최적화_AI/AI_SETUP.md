@@ -292,4 +292,4 @@ API 키는 서버에서만 Google 헤더로 전송한다. 대화는 브라우저
 
 2026-09-07 Codex 내장 브라우저로 [Gemini 호출 계약](https://ai.google.dev/api/generate-content), [공식 모델 목록](https://ai.google.dev/gemini-api/docs/models)을 확인했다. FAQ 정책 출처는 [일반 상환 소개](https://www.kosaf.go.kr/ko/tuition.do?pg=tuition04_02_01&ttab1=0), [취업 후 상환 소개](https://www.kosaf.go.kr/ko/tuition.do?pg=tuition04_01_01&ttab1=0), [ICL 신청대상](https://www.kosaf.go.kr/ko/tuition.do?pg=tuition04_01_01&ttab1=1)이며 FAQ에 출처·확인일을 보존했다.
 
-테스트 111개 및 빌드 통과. 가상 공급자 응답으로 FAQ+계산 facts 전달, HTTP 진단, 인증/모델 오류 분리를 확인했다. 실제 `npm run ai:check`는 키가 없어 `NOT_CONFIGURED`로 종료했다. 따라서 Google 실제 생성 응답과 답변 품질은 아직 미검증이다. 키 입력 후 2~4단계를 완료해야 실제 연결 검증이 끝난다.
+테스트 114개 및 빌드 통과. Vercel 환경 변수 화면에서 GEMINI_API_KEY가 Production·Preview에 등록되어 있음을 값 공개 없이 확인했다. 커밋 5a96a80을 main에 배포한 뒤 운영 사이트에서 실제 Gemini 요약과 FAQ 답변을 확인했다. 가상 입력(등록금 400·자기자금 200·월소득 50·희망 생활비 80만 원)에 대해 등록금 대출 300·생활비 대출 180만 원과 추가 알바 0시간을 읽었고, FAQ 답변은 한도 및 이자·상환 차감 전 기준의 한계를 명시했다. 패널의 Gemini 응답 확인됨 상태도 확인했다. 로컬 ai:check의 NOT_CONFIGURED는 로컬 환경에만 해당하며 배포된 키와 실제 연결은 정상이다.
