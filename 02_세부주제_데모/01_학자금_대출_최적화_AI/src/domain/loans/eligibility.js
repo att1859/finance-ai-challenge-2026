@@ -113,11 +113,14 @@ function evaluateSpecialCondition(rule, applicant, policySnapshot) {
         : ['isMultiChildHousehold', 'isCareLeaver'];
       return anyBooleanCondition(applicant, fields);
     }
-    case 'BASIC_OR_NEAR_POVERTY_OR_MULTI_CHILD':
-      return anyBooleanCondition(
-        applicant,
-        ['isBasicOrNearPoverty', 'isMultiChildHousehold'],
-      );
+    case 'BASIC_OR_NEAR_POVERTY_OR_MULTI_CHILD': {
+      const basic = knownBoolean(applicant.isBasicOrNearPoverty);
+      const multi = applicant.isMultiChildHousehold === false || applicant.isUnmarried === false ? false
+        : applicant.isMultiChildHousehold === true && applicant.isUnmarried === true ? true : null;
+      return { value: basic === true || multi === true ? true : basic === false && multi === false ? false : null,
+        missingFields: basic === true || multi === true ? [] : ['isBasicOrNearPoverty','isMultiChildHousehold','isUnmarried'].filter(f=>knownBoolean(applicant[f])==null) };
+    }
+    case 'MEDIAN_INCOME_130': return booleanCondition(applicant, 'isMedianIncome130');
     case 'CARE_LEAVER_OR_PROTECTED_CHILD':
       return anyBooleanCondition(
         applicant,
@@ -330,7 +333,11 @@ function evaluateIncomeBracket({
 }
 
 function evaluateAge({ applicant, eligibilityPolicy, eligibilityOverrides, product }) {
+  const ageKey = product === 'general' ? 'ageGeneralConfirmed' : applicant.academicLevel === 'graduate' ? 'ageIclGraduateConfirmed' : 'ageIclUndergraduateConfirmed';
+  if (applicant[ageKey] === true && knownNumber(applicant.age) == null) return ruleResult('age', 'age', ELIGIBLE);
   const age = knownNumber(applicant.age);
+  const claimsException=product==='general'?applicant.enteredByAge55AndContinuouslyEnrolled===true:applicant.academicLevel==='undergraduate'&&applicant.qualifyingEmployedUndergraduateProgram===true;
+  if (applicant[ageKey]===false && age==null && !claimsException) return ruleResult('age','age',INELIGIBLE,{reasonCode:'AGE_CRITERION_NOT_MET'});
   if (age == null) {
     return ruleResult('age', 'age', UNKNOWN, {
       reasonCode: 'AGE_REQUIRED',
@@ -413,7 +420,7 @@ function evaluateAge({ applicant, eligibilityPolicy, eligibilityOverrides, produ
 function exemptionCondition(exemptionId, applicant) {
   switch (exemptionId) {
     case 'new-student-group':
-      if (applicant.studentStatus == null) {
+      if (!applicant.studentStatus) {
         return { value: null, missingFields: ['studentStatus'] };
       }
       return {
@@ -480,6 +487,13 @@ function evaluateAcademicMinimum({
     });
   }
 
+  const confirmation = category === 'credits' ? 'creditsConfirmed' : 'scoreConfirmed';
+  const confirmed = knownNumber(applicant[field]) == null ? knownBoolean(applicant[confirmation]) : null;
+  if (confirmed === true || (category === 'credits' && applicant.schoolCreditRuleMet === true)) return ruleResult(category, 'academics', ELIGIBLE);
+  if (confirmed === false && category === 'credits' && applicant.schoolCreditRuleMet == null) return ruleResult(category, 'academics', CONDITIONAL, {reasonCode:'CREDITS_EXEMPTION_CONFIRMATION_REQUIRED',missingFields:unique([...exemptions.missingFields,'schoolCreditRuleMet'])});
+  if (confirmed === false) return ruleResult(category, 'academics', exemptions.value == null ? CONDITIONAL : INELIGIBLE, {
+    reasonCode: `${category.toUpperCase()}_BELOW_MINIMUM`, missingFields: exemptions.missingFields,
+  });
   const value = knownNumber(applicant[field]);
   if (value == null) {
     return ruleResult(category, 'academics', UNKNOWN, {

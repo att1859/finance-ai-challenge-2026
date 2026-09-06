@@ -18,7 +18,7 @@ export function applyPlan(state, plan) {
   state.currentRecommendations.forEach((recommendation) => {
     const scenarioId = recommendation.scenarioId;
     const currentSelection = state.resultSelections.candidateByScenario[scenarioId];
-    const available = recommendation.candidates.some(({ id }) => id === currentSelection);
+    const available = [...recommendation.candidates, ...recommendation.excludedCandidates].some(({ id }) => id === currentSelection);
     if (!available && !state.customScenarios?.some(s => s.id === scenarioId)) {
       state.resultSelections.candidateByScenario[scenarioId]
         = recommendation.candidates.find(({ id }) => id === 'general:general')?.id

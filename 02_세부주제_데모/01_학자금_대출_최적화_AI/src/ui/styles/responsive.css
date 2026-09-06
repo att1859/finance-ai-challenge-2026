@@ -69,7 +69,7 @@
   .scenario-option { padding: 15px; }
   .loan-options { margin-left: -18px; margin-right: -18px; padding: 26px 18px; }
   .living-choice-row, .result-condition-grid { grid-template-columns: 1fr; }
-  .comparison-figure { margin-left: -18px; margin-right: -18px; margin-bottom: 65px; padding: 24px 18px; border-inline: 0; border-radius: 0; }
+  .comparison-figure { margin-bottom: 65px; padding: 24px 18px; }
   .scenario-key { justify-content: flex-start; }
   .metric-chart { gap: 27px; }
   .bar-line { height: auto; min-height: 42px; grid-template-columns: 88px minmax(0,1fr); grid-template-rows: auto auto; gap: 3px 9px; }
@@ -81,7 +81,7 @@
   table { min-width: 0; font-size: .72rem; }
   caption { border: 1px solid var(--line); }
   th, td { padding: 8px 4px; }
-  .selected-detail { margin-left: -18px; margin-right: -18px; margin-bottom: 70px; padding: 30px 18px; border-radius: 0; }
+  .selected-detail { margin-bottom: 70px; padding: 30px 18px; }
   .detail-heading { display: grid; }
   .detail-heading h3 { font-size: 2rem; }
   .detail-metrics { grid-template-columns: 1fr 1fr; }

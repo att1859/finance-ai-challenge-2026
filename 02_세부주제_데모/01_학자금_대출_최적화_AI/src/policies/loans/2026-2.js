@@ -20,6 +20,7 @@ export const LOAN_POLICY_SNAPSHOT = deepFreeze({
     annualRate: 'percent',
   },
   sources: [
+    {id:'kosaf-icl-interest-exemption',title:'취업 후 상환 학자금대출 이자면제',url:'https://www.kosaf.go.kr/ko/tuition.do?pg=tuition05_07',checkedAt:'2026-09-06',supports:['interest-exemption']},
     {
       id: 'kosaf-overview',
       title: '한눈에 보는 학자금대출',
@@ -247,14 +248,14 @@ export const LOAN_POLICY_SNAPSHOT = deepFreeze({
       sourceId: 'kosaf-icl',
     },
     {
-      id: 'icl-income-tier-six',
+      id: 'icl-median-income-130',
       product: 'income-contingent',
       purposes: ['tuition', 'living'],
       effectiveFrom: '2026-07-01',
       effectiveTo: null,
-      condition: 'INCOME_TIER_AT_MOST_6_BEFORE_MANDATORY_REPAYMENT',
-      maximumSupportBracket: 6,
-      sourceId: 'moe-2026-first-semester',
+      condition: 'MEDIAN_INCOME_130',
+      maximumMedianIncomePercent: 130,
+      sourceId: 'kosaf-icl-interest-exemption',
     },
     {
       id: 'icl-regional-university-tier-eight',

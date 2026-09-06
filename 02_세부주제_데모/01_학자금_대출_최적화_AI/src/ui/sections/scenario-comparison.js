@@ -1,13 +1,13 @@
 import { getLoanCompositionComponents } from '../../domain/loans/loan-composition.js';
 import { chartAxis } from '../formatters/chart-axis.js';
 import { selectableMonths, nearestMonth } from '../../app/chart-selection.js';
-import { segmented, quietButton } from '../shared/seed-controls.js';
+import { segmented, quietButton } from '../shared/controls.js';
 import { escapeHtml as safe } from '../shared/escape-html.js';
 import { visibleScenarios } from '../../app/selectors.js';
 import { renderStressControls } from './stress-controls.js';
 export const METRICS = {
  living: { label: '대학 생활비', unit: '만 원/월', summaryKey: 'collegeLiving', note: '현재 월소득 + 생활비 대출의 월 배분액입니다. 이자·상환 차감 전이며 추가 알바 소득은 포함하지 않습니다.' },
- careerLiving: { label: '상환기간 생활비', unit: '만 원/월', summaryKey: 'careerLiving', note: '일반 상환은 원금 상환 시작과 취업 중 늦은 시점부터 12개월, 취업 후 상환만 있으면 취업 첫 12개월을 봅니다. 예상 월소득에서 해당 기간의 월평균 상환액을 뺍니다.' },
+ careerLiving: { label: '상환 첫 1년 생활비', unit: '만 원/월', summaryKey: 'careerLiving', note: '일반 상환은 원금 상환 시작과 취업 중 늦은 시점부터 12개월, 취업 후 상환만 있으면 취업 첫 12개월을 봅니다. 예상 월소득에서 해당 기간의 월평균 상환액을 뺍니다.' },
  repayment: { label: '상환 부담', unit: '만 원/월', note: '일반 상환은 해당 월 약정액, 취업 후 상환은 연간 예상액의 월평균 환산액입니다.' },
  balance: { label: '대출잔액', unit: '만 원', note: '월 시작 잔액. 각 안의 상환 완료까지 비교하며 취업 후 상환은 연간 결산값입니다. 소득·금리 고정 가정으로, 50년 내 완료되지 않으면 잔액을 남겨 표시합니다.' },
 };

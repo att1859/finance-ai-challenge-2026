@@ -74,6 +74,7 @@ export function calculateIncomeContingentCurrentValueComparison({
   repaymentRate,
   minimumAnnualMandatoryRepayment,
   comparisonYears = 10,
+  interestExemptBalance = 0,
 }) {
   const incomeBasedRepayment = Math.max(
     0,
@@ -84,12 +85,15 @@ export function calculateIncomeContingentCurrentValueComparison({
     : 0;
   const rate = nonNegative(annualRate) / 100;
   let balance = nonNegative(balanceAtEmployment);
+  let exemptBalance = Math.min(balance,nonNegative(interestExemptBalance));
   const annualSchedule = Array.from({ length: comparisonYears }, (_, index) => {
     const openingBalance = balance;
-    const interest = openingBalance * rate;
+    const exemptedInterest = exemptBalance * rate;
+    const interest = Math.max(0,openingBalance-exemptBalance) * rate;
     const balanceBeforePayment = openingBalance + interest;
     const mandatoryRepayment = Math.min(balanceBeforePayment, plannedAnnualRepayment);
     balance = Math.max(0, balanceBeforePayment - mandatoryRepayment);
+    exemptBalance = balanceBeforePayment ? exemptBalance * balance / balanceBeforePayment : 0;
 
     return {
       comparisonYear: index + 1,
@@ -99,6 +103,7 @@ export function calculateIncomeContingentCurrentValueComparison({
       repaymentRate,
       openingBalance,
       interest,
+      exemptedInterest,
       balanceBeforePayment,
       mandatoryRepayment,
       closingBalance: balance,
@@ -112,6 +117,7 @@ export function calculateIncomeContingentCurrentValueComparison({
     annualGrossIncomeThreshold,
     repaymentRate,
     plannedAnnualRepayment,
+    totalExemptedInterest:annualSchedule.reduce((sum,row)=>sum+row.exemptedInterest,0),
     annualSchedule,
     totalPayment: annualSchedule.reduce(
       (sum, row) => sum + row.mandatoryRepayment,

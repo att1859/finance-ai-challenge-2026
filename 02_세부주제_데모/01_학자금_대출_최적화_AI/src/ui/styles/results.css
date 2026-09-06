@@ -52,7 +52,6 @@
 .loan-candidate-title em { padding: 2px 6px; background: var(--lime); color: var(--ink); font-size: .64rem; font-style: normal; font-weight: 700; }
 .loan-purpose-line { color: var(--muted); font-size: .73rem; line-height: 1.45; }
 .loan-purpose-line b { color: var(--ink-2); }
-.loan-candidate.is-selected .loan-candidate-copy { border: 2px solid var(--ink); box-shadow: inset 0 0 0 3px var(--lime); }
 .loan-candidate > input:focus-visible + .loan-candidate-copy { outline: 3px solid var(--focus); outline-offset: 3px; }
 .living-choice-row { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 9px; align-items: stretch; }
 .condition-check { min-height: 64px; padding: 13px 14px; display: flex; align-items: flex-start; gap: 10px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--white); cursor: pointer; }
@@ -224,8 +223,8 @@ tbody th small { display: block; color: var(--muted); font-weight: 400; }
 .comparison-controls { display:grid; grid-template-columns:1fr 1fr auto; align-items:end; gap:16px; margin:20px 0; }
 .comparison-controls select { width:100%; min-width:0; }
 .comparison-controls button { min-height:44px; }
-.seed-choice { min-width:0; max-width:100%; }
-.seed-choice button { font-family:inherit; min-width:0; padding-inline:14px; cursor:pointer; white-space:nowrap; }
+.choice-control { min-width:0; max-width:100%; }
+.choice-control button { font-family:inherit; min-width:0; padding-inline:14px; cursor:pointer; white-space:nowrap; }
 .chart-toolbar { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-top:20px; }
 .chart-toolbar strong { font-size:1.1rem; }
 .comparison-figure .compact-stress { margin:0; padding:14px 0; border-block:1px solid var(--line); }
@@ -289,7 +288,7 @@ tbody th small { display: block; color: var(--muted); font-weight: 400; }
  .detail-heading { flex-wrap:wrap; gap:12px; }
 }
 @media(max-width:580px) {
- .seed-choice button { font-size:.75rem; padding-inline:8px; min-height:44px; }
+ .choice-control button { font-size:.75rem; padding-inline:8px; min-height:44px; }
  .timeline-chart text { font-size:30px; }
  .timeline-chart .axis-time.compact-hide { display:none; }
  .timeline-chart .axis-time:last-child { text-anchor:end; }
@@ -303,7 +302,7 @@ tbody th small { display: block; color: var(--muted); font-weight: 400; }
 .custom-editor fieldset { border:1px solid var(--line); border-radius:12px; margin:20px 0 0; padding:16px; min-width:0; }
 .custom-editor legend { padding:0 6px; font-weight:700; font-size:.9rem; }
 .custom-editor .editor-heading h3 { margin:4px 0; }
-.seed-choice button { border:0; background:transparent; }
+.choice-control button { border:0; background:transparent; }
 
 
 /* Keep the chart anchored when switching between summary bars and timelines. */
@@ -320,8 +319,8 @@ tbody th small { display: block; color: var(--muted); font-weight: 400; }
 @media(max-width:820px) {
  .chart-toolbar { min-height:100px; }
  .chart-toolbar strong { min-height:28px; }
- .chart-toolbar .seed-choice { width:100%; }
- .chart-toolbar .seed-choice button { white-space:normal; }
+ .chart-toolbar .choice-control { width:100%; }
+ .chart-toolbar .choice-control button { white-space:normal; }
 }
 @media(max-width:580px) {
  .timeline-chart text, .bar-chart text { font-size:25px; }
@@ -346,7 +345,6 @@ tbody th small { display: block; color: var(--muted); font-weight: 400; }
 .repayment-guide { margin:0 0 64px; padding:32px; border:1px solid var(--line-strong); border-radius:12px; background:var(--white); scroll-margin-top:24px; }
 .repayment-guide:focus { outline:none; }
 .repayment-guide h2 { margin:8px 0 24px; font-size:clamp(1.65rem,3vw,2.4rem); }
-.guide-eyebrow { margin:0; color:var(--muted); font-size:.85rem; }
 .repayment-guide-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; }
 .repayment-guide-grid article { padding:22px; border:1px solid var(--line); border-radius:10px; background:var(--paper); }
 .repayment-guide-grid h3 { margin:12px 0; font-size:1.35rem; }
@@ -360,8 +358,8 @@ tbody th small { display: block; color: var(--muted); font-weight: 400; }
 .loan-extra-options { margin-top:20px; border-top:1px solid var(--line); }
 .loan-extra-options > summary { min-height:48px; padding-top:12px; cursor:pointer; font-weight:700; }
 .loan-extra-options .result-subsection > small { display:block; margin-top:8px; color:var(--muted); }
-.seed-choice { border-radius:8px !important; }
-.seed-choice > span, .seed-choice > button { border-radius:6px !important; }
+.choice-control { border-radius:var(--radius-control); }
+.choice-control > span, .choice-control > button { border-radius:var(--seed-radius-r1); }
 .scenario-options { border:0; gap:12px; overflow:visible; }
 .scenario-option, .scenario-option + .scenario-option { border:1px solid var(--line-strong); border-radius:10px; }
 .scenario-option.is-selected { box-shadow:inset 0 0 0 1px var(--ink); border-color:var(--ink); }
@@ -388,3 +386,118 @@ input[type="radio"]:disabled, input[type="checkbox"]:disabled { opacity:.45; cur
 .compared-products strong { font-size:.9rem; }
 .compared-products span { font-size:.82rem; color:var(--ink-2); overflow-wrap:anywhere; }
 @media(max-width:580px) { .compared-products { grid-template-columns:1fr; } }
+
+.variable-rate-emphasis { color:#e33232; }
+.variable-rate-explanation { text-decoration:underline; text-underline-offset:4px; text-decoration-thickness:1.5px; }
+
+/* Detail intake and readable ledger. */
+.selected-detail, .loan-options { font-size:16px; }
+.selected-detail small, .selected-detail dt, .selected-detail dd, .selected-detail td, .selected-detail th, .selected-detail caption,
+.selected-detail .detail-metrics > div > span, .selected-detail .detail-metrics strong small,
+.selected-detail .execution-ledger li, .selected-detail .policy-basis li, .selected-detail .loan-detail > div > p,
+.loan-options small, .loan-options .loan-purpose-line, .loan-options em, .loan-options legend, .loan-options .loan-candidate-title { font-size:14px; }
+.selected-detail p { font-size:16px; }
+.detail-heading { flex-wrap:wrap; }
+.detail-products { display:grid; gap:8px; margin-left:auto; padding:12px 16px; border:1px solid #52616b; border-radius:8px; font-size:14px; }
+.eligibility-intake { background:var(--paper); color:var(--ink); padding:24px; border-radius:10px; margin:0 0 24px; scroll-margin-top:24px; }
+.eligibility-intake h4 { font-size:20px; margin:0 0 12px; }
+.eligibility-intake fieldset { border:0; border-top:1px solid var(--line); padding:18px 0; margin:18px 0 0; min-width:0; }
+.eligibility-intake legend { font-size:16px; font-weight:700; padding-right:10px; }
+.eligibility-intake .field { min-width:0; }
+.eligibility-intake .field > span, .eligibility-intake .field select, .eligibility-intake .field input { font-size:14px; }
+.eligibility-intake select { max-width:100%; }
+.common-list { display:grid; gap:12px; margin-bottom:16px; }
+.common-list .field { display:grid; grid-template-columns:minmax(0,1fr) 190px; align-items:center; gap:16px; padding-bottom:12px; border-bottom:1px solid var(--line); }
+.missing-information a { color:var(--lime); white-space:nowrap; }
+.exemption-summary { padding:18px; border:1px solid #52616b; border-radius:8px; margin-bottom:24px; }
+.exemption-summary p { margin:8px 0; }
+.composition-ledger .table-wrap { max-width:760px; margin-top:14px; }
+.composition-ledger th, .composition-ledger td { padding:12px 14px; text-align:left; }
+.composition-ledger th:nth-child(3), .composition-ledger td:nth-child(3) { text-align:right; white-space:nowrap; }
+.composition-ledger a { display:inline-block; color:var(--lime); }
+@media(max-width:580px) {
+ .detail-products { margin-left:0; width:100%; }
+ .eligibility-intake { padding:16px; }
+ .common-list .field { grid-template-columns:1fr; gap:8px; }
+ .composition-ledger table, .composition-ledger tbody, .composition-ledger tr, .composition-ledger th, .composition-ledger td { display:block; width:auto; }
+ .composition-ledger thead { display:none; }
+ .composition-ledger td { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+ .composition-ledger td::before { content:attr(data-label); color:#b9c3c8; }
+ .composition-ledger tbody th { font-size:16px; background:#182936; }
+}
+
+:is(.selected-detail,.loan-options) :is(small,li,summary,a,em,dt,dd,td,th,caption) { font-size:14px !important; }
+:is(.selected-detail,.loan-options) p { font-size:16px !important; }
+.loan-options .condition-check strong { font-size:14px; }
+.selected-detail .source-grid article > span { font-size: 14px; }
+
+@media(max-width:580px) { .composition-ledger caption { display:block; width:100%; box-sizing:border-box; } .composition-ledger table { min-width:0; width:100%; } }
+
+.common-list { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 24px; }
+.common-check { display:flex; align-items:flex-start; gap:10px; padding:12px 0; font-size:14px; cursor:pointer; }
+.common-check input { flex:0 0 auto; margin-top:3px; }
+.common-check span { min-width:0; }
+.common-check small { display:block; color:var(--muted); margin-top:4px; }
+.common-check.check-all { border-bottom:1px solid var(--line); font-weight:700; font-size:16px; }
+@media(max-width:580px) { .common-list { grid-template-columns:1fr; } }
+
+.academic-questions { display:grid; gap:16px; margin-bottom:20px; }
+.eligibility-radio-row { display:flex; align-items:center; justify-content:space-between; gap:16px; font-size:14px; min-height:48px; }
+.eligibility-radio-row > span { font-weight:600; }
+.eligibility-radio-row [role="radiogroup"] { display:flex; flex:0 0 auto; gap:14px; }
+.eligibility-radio-row label { display:flex; align-items:center; gap:6px; cursor:pointer; }
+.eligibility-select { position:relative; width:100%; }
+.eligibility-select summary { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px 14px; min-height:48px; box-sizing:border-box; border:1px solid var(--line-strong); border-radius:8px; background:var(--white); cursor:pointer; list-style:none; }
+.eligibility-select summary::-webkit-details-marker { display:none; }
+.eligibility-select [role="listbox"] { position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:20; padding:6px; max-height:280px; overflow:auto; background:var(--white); color:var(--ink); border:1px solid var(--line); border-radius:8px; box-shadow:0 8px 24px #09162220; }
+.eligibility-select [role="option"] { display:block; width:100%; text-align:left; padding:10px 12px; border:0; border-radius:6px; font:inherit; color:var(--ink); background:transparent; cursor:pointer; }
+.eligibility-select [role="option"]:is(:hover,:focus-visible,[aria-selected="true"]) { background:var(--paper-2); }
+@media(max-width:580px) { .eligibility-radio-row { flex-wrap:wrap; gap:8px; } .eligibility-radio-row [role="radiogroup"] { margin-left:auto; } }
+
+.persistent-question { min-width:0; }
+.applicability-note { display:block; min-height:46px; margin:4px 0 0; color:var(--muted); line-height:1.5; }
+.persistent-question.is-inapplicable .eligibility-radio-row { color:var(--muted); }
+.persistent-question input:disabled { cursor:not-allowed; }
+
+.loan-candidates { gap:12px; align-items:stretch; }
+.loan-candidate-copy { height:100%; align-content:start; }
+.loan-candidate.is-selected:not(.is-unavailable) .loan-candidate-copy { border-color:var(--ink); background:var(--white); }
+.loan-candidate.is-unavailable { cursor:not-allowed; }
+.loan-candidate.is-unavailable .loan-candidate-copy { background:#e4e5e3; border-color:#b5b9b8; color:#46504f; }
+.loan-candidate.is-unavailable .loan-purpose-line { color:#46504f; }
+.loan-candidate.is-unavailable em { background:#cfd3d0; color:#303a37; }
+.candidate-reason { padding-top:10px; margin-top:4px; border-top:1px solid #b5b9b8; font-size:14px; line-height:1.6; color:#46504f; }
+.candidate-selection-note { font-size:14px; font-weight:600; }
+.candidate-availability-note { color:var(--ink-2); line-height:1.6; margin:0 0 20px; }
+.candidate-availability-note a { color:var(--blue); text-decoration:underline; text-underline-offset:3px; font-weight:600; }
+@media(max-width:580px) { .loan-candidates { grid-template-columns:1fr; } }
+
+/* Qualification is an explicit draft/submit step next to product selection. */
+.eligibility-graph-status { margin:12px 0; color:var(--ink-2); font-size:14px; }
+.eligibility-workflow { margin:28px 0; padding:28px 32px; border:1px solid var(--line-strong); border-radius:12px; background:var(--white); scroll-margin-top:24px; }
+.eligibility-workflow-heading { display:flex; justify-content:space-between; align-items:center; gap:20px; }
+.eligibility-workflow-heading h3 { margin:0 0 8px; font-size:24px; }
+.eligibility-workflow-heading p { margin:0; color:var(--ink-2); font-size:16px; }
+.eligibility-workflow-heading button { flex-shrink:0; }
+.eligibility-pending { margin:20px 0 0; color:var(--blue); font-size:14px; }
+.eligibility-workflow .eligibility-intake { padding:28px 0 0; margin:0; border-radius:0; background:transparent; }
+.eligibility-workflow .eligibility-intake > h4 { font-size:20px; }
+.eligibility-workflow .eligibility-intake > fieldset { margin-top:28px; padding-top:20px; }
+.eligibility-workflow .eligibility-radio-row { font-size:16px; }
+.eligibility-workflow .eligibility-intake small { font-size:14px; }
+.eligibility-workflow .eligibility-intake p { font-size:14px; color:var(--muted); max-width:75ch; }
+.eligibility-workflow .eligibility-intake legend { font-size:18px; }
+.eligibility-completion { border-top:1px solid var(--line); padding-top:24px; margin-top:24px; }
+.eligibility-completion > p { font-size:14px; color:var(--muted); }
+.eligibility-review { display:flex; align-items:flex-start; gap:12px; font-size:16px; font-weight:600; }
+.eligibility-review input { margin-top:4px; flex-shrink:0; }
+.eligibility-error, .eligibility-completion .eligibility-error { color:#943b32; font-size:14px; margin:6px 0 0; }
+.required-label { color:var(--blue); font-style:normal; font-size:14px; margin-left:6px; }
+.eligibility-workflow [aria-invalid="true"] { outline:2px solid #943b32; outline-offset:2px; }
+.eligibility-completion button { margin-top:16px; }
+@media(max-width:580px) {
+ .eligibility-workflow { padding:20px 16px; }
+ .eligibility-workflow-heading { align-items:flex-start; flex-direction:column; gap:16px; }
+ .eligibility-workflow-heading h3 { font-size:22px; }
+ .eligibility-completion button { width:100%; }
+}

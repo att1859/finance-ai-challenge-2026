@@ -1,7 +1,7 @@
 import { DEFAULT_PROFILE } from '../../data/sample-profile.js';
 import { escapeHtml as safe } from '../shared/escape-html.js';
 import { icon } from '../shared/icon.js';
-import { quietButton } from '../shared/seed-controls.js';
+import { quietButton } from '../shared/controls.js';
 
 export function renderDiagnosisSection(profile, inputMode = 'manual') {
   return `<section class="diagnosis-section" id="diagnosis" aria-labelledby="diagnosis-title"><div class="section-heading"><h2 id="diagnosis-title">계산에 필요한 정보를 입력해 주세요.</h2><p>이번 학기 자금과 졸업까지 남은 학기를 알려주세요.</p></div><button class="${quietButton}" type="button" data-action="sample">${inputMode === 'sample' ? '예시 정보 다시 채우기' : '예시 정보로 채우기'}</button>${renderForm(profile)}</section>`;
@@ -19,9 +19,9 @@ export function renderForm(p) {
     ${numberField('salary', '취업 후 예상 월소득', p.salary, '만 원', '취업 후 상환액 비교에 사용하는 예상 소득입니다.')}
   </div><div class="form-submit-row"><div><strong>현재 중시 · 균형 · 미래 중시를 비교합니다.</strong><p>대출상품과 추가 조건은 결과에서 확인할 수 있어요.</p></div><button class="button button-primary button-large" type="submit">결과 확인하기 ${icon('arrow')}</button></div></form>`;
 }
-export function readProfile(form) {
+export function readProfile(form, previousProfile = {}) {
   const data = new FormData(form);
-  const profile = { ...DEFAULT_PROFILE };
+  const profile = { ...DEFAULT_PROFILE, ...previousProfile };
   for (const key of ['remainingSemesters','tuitionPerSemester','tuitionContributionPerSemester','currentMonthlyIncome','desiredCollegeSpend','salary']) {
     const value = data.get(key);
     profile[key] = value == null || String(value).trim() === '' ? NaN : Number(value);

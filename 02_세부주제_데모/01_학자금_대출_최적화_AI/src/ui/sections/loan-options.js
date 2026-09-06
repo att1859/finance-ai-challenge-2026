@@ -14,67 +14,24 @@ function checked(value) {
   return value === true ? 'checked' : '';
 }
 
-function renderCandidate(candidate, selectedId) {
+function renderCandidate(candidate, selectedId, unavailable = false) {
   const description = candidate.compositionDescription;
-  const badge = candidate.isRecommended
+  const badge = unavailable ? '<em>요건 미충족</em>' : candidate.isRecommended
     ? '<em>추천 구성</em>'
     : candidate.isPendingConfirmation
       ? '<em>자격 확인 전 후보</em>'
       : '';
 
-  return `<label class="loan-candidate ${candidate.id === selectedId ? 'is-selected' : ''}">
-    <input type="radio" name="loanCandidate" value="${candidate.id}" ${candidate.id === selectedId ? 'checked' : ''}>
+  return `<label class="loan-candidate ${candidate.id === selectedId ? 'is-selected' : ''} ${unavailable ? 'is-unavailable' : ''}">
+    <input type="radio" name="loanCandidate" value="${candidate.id}" ${unavailable ? 'disabled' : ''} ${candidate.id === selectedId ? 'checked' : ''}>
     <span class="loan-candidate-copy">
       <span class="loan-candidate-title"><strong>${safe(candidate.label)}</strong>${badge}</span>
       <span class="loan-purpose-line"><b>등록금</b> ${description.purposes.tuition.productLabel} · ${formatMoney(description.purposes.tuition.principal, { digits: 1 })} · ${description.purposes.tuition.eligibilityLabel}</span>
       <span class="loan-purpose-line"><b>생활비</b> ${description.purposes.living.productLabel} · ${formatMoney(description.purposes.living.principal, { digits: 1 })} · ${description.purposes.living.eligibilityLabel}</span>
+      ${unavailable ? `<span class="candidate-reason">${safe([...new Set(description.exclusionReasons.map(item=>item.message))].join(' ') || '현재 입력한 자격 요건을 충족하지 않습니다.')}</span>` : ''}
+      ${candidate.id===selectedId?'<span class="candidate-selection-note">현재 그래프에 반영 중'+(unavailable?' · 자격 미충족 가정':'')+'</span>':''}
     </span>
   </label>`;
-}
-
-function fieldNeeded(missingFields, field) {
-  return missingFields.includes(field);
-}
-
-function renderEligibilityFields(state, candidate) {
-  const profile = state.profile;
-  const missing = candidate.eligibility.missingFields;
-  const fields = [];
-
-  if (fieldNeeded(missing, 'academicLevel')) {
-    fields.push(`<label class="field"><span>학부·대학원</span><select name="academicLevel"><option value="">선택해 주세요</option><option value="undergraduate" ${selected(profile.academicLevel, 'undergraduate')}>학부</option><option value="graduate" ${selected(profile.academicLevel, 'graduate')}>대학원</option></select></label>`);
-  }
-  if (fieldNeeded(missing, 'age')) {
-    fields.push(`<label class="field"><span>현재 만 나이</span><span class="input-unit"><input name="age" type="number" min="0" max="100" value="${profile.age ?? ''}"><em>세</em></span></label>`);
-  }
-  if (fieldNeeded(missing, 'studentStatus')) {
-    fields.push(`<label class="field"><span>학적 구분</span><select name="studentStatus"><option value="">선택해 주세요</option><option value="continuing" ${selected(profile.studentStatus, 'continuing')}>재학생</option><option value="new" ${selected(profile.studentStatus, 'new')}>신입생</option><option value="transfer" ${selected(profile.studentStatus, 'transfer')}>편입생</option><option value="readmitted" ${selected(profile.studentStatus, 'readmitted')}>재입학생</option></select></label>`);
-  }
-  if (fieldNeeded(missing, 'previousSemesterScore')) {
-    fields.push(`<label class="field"><span>직전학기 백분위 성적</span><span class="input-unit"><input name="previousSemesterScore" type="number" min="0" max="100" value="${profile.previousSemesterScore ?? ''}"><em>점</em></span></label>`);
-  }
-  if (fieldNeeded(missing, 'previousSemesterCredits')) {
-    fields.push(`<label class="field"><span>직전학기 이수학점</span><span class="input-unit"><input name="previousSemesterCredits" type="number" min="0" value="${profile.previousSemesterCredits ?? ''}"><em>학점</em></span></label>`);
-  }
-  if (fieldNeeded(missing, 'isDisabled')) {
-    fields.push(`<label class="condition-check"><input name="isDisabled" type="checkbox" ${checked(profile.isDisabled)}><span><strong>장애학생에 해당해요</strong><small>성적·이수학점 예외 판정에만 사용합니다.</small></span></label>`);
-  }
-  if (missing.some((field) => field.startsWith('commonEligibility.'))) {
-    fields.push(`<label class="condition-check condition-check-wide"><input name="commonEligibilityConfirmed" type="checkbox" ${checked(profile.commonEligibilityConfirmed)}><span><strong>공통 신청요건을 모두 확인했어요</strong><small>대상기관·국적/거주·중복지원·제한대학·허위정보·차액 반환·금융거래 제한 요건입니다.</small></span></label>`);
-  }
-
-  const usesIncomeContingent = candidate.tuitionProduct === 'income-contingent'
-    || candidate.livingProduct === 'income-contingent';
-  if (usesIncomeContingent) {
-    fields.push(`<label class="field"><span>학자금 지원구간</span><select name="supportBracket"><option value="">모름 / 확인 필요</option>${Array.from({ length: 10 }, (_, i) => `<option value="${i + 1}" ${selected(profile.supportBracket, String(i + 1))}>${i + 1}구간</option>`).join('')}</select><small>취업 후 상환의 생활비 자격과 이자면제 판정에 사용합니다. 일반 상환에는 지원구간에 따른 국가 이자면제를 적용하지 않습니다.</small></label>`);
-    fields.push(`<label class="condition-check"><input name="isMultiChildHousehold" type="checkbox" ${checked(profile.isMultiChildHousehold)}><span><strong>다자녀가구 학생이에요</strong><small>생활비 자격 예외와 이자면제를 다시 판정합니다.</small></span></label>`);
-    fields.push(`<label class="condition-check"><input name="isCareLeaver" type="checkbox" ${checked(profile.isCareLeaver)}><span><strong>자립준비청년이에요</strong><small>생활비 자격 예외와 이자면제를 다시 판정합니다.</small></span></label>`);
-    fields.push(`<label class="condition-check"><input name="isBasicOrNearPoverty" type="checkbox" ${checked(profile.isBasicOrNearPoverty)}><span><strong>기초·차상위 대상이에요</strong><small>취업 후 상환 이자면제를 다시 판정합니다.</small></span></label>`);
-  }
-
-  return fields.length
-    ? `<div class="result-condition-grid">${fields.join('')}</div>`
-    : '<p class="condition-complete">현재 선택에 필요한 자격 정보를 모두 확인했습니다.</p>';
 }
 
 function renderRepaymentTerms(state, candidate, scenario) {
@@ -99,10 +56,15 @@ function renderExistingLoan(state) {
 }
 
 export function renderLoanOptions(state, scenario) {
+  if(!state.eligibility.completed || state.eligibility.open) return '';
   const recommendation = selectedRecommendation(state);
   const candidate = selectedLoanCandidate(state);
   if (!recommendation || !candidate) return '';
   const selectedId = state.resultSelections.candidateByScenario[scenario.id];
+  const excludedIds = new Set(recommendation.excludedCandidates.map(item=>item.id));
+  const byId = new Map([...recommendation.candidates,...recommendation.excludedCandidates].map(item=>[item.id,item]));
+  const cards = ['general:general','general:income-contingent','income-contingent:general','income-contingent:income-contingent'].map(id=>byId.get(id)).filter(Boolean);
+
   const statusCopy = recommendation.status === 'recommended'
     ? '현재 입력으로 추천 구성을 찾았습니다.'
     : recommendation.status === 'confirmation-required'
@@ -111,18 +73,17 @@ export function renderLoanOptions(state, scenario) {
   const fullCap = state.comparison?.view === 'baseline' ? state.baselineFullLoanCapView : state.currentFullLoanCapView;
 
   return `<section class="loan-options" aria-labelledby="loan-options-title">
-    <div class="section-heading compact"><h3 id="loan-options-title">${safe(scenario.name)}의 상환상품 바꾸기</h3><p>등록금과 생활비의 상품을 함께 골라주세요. 이 선택은 <strong>${safe(scenario.name)}</strong>의 그래프에만 반영됩니다.</p></div>
-    ${scenario.custom && recommendation.excludedCandidates.some(c=>c.id===selectedId) ? `<p class="current-value-notice"><strong>직접 선택한 구성은 현재 자격 조건에 맞지 않습니다.</strong> 가정한 금액을 계산한 결과이며, 아래 제외 사유를 확인해 주세요. 상품을 자동으로 바꾸지 않았습니다.</p>` : ''}
+    <div class="section-heading compact"><h3 id="loan-options-title" tabindex="-1">${safe(scenario.name)}의 상환상품 바꾸기</h3><p>등록금과 생활비의 상품을 함께 골라주세요. 이 선택은 <strong>${safe(scenario.name)}</strong>의 그래프에만 반영됩니다.</p></div>
+    ${excludedIds.size ? `<p class="candidate-availability-note">${excludedIds.size===cards.length?'현재 입력으로는 네 구성 모두 요건을 충족하지 않습니다.':'회색 카드는 현재 입력한 요건을 충족하지 않아 선택할 수 없습니다.'} <a href="#eligibility-workflow" data-action="eligibility-edit">자격·혜택 정보 수정</a>${excludedIds.has(selectedId)?' 현재 그래프는 이전 선택을 유지한 가정입니다.':''}</p>` : ''}
     <p id="condition-update-status" class="sr-only" role="status" aria-live="polite"></p>
-    <fieldset class="loan-candidate-group"><legend>가능한 상품 구성</legend><div class="loan-candidates">${recommendation.candidates.map((item) => renderCandidate(item, selectedId)).join('')}</div></fieldset>
-    <details class="loan-extra-options" data-detail="loan-extra"><summary>기간·생활비 포함·자격 조건 조정</summary><div class="living-choice-row">
+    <fieldset class="loan-candidate-group"><legend>상환상품 구성</legend><div class="loan-candidates">${cards.map((item) => renderCandidate(item, selectedId, excludedIds.has(item.id))).join('')}</div></fieldset>
+    <details class="loan-extra-options" data-detail="loan-extra"><summary>기간·생활비 포함·기존 대출 조정</summary><div class="living-choice-row">
       <label class="condition-check condition-check-wide"><input name="includeLivingLoan" type="checkbox" ${checked(state.resultSelections.includeLivingByScenario[scenario.id])}><span><strong>생활비 대출 포함</strong><small>제외하면 생활비 여력과 미충족액을 다시 계산합니다.</small></span></label>
       <details><summary>풀대출 상한 보기 ${icon('chevron')}</summary><p>추천액과 별개로 ${fullCap.semesters}학기 동안 생활비 대출은 최대 ${formatMoney(fullCap.livingPrincipal)}입니다. 학기 ${formatMoney(fullCap.semesterLimit)}와 누적 ${formatMoney(fullCap.cumulativeLimit)} 중 먼저 닿는 한도를 적용합니다.</p></details>
     </div>
     ${renderRepaymentTerms(state, candidate, scenario)}
-    <details class="eligibility-panel" ${state.resultSelections.eligibilityDetailsOpen ? 'open' : ''}><summary>현재 판정에 필요한 자격 조건 ${icon('chevron')}</summary><div><p>선택한 구성에 필요한 항목만 확인합니다. 이 정보는 브라우저 세션에만 남습니다.</p>${renderEligibilityFields(state, candidate)}</div></details>
     ${renderExistingLoan(state)}
-    ${recommendation.excludedCandidates.length ? `<details class="excluded-options"><summary>제외된 선택지와 이유 ${icon('chevron')}</summary><ul>${recommendation.excludedCandidates.map((item) => `<li><strong>${safe(item.label)}</strong>${item.compositionDescription.exclusionReasons.map(({ message }) => `<span>${safe(message)}</span>`).join('')}</li>`).join('')}</ul></details>` : ''}
+
     </details>
   </section>`;
 }

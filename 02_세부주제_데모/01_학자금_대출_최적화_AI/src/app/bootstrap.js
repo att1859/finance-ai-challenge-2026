@@ -1,3 +1,7 @@
+import { beginEligibility, updateEligibilityDraft, completeEligibility, createEligibilityWorkflow, ALL_PRODUCT_CONTEXT } from './eligibility-draft.js';
+import { renderEligibilityWorkflow, renderEligibilityGraphStatus } from '../ui/sections/eligibility-workflow.js';
+import { commonConfirmations } from '../ui/sections/eligibility-intake.js';
+import { applyControls } from '../ui/shared/controls.js';
 import { renderRepaymentGuide } from '../ui/sections/repayment-guide.js';
 import { selectableMonths, nearestMonth, moveSelectedMonth } from './chart-selection.js';
 import { calculatePlan } from '../application/calculate-plan.js';
@@ -45,6 +49,7 @@ const selectedScenario = () => findSelectedScenario(state);
 
 function bindShell() {
   const form = document.querySelector('#diagnosis-form');
+  applyControls(app);
   const smoothingDialog = document.querySelector('#smoothing-dialog');
   app.addEventListener('click', handleClick);
   smoothingDialog?.addEventListener('click', (event) => {
@@ -59,6 +64,18 @@ function handleClick(event) {
   const trigger = event.target.closest('[data-action]');
   if (!trigger) return;
   const action = trigger.dataset.action;
+  if (action === 'eligibility-toggle' || action === 'eligibility-edit') {
+    event.preventDefault();
+    const previousTop=trigger.getBoundingClientRect().top;
+    if(action==='eligibility-toggle' && state.eligibility.open) state.eligibility.open=false;
+    else beginEligibility(state);
+    renderResults();
+    const target=document.querySelector('[data-action="eligibility-toggle"]');
+    if(action==='eligibility-edit') document.querySelector('#eligibility-workflow')?.scrollIntoView({block:'start',behavior:'instant'});
+    else if(target) window.scrollTo({top:window.scrollY+target.getBoundingClientRect().top-previousTop,behavior:'instant'});
+    target?.focus({preventScroll:true});
+    return;
+  }
   if (action === 'tuition-help') {
     const help = document.querySelector('#tuition-help');
     help.hidden = !help.hidden;
@@ -110,7 +127,7 @@ function showErrors(errors) {
 
 function handleSubmit(event) {
   event.preventDefault();
-  const profile = readProfile(event.currentTarget);
+  const profile = readProfile(event.currentTarget, state.profile);
   const errors = validateProfile(profile);
   showErrors(errors);
   if (Object.keys(errors).length) {
@@ -129,6 +146,8 @@ function handleSubmit(event) {
 }
 
 function loadSample() {
+  state.eligibility=createEligibilityWorkflow();
+  Object.keys(state.resultSelections.candidateByScenario).forEach(id=>{state.resultSelections.candidateByScenario[id]='general:general';});
   setProfile(state, { ...SAMPLE_PROFILE });
   updateUi(state, { inputMode: 'sample' });
   document.querySelector('.diagnosis-section').outerHTML = renderDiagnosisSection(
@@ -140,6 +159,7 @@ function loadSample() {
   form.addEventListener('input', handleFormInput);
   form.addEventListener('change', handleFormInput);
   document.querySelector('#diagnosis')?.scrollIntoView({ behavior: 'smooth' });
+  applyControls(document.querySelector('.diagnosis-section'));
 }
 
 function recalculate(announce = true) {
@@ -163,13 +183,24 @@ function recalculate(announce = true) {
 }
 
 function recalculateResultOption(name, value, message) {
+  const previousField = document.getElementsByName(name)[0];
+  const preservePosition = previousField?.closest('.eligibility-intake');
+  const previousTop = previousField?.getBoundingClientRect().top;
+  const previousScroll = window.scrollY;
   recalculate(false);
   window.requestAnimationFrame(() => {
     const escapedValue = window.CSS?.escape ? window.CSS.escape(String(value)) : String(value);
-    const selector = name === 'loanCandidate' && value != null
+    const selector = (name === 'loanCandidate' || document.querySelector(`input[type="radio"][name="${name}"]`)) && value != null
       ? `[name="${name}"][value="${escapedValue}"]`
       : `[name="${name}"]`;
-    document.querySelector(selector)?.focus({ preventScroll: true });
+    const nextField = document.querySelector(selector);
+    if (preservePosition && nextField && Number.isFinite(previousTop)) {
+      const offset = nextField.getBoundingClientRect().top - previousTop;
+      window.scrollTo({top: window.scrollY + offset, behavior: 'instant'});
+    } else if (preservePosition) {
+      window.scrollTo({top: previousScroll, behavior: 'instant'});
+    }
+    nextField?.focus({ preventScroll: true });
     const status = document.querySelector('#condition-update-status');
     if (status) status.textContent = message;
   });
@@ -188,11 +219,14 @@ function renderResults() {
     <section class="results" aria-labelledby="result-title">
       ${renderRepaymentGuide()}
       <p id="selection-status" class="sr-only" role="status" aria-live="polite"></p>
+      ${renderEligibilityGraphStatus(state)}
       ${renderComparisonFigure(state, current)}
-      ${renderScenarioSelector(state)}
+      ${renderEligibilityWorkflow(state)}
+      ${state.eligibility.completed && !state.eligibility.open ? renderScenarioSelector(state) : ''}
       ${renderLoanOptions(state, current)}
       ${renderSelectedDetail(state, current)}
     </section>`;
+  applyControls(root);
   bindResultEvents();
   openDetails.forEach(key => { const details = root.querySelector(`[data-detail="${key}"]`); if (details) details.open = true; });
 }
@@ -240,7 +274,7 @@ function bindResultEvents() {
     event.preventDefault();
     updateMonth(event.key === 'Home' ? 0 : event.key === 'End' ? months.at(-1) : moveSelectedMonth(months,state.comparison.month,event.key === 'ArrowLeft' ? -1 : 1));
   });
-  document.querySelectorAll('.seed-choice').forEach(group => {
+  document.querySelectorAll('.choice-control').forEach(group => {
     const choose = button => {
       const {name,value} = button;
       if (name === 'employmentDelayMonths') { updateStress(state,{employmentDelayMonths:Number(value)}); recalculate(); restore(name,value); }
@@ -258,14 +292,8 @@ function bindResultEvents() {
     selectScenario(state, event.target.value);
     restore('scenario', event.target.value); announceSelection();
   }));
-  document.querySelectorAll('.loan-options input, .loan-options select').forEach((input) => (
-    input.addEventListener('change', handleResultOptionChange)
-  ));
-  document.querySelector('.eligibility-panel')?.addEventListener('toggle', (event) => {
-    updateResultSelections(state, {
-      eligibilityDetailsOpen: event.currentTarget.open,
-    });
-  });
+  bindEligibilityEvents();
+  document.querySelectorAll('.loan-options input, .loan-options select').forEach(input=>input.addEventListener('change',handleResultOptionChange));
   document.querySelectorAll('.stress-controls input').forEach((input)=>input.addEventListener('change',(event)=>{
     if (event.target.name === 'employmentDelayMonths') {
       updateStress(state, { employmentDelayMonths: Number(event.target.value) });
@@ -280,6 +308,82 @@ function bindResultEvents() {
     recalculate();
     restore(name, value);
   }));
+}
+
+function refreshEligibility(name, value) {
+  const escaped=CSS.escape(name);
+  const selector=document.querySelector(`input[type="radio"][name="${escaped}"]`)?`[name="${escaped}"][value="${CSS.escape(String(value))}"]`:`[name="${escaped}"]`;
+  const previous=document.querySelector(selector);
+  const top=previous?.getBoundingClientRect().top;
+  document.querySelector('#eligibility-workflow').outerHTML=renderEligibilityWorkflow(state);
+  document.querySelector('.eligibility-graph-status').outerHTML=renderEligibilityGraphStatus(state);
+  bindEligibilityEvents();
+  const next=document.querySelector(selector);
+  if(next&&Number.isFinite(top)) window.scrollTo({top:window.scrollY+next.getBoundingClientRect().top-top,behavior:'instant'});
+  next?.focus({preventScroll:true});
+}
+function bindEligibilityEvents() {
+  const form=document.querySelector('#eligibility-form');
+  if(!form) return;
+  form.querySelectorAll('.eligibility-select').forEach(menu=>{
+    const options=[...menu.querySelectorAll('[role="option"]')];
+    menu.addEventListener('click',event=>{
+      const option=event.target.closest('[data-choice-value]');
+      if(!option) return;
+      const name=menu.dataset.choice,value=option.dataset.choiceValue;
+      updateEligibilityDraft(state,{[name]:value});
+      refreshEligibility(name,value);
+    });
+    menu.addEventListener('keydown',event=>{
+      if(event.key==='Escape') {event.preventDefault();menu.open=false;menu.querySelector('summary').focus();}
+      if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)) {
+        event.preventDefault();menu.open=true;
+        const index=options.indexOf(document.activeElement);
+        const next=event.key==='Home'?0:event.key==='End'?options.length-1:index<0?0:(index+(event.key==='ArrowDown'?1:-1)+options.length)%options.length;
+        options[next]?.focus();
+      }
+    });
+    menu.addEventListener('focusout',()=>requestAnimationFrame(()=>{if(!menu.contains(document.activeElement))menu.open=false;}));
+  });
+  form.addEventListener('change',event=>{
+    const field=event.target, {name,value,checked}=field;
+    if(!name) return;
+    const flow=state.eligibility;
+    if(name==='eligibilityReviewed') {
+      flow.reviewed=checked; delete flow.errors.eligibilityReviewed;
+    } else if(field.hasAttribute('data-confirm-all')) {
+      const patch={commonEligibility:{...flow.draft.commonEligibility}};
+      commonConfirmations(flow.draft,ALL_PRODUCT_CONTEXT).filter(item=>!item.disabled).forEach(({name:key})=>{
+        if(key.startsWith('common:')) patch.commonEligibility[key.slice(7)]=checked;
+        else patch[key]=checked;
+      });
+      updateEligibilityDraft(state,patch);
+    } else if(name.startsWith('common:')) {
+      updateEligibilityDraft(state,{commonEligibility:{...flow.draft.commonEligibility,[name.slice(7)]:checked}});
+    } else {
+      const answer=field.hasAttribute('data-common-check')?checked:field.dataset.tristate?value==='true':field.type==='number'?(value===''?undefined:Number(value)):value;
+      updateEligibilityDraft(state,{[name]:answer});
+    }
+    refreshEligibility(name,value);
+  });
+  form.addEventListener('submit',event=>{
+    event.preventDefault();
+    const top=document.querySelector('#eligibility-complete').getBoundingClientRect().top;
+    if(!completeEligibility(state)) {
+      refreshEligibility('eligibilityReviewed');
+      const name=Object.keys(state.eligibility.errors)[0];
+      const field=document.querySelector(`#eligibility-form [name="${CSS.escape(name)}"]`);
+      field?.focus({preventScroll:true});field?.scrollIntoView({block:'center',behavior:'instant'});
+      return;
+    }
+    recalculate(false);
+    const heading=document.querySelector('#loan-options-title');
+    if(heading) {
+      const targetTop=Math.max(24,Math.min(top,window.innerHeight*.45));
+      window.scrollTo({top:window.scrollY+heading.getBoundingClientRect().top-targetTop,behavior:'instant'});
+      heading.focus({preventScroll:true});
+    }
+  });
 }
 
 function handleResultOptionChange(event) {
@@ -390,8 +494,9 @@ function openCustomEditor(id) {
   draft.candidateId = state.resultSelections.candidateByScenario[id ?? scenario.id] ?? 'general:general';
   const count = scenario.funding.semesters;
   document.querySelector('#custom-editor')?.remove();
-  app.insertAdjacentHTML('beforeend', renderCustomEditor(draft, count, Boolean(existing)));
+  app.insertAdjacentHTML('beforeend', renderCustomEditor(draft, count, Boolean(existing), state.eligibility.completed));
   const dialog = document.querySelector('#custom-editor');
+  applyControls(dialog);
   const form = dialog.querySelector('form');
   const read = () => ({
     ...draft, name: form.elements['custom-name'].value.trim(),

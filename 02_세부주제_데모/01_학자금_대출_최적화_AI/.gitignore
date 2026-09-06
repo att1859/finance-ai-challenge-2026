@@ -2,6 +2,7 @@ node_modules/
 dist/
 playwright-report/
 test-results/
+.env
 
 # impeccable-live-ignore-start
 .impeccable/hook.cache.json

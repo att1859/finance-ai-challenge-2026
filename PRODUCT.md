@@ -1,6 +1,6 @@
 # 현행 제품 안내
 
-현재 공모전 웹 MVP는 **SLOW (Student Loan Operating Window)**다. 구현과 실행 위치는 `02_세부주제_데모/01_학자금_대출_최적화_AI`이며, Vite 기반 단일 페이지 앱이다.
+현재 공모전 웹 MVP는 **SLOW (Student Loan Optimizing Window)**다. 구현과 실행 위치는 `02_세부주제_데모/01_학자금_대출_최적화_AI`이며, Vite 기반 단일 페이지 앱이다.
 
 현행 기준은 앱 폴더의 다음 문서로 통일한다.
 

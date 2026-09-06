@@ -1,5 +1,5 @@
 import { hasActiveStress } from '../../app/selectors.js';
-import { segmented, quietButton } from '../shared/seed-controls.js';
+import { segmented, quietButton } from '../shared/controls.js';
 export function renderStressControls(state) {
  return `<section class="stress-section compact-stress" aria-label="조건 변경"><div class="stress-controls">
  <div class="compact-choice"><span>취업 지연</span>${segmented('employmentDelayMonths','취업 지연',[[0,'없음'],[6,'6개월'],[12,'12개월']],state.stress.employmentDelayMonths)}</div>

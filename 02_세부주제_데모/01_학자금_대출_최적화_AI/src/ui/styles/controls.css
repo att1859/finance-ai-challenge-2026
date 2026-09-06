@@ -1,0 +1,9 @@
+/* Project-owned controls; no SEED runtime or recipes. */
+.button { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:10px 16px; border:1px solid transparent; border-radius:var(--radius-control); font:inherit; cursor:pointer; text-decoration:none; }
+.button-secondary { background:var(--paper-2); color:var(--ink); }
+.button-primary { background:var(--navy); color:var(--white); }
+.choice-control { display:inline-flex; flex-wrap:wrap; gap:4px; padding:4px; background:var(--paper-2); border-radius:var(--radius-control); }
+.choice-indicator { display:none; }
+.choice-item { border:0; border-radius:6px; min-height:44px; padding:8px 14px; background:transparent; color:var(--muted); font:inherit; cursor:pointer; }
+.choice-item[aria-checked="true"] { background:var(--white); color:var(--ink); font-weight:700; }
+input[type="checkbox"],input[type="radio"] { accent-color:var(--ink); }

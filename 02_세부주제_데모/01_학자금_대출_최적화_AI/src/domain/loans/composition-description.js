@@ -23,6 +23,14 @@ export const LOAN_REASON_MESSAGES = Object.freeze({
   GENERAL_AGE_LIMIT_EXCEEDED: '일반 상환 대출의 연령 기준을 충족하지 않습니다.',
   INCOME_CONTINGENT_UNDERGRADUATE_AGE_LIMIT_EXCEEDED: '취업 후 상환 학부 대출의 연령 기준을 충족하지 않습니다.',
   INCOME_CONTINGENT_GRADUATE_AGE_LIMIT_EXCEEDED: '취업 후 상환 대학원 대출의 연령 기준을 충족하지 않습니다.',
+  AGE_CRITERION_NOT_MET: '해당 상품의 연령 기준을 충족하지 않는 것으로 확인했습니다.',
+  SUPPORTED_INSTITUTION_NOT_MET: '지원 대상 대학 요건을 충족하지 않는 것으로 확인했습니다.',
+  NATIONALITY_OR_ALLOWED_DOMESTIC_RESIDENCY_NOT_MET: '국적·국내 거주 요건을 충족하지 않는 것으로 확인했습니다.',
+  NO_DUPLICATE_FUNDING_NOT_MET: '등록금 범위를 초과하는 중복지원이 없는지 확인이 필요합니다.',
+  NO_RESTRICTED_INSTITUTION_NOT_MET: '학자금 지원 제한 대학에 해당하지 않는다는 요건을 충족하지 않습니다.',
+  NO_FALSE_INFORMATION_NOT_MET: '허위 정보·부실 자료가 없다는 요건을 충족하지 않습니다.',
+  NO_UNRETURNED_TUITION_DIFFERENCE_NOT_MET: '반환하지 않은 등록금 대출 차액이 없다는 요건을 충족하지 않습니다.',
+  NO_FINANCIAL_TRANSACTION_BLOCK_NOT_MET: '금융거래 제한 사유가 없다는 요건을 충족하지 않습니다.',
   SCORE_BELOW_MINIMUM: '직전학기 성적 기준을 충족하지 않습니다.',
   CREDITS_BELOW_MINIMUM: '직전학기 이수학점 기준을 충족하지 않습니다.',
 });
@@ -88,7 +96,9 @@ export function createLoanCompositionDescription(candidate) {
     }),
     reasons: reasonItems(candidate.reasonCodes ?? []),
     warnings: reasonItems(candidate.warningCodes ?? []),
-    exclusionReasons: reasonItems(candidate.exclusionReasonCodes ?? []),
+    exclusionReasons: reasonItems(candidate.eligibility.status === 'ineligible'
+      ? [...candidate.loanComposition.tuitionComponents,...candidate.loanComposition.livingComponents].flatMap(component=>(component.eligibility.rules??[]).filter(rule=>rule.status==='ineligible').map(rule=>rule.reasonCode)).filter(Boolean)
+      : candidate.exclusionReasonCodes ?? []),
     policyReferences: candidate.policyReferences,
   });
 }

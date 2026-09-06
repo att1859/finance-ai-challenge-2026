@@ -1,6 +1,6 @@
 @font-face {
-  font-family: 'Noto Sans KR UI';
-  src: url('../../assets/NotoSansKR-UI.woff2') format('woff2');
+  font-family: 'Pretendard Variable';
+  src: url('../../assets/PretendardVariable.woff2') format('woff2');
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
@@ -23,8 +23,11 @@
   --rose: #a54d42;
   --amber: #865b13;
   --focus: #1769aa;
-  --radius: 12px;
+  --radius-control: 8px;
+  --radius-surface: 12px;
+  --radius-detail: 16px;
+  --radius: var(--radius-surface);
   --max: 1180px;
-  --font-body: 'Noto Sans KR UI', 'Malgun Gothic', system-ui, sans-serif;
-  --font-display: 'Noto Sans KR UI', 'Malgun Gothic', system-ui, sans-serif;
+  --font-body: 'Pretendard Variable', 'Malgun Gothic', system-ui, sans-serif;
+  --font-display: 'Pretendard Variable', 'Malgun Gothic', system-ui, sans-serif;
 }

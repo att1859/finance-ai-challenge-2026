@@ -21,10 +21,7 @@ export function buildScenarioTimeline(scenario, endMonth) {
     let repayment = generalRow?.totalPayment ?? 0;
     if (icl) {
       if (month < employmentMonth) {
-        const rate = icl.annualRate / 100 / 12;
-        const newPrincipal = icl.disbursementSchedule.reduce((sum, item) => sum + item.principal, 0);
-        balance += (icl.principal - newPrincipal) * (1 + rate) ** month;
-        balance += icl.disbursementSchedule.reduce((sum, item) => sum + (item.month <= month ? item.principal * (1 + rate) ** (month - item.month) : 0), 0);
+        balance += icl.preEmploymentBalances[month];
       } else {
         const elapsed = month - employmentMonth;
         const year = annualSchedule[Math.floor(elapsed / 12)];
@@ -62,7 +59,7 @@ export function scenarioRepaymentProjection(scenario) {
   const icl = scenario.loan.repayments.incomeContingent;
   const generalEnd = (general?.monthlyRepaymentSchedule ?? []).filter(r => r.totalPayment > 0).at(-1)?.globalMonth;
   const annualSchedule = icl?.calculationPossible ? calculateIncomeContingentCurrentValueComparison({
-    ...icl.policy, balanceAtEmployment: icl.balanceAtEmployment,
+    ...icl.policy, balanceAtEmployment: icl.balanceAtEmployment, interestExemptBalance:icl.interestExemptBalance,
     annualGrossIncome: scenario.adjustedSalary * 12, comparisonYears: 50,
   }).annualSchedule : [];
   const paidYear = annualSchedule.findIndex(r => r.closingBalance <= 1e-8);

@@ -27,7 +27,7 @@ export function selectedLoanCandidate(state) {
     state.selectedScenarioId
   ];
   return recommendation?.candidates.find(({ id }) => id === candidateId)
-    ?? (selectedScenario(state)?.custom ? recommendation?.excludedCandidates.find(({ id }) => id === candidateId) : null)
+    ?? recommendation?.excludedCandidates.find(({ id }) => id === candidateId)
     ?? recommendation?.candidates[0]
     ?? null;
 }

@@ -49,3 +49,20 @@ test('무대출·무소득·음수 생활비·계산 불가를 구분한다',()=
  const unpaid=run({salary:0,loanType:'income-contingent'});
  assert.ok(unpaid.t.rows[168].balance>unpaid.t.rows[48].balance);
 });
+
+
+test('ICL exemption is shared by graduation ledger and ten-year timeline for mixed loans',()=>{
+ const selection={resultSelections:{[SCENARIO_DEFINITIONS[1].id]:{candidateId:'general:income-contingent'}}};
+ const normal=run({...selection,isMedianIncome130:false});
+ const exempt=run({...selection,isMedianIncome130:true});
+ assert.deepEqual(normal.s.loan.repayments.general,exempt.s.loan.repayments.general);
+ assert.ok(exempt.s.loan.balanceAtGraduation<normal.s.loan.balanceAtGraduation);
+ near(exempt.t.rows[48].balance,exempt.s.loan.balanceAtGraduation);
+ near(exempt.t.rows[168].balance,exempt.s.loan.currentValueComparison.endingBalance);
+});
+test('below-threshold ICL exemption remains consistent throughout fifty-year horizon',()=>{
+ const s=calculateScenario({...SAMPLE_PROFILE,loanType:'income-contingent',salary:0,isMedianIncome130:true},SCENARIO_DEFINITIONS[1]);
+ const t=buildScenarioTimeline(s,648);
+ near(t.rows[48].balance,t.rows[648].balance);
+ assert.ok(t.rows.every(row=>row.repayment===0));
+});

@@ -1,4 +1,6 @@
-import { quietButton } from '../shared/seed-controls.js';
+import { COMMON_LABELS } from './eligibility-intake.js';
+import { getLoanCompositionComponents } from '../../domain/loans/loan-composition.js';
+import { quietButton } from '../shared/controls.js';
 import { selectedLoanCandidate } from '../../app/selectors.js';
 import { renderFundingFormula } from './funding-formula.js';
 import { renderSources } from './sources.js';
@@ -19,19 +21,25 @@ function moneyOrPending(value, digits = 1) {
 
 function renderComposition(candidate) {
   const { tuition, living } = candidate.compositionDescription.purposes;
-  return `<div class="composition-ledger"><h4>상품·용도별 신규 대출</h4><div class="table-wrap"><table><caption>선택한 신규 대출 구성</caption><thead><tr><th scope="col">용도</th><th scope="col">상품</th><th scope="col">대출액</th><th scope="col">자격 상태</th></tr></thead><tbody>${[tuition, living].map((purpose) => `<tr><th scope="row">${purpose.purposeLabel}</th><td>${purpose.productLabel}</td><td>${formatMoney(purpose.principal, { digits: 1 })}</td><td>${purpose.eligibilityLabel}</td></tr>`).join('')}</tbody></table></div></div>`;
+  return `<div class="composition-ledger"><h4>상품·용도별 신규 대출</h4><div class="table-wrap"><table><caption>선택한 신규 대출 구성</caption><thead><tr><th scope="col">용도</th><th scope="col">상품</th><th scope="col">대출액</th><th scope="col">자격 상태</th></tr></thead><tbody>${[tuition, living].map((purpose) => `<tr><th scope="row">${purpose.purposeLabel}</th><td data-label="상품">${purpose.productLabel}</td><td data-label="대출액">${formatMoney(purpose.principal, { digits: 1 })}</td><td data-label="자격 상태">${purpose.eligibilityLabel}${purpose.eligibilityLabel.includes("확인")?` <a href="#eligibility-workflow" data-action="eligibility-edit">정보 입력</a>`:""}</td></tr>`).join('')}</tbody></table></div></div>`;
 }
 
 function missingFieldLabel(field) {
-  if (field.startsWith('commonEligibility.')) return '공통 신청요건';
+  if (field.startsWith('commonEligibility.')) return COMMON_LABELS[field.split('.')[1]] ?? '공통 신청요건';
   return {
     supportBracket: '학자금 지원구간',
     academicLevel: '학부·대학원',
-    age: '현재 만 나이',
+    age: '선택 상품의 연령 기준 확인',
     studentStatus: '학적 구분',
     previousSemesterScore: '직전학기 성적',
     previousSemesterCredits: '직전학기 이수학점',
     isDisabled: '장애학생 여부',
+    isGraduating: '졸업학년 여부',
+    creditsConfirmed: '12학점 충족 여부',
+    scoreConfirmed: '성적 기준 확인',
+    schoolCreditRuleMet: '학교 학점 예외',
+    isUnmarried: '다자녀 미혼 조건',
+    isMedianIncome130: '중위소득 130% 이하 여부',
     hasEmergencyLivelihood: '긴급생계곤란 여부',
     isMultiChildHousehold: '다자녀가구 여부',
     isCareLeaver: '자립준비청년 여부',
@@ -63,7 +71,7 @@ function renderRecommendationExplanation(candidate, scenario) {
 
   return `<section class="recommendation-explanation" aria-labelledby="recommendation-reason-title"><div><h4 id="recommendation-reason-title">${title}</h4><p>${workEffect}</p></div><div>
     ${reasons.length ? `<ul class="reason-list">${reasons.map(({ message }) => `<li>${safe(message)}</li>`).join('')}</ul>` : '<p class="reason-empty">다른 구성의 대출액과 상환부담도 함께 비교해 보세요.</p>'}
-    ${missing.length ? `<p class="current-value-notice"><strong>추천 전에 확인할 정보</strong> ${safe(missing.join(', '))}. 위의 ‘현재 판정에 필요한 자격 조건’을 열어 입력하면 다시 계산됩니다.</p>` : ''}
+    ${missing.length ? `<p class="current-value-notice"><strong>추천 전에 확인할 정보</strong> ${safe(missing.join(', '))}. 그래프 아래 ‘내 조건으로 상품 확인’에서 입력하면 다시 계산됩니다.</p>` : ''}
     ${notices.length ? `<h5 class="notice-heading">선택 전에 확인하세요</h5><ul class="warning-list">${notices.map((message) => `<li>${safe(message)}</li>`).join('')}</ul>` : ''}
   </div></section>`;
 }
@@ -132,14 +140,20 @@ export function renderSelectedDetail(state, scenario) {
     ? ` · 기본 대비 ${signedMoney(summary[key] - baseline.timeline.summary[key])}` : '';
 
   return `<section class="selected-detail" aria-labelledby="detail-title">
-    <div class="detail-heading"><div><h3 id="detail-title">${safe(scenario.name)}</h3><p>${state.comparison.view === 'baseline' ? '기본 조건' : '그래프와 같은 변경 조건'} · ${safe(scenario.summary)}</p></div>${scenario.custom ? `<div class="custom-actions"><button type="button" class="${quietButton}" data-action="edit-custom" data-id="${scenario.id}">내 시나리오 수정</button><button type="button" class="${quietButton}" data-action="delete-custom" data-id="${scenario.id}">삭제</button></div>` : ''} </div>
+    <div class="detail-heading"><div><h3 id="detail-title">${safe(scenario.name)}</h3><p>${state.comparison.view === 'baseline' ? '기본 조건' : '그래프와 같은 변경 조건'} · ${safe(scenario.summary)}</p></div>${scenario.custom ? `<div class="custom-actions"><button type="button" class="${quietButton}" data-action="edit-custom" data-id="${scenario.id}">내 시나리오 수정</button><button type="button" class="${quietButton}" data-action="delete-custom" data-id="${scenario.id}">삭제</button></div>` : ''}     <div class="detail-products">${['tuition','living'].map(purpose=>{
+      const component=getLoanCompositionComponents(scenario.loanComposition).find(c=>c.purpose===purpose&&c.principal>0);
+      return `<span>${purpose==='tuition'?'등록금':'생활비'}: ${!component?'대출 없음':component.product==='general'?'일반 상환':'취업 후 상환(ICL)'}</span>`;
+    }).join('')}</div></div>
     ${scenario.custom && scenario.livingLoan.semesters.some(s=>s.limitedByPolicy) ? '<p role="status">누적 대출 한도로 일부 학기 금액이 줄었습니다. 자금 계산 내역에서 실제 반영액을 확인하세요.</p>' : ''}
+
+    ${state.eligibility.completed && candidate.eligibility.missingFields.length?`<p class="missing-information">확인할 정보: ${[...new Set(candidate.eligibility.missingFields.map(missingFieldLabel))].join(', ')} <a href="#eligibility-workflow" data-action="eligibility-edit">정보 입력하기 ↑</a></p>`:''}
+    ${renderExemptionSummary(loan)}
     <div class="detail-metrics">
       ${metric('이번 학기 월평균 생활비 여력', moneyOrPending(summary.collegeLiving), '이자·상환 차감 전' + delta('collegeLiving'))}
       ${metric('생활비 보완에 필요한 추가 알바', `월 약 ${Math.round(scenario.monthlyWorkHours)}<small>시간</small>`, `생활비 부족 ${formatMoney(scenario.monthlyLivingGap)} / 월 · 최저시급 단순 환산`)}
       ${metric('졸업 시 예상 대출잔액', moneyOrPending(summary.graduationBalance), '졸업할 때 남아 있는 금액' + delta('graduationBalance'))}
       ${metric('상환 기준기간 월평균 부담', moneyOrPending(summary.careerRepayment), (loan.repayments.incomeContingent ? 'ICL은 연간액의 월평균 환산 · 실제 월 청구액 아님' : '일반 상환 약정 월납입액 기준') + delta('careerRepayment'))}
-      ${metric('상환기간 생활비', moneyOrPending(summary.careerLiving), `현재부터 ${scenario.timeline.repaymentReferenceMonth}~${scenario.timeline.repaymentReferenceMonth+12}개월 · 예상 월소득 − 상환부담` + delta('careerLiving'))}
+      ${metric('상환 첫 1년 생활비', moneyOrPending(summary.careerLiving), `현재부터 ${scenario.timeline.repaymentReferenceMonth}~${scenario.timeline.repaymentReferenceMonth+12}개월 · 예상 월소득 − 상환부담` + delta('careerLiving'))}
     </div>
     <p class="tuition-resources">이번 학기 등록금 대출 ${formatMoney(scenario.tuitionFunding.principal)} · 실제 사용할 자기자금 ${formatMoney(scenario.tuitionFunding.contributionPerSemester)} · 남겨두는 자기자금 ${formatMoney(scenario.tuitionFunding.retainedContribution)}. 남겨두는 돈은 생활비에 자동 합산하지 않습니다.</p>
     <p>이번 학기 이자·상환 부담 월평균 ${formatMoney(scenario.currentSemesterPayment / scenario.funding.fundingMonths, {digits:1})}은 별도입니다. 이를 낸 뒤 생활비 여력은 ${formatMoney(scenario.collegeAfterRepayment, {digits:1})}입니다.</p>
@@ -148,7 +162,6 @@ export function renderSelectedDetail(state, scenario) {
     ${renderRecommendationExplanation(candidate, scenario)}
     ${renderRepayment(loan)}
     ${renderExecutionLedger(candidate)}
-    <details><summary>기간별 상환액과 잔액</summary><div class="table-wrap"><table><caption>그래프와 같은 관찰 기간 · 상환부담은 월평균 환산 포함</caption><thead><tr><th>경과 개월</th><th>상환 부담 (만 원/월)</th><th>월초 잔액 (만 원)</th></tr></thead><tbody>${scenario.timeline.rows.map(row => `<tr><th scope="row">${row.month}</th><td>${moneyOrPending(row.repayment)}</td><td>${moneyOrPending(row.balance)}</td></tr>`).join('')}</tbody></table></div></details>
     </details>
     <details class="detail-disclosure" data-detail="funding"><summary>자금 계산 내역</summary>
     ${renderFundingFormula(state, scenario)}
@@ -163,4 +176,11 @@ export function renderSelectedDetail(state, scenario) {
 
 function metric(label, value, note) {
   return `<div><span>${label}</span><strong>${value}</strong><small>${note}</small></div>`;
+}
+
+function renderExemptionSummary(loan) {
+ const e=loan.repayments.incomeContingent?.interestExemption;
+ if(!e) return '';
+ const label=e.newLoan.status==='applied'?`이번 학기 ICL 이자면제 적용 (${e.newLoan.types.join('·')})`:e.newLoan.status==='unknown'?'이번 학기 ICL: 혜택 정보 미확인 · 면제 미반영 추정':'이번 학기 ICL: 이자면제 비대상';
+ return `<div class="exemption-summary"><strong>${label}</strong><p>면제 예상 이자 ${formatMoney(e.exemptedInterest,{digits:1})} · 현재부터 취업 후 10년까지의 계산 범위</p>${e.newLoan.status==='applied'||e.existingLoan==='applied'?`<p>면제 기간: 현재부터 ${e.endMonth===null?'소득 기준 초과 전까지 (현재 소득 가정에서는 계속 면제)':`${e.endMonth}개월 시점 전까지`}. 졸업과 소득 기준 초과 중 늦은 시점으로 추정합니다.</p>`:''}${e.existingLoan?`<p>기존 ICL: ${e.existingLoan==='applied'?'확인한 면제 적용':e.existingLoan==='unknown'?'면제 상태 미확인 · 면제 미반영 추정':'이자면제 비대상'}</p>`:''}<small>입력한 조건에 따른 예상이며 실제 면제 확정·고지일은 한국장학재단에서 확인합니다.</small></div>`;
 }

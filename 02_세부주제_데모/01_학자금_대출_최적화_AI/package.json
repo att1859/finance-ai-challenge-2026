@@ -13,9 +13,5 @@
   "devDependencies": {
     "@playwright/test": "^1.62.1",
     "vite": "^7.1.3"
-  },
-  "dependencies": {
-    "@seed-design/css": "^2.5.0",
-    "@seed-design/vite-plugin": "^2.1.0"
   }
 }

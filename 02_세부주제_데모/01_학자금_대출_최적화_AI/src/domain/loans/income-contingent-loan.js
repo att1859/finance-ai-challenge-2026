@@ -1,3 +1,4 @@
+import { buildExemptedBalances } from './interest-exemption.js';
 import { nonNegative } from '../shared/numbers.js';
 import { calculateIncomeContingentCurrentValueComparison } from './current-value-comparison.js';
 import { buildLoanDisbursementSchedule } from './disbursement-schedule.js';
@@ -18,27 +19,16 @@ export function calculateIncomeContingentLoan(
     { product: 'income-contingent' },
   );
   const annualRate = policy?.annualRate;
-  const schedule = buildLoanDisbursementSchedule(
+  let schedule = buildLoanDisbursementSchedule(
     components,
     funding.studyMonths,
     annualRate,
   );
-  const monthlyRate = nonNegative(annualRate) / 100 / 12;
-  const existingAtGraduation = nonNegative(profile.existingLoanBalance)
-    * ((1 + monthlyRate) ** funding.studyMonths);
-  const compositionBalanceAtGraduation = schedule.reduce(
-    (sum, item) => sum + item.balanceAtGraduation,
-    0,
-  );
-  const compositionPrincipal = getLoanCompositionPrincipal(
-    loanComposition,
-    { product: 'income-contingent' },
-  );
-  const principal = compositionPrincipal + nonNegative(profile.existingLoanBalance);
-  const balanceAtGraduation = existingAtGraduation
-    + compositionBalanceAtGraduation;
-  const balanceAtEmployment = balanceAtGraduation
-    * ((1 + monthlyRate) ** stress.employmentDelayMonths);
+  const exemptionResult=buildExemptedBalances(profile,schedule,funding,stress,policy);
+  schedule=exemptionResult.schedule;
+  const principal=getLoanCompositionPrincipal(loanComposition,{product:'income-contingent'})+nonNegative(profile.existingLoanBalance);
+  const balanceAtGraduation=exemptionResult.preEmploymentBalances[funding.studyMonths];
+  const balanceAtEmployment=exemptionResult.preEmploymentBalances.at(-1);
   const adjustedMonthlyIncome = nonNegative(profile.salary)
     * (1 - stress.salaryReductionRate);
   const annualGrossIncome = adjustedMonthlyIncome * 12;
@@ -73,6 +63,7 @@ export function calculateIncomeContingentLoan(
 
   const currentValueComparison = calculateIncomeContingentCurrentValueComparison({
     balanceAtEmployment,
+    interestExemptBalance: exemptionResult.exemptBalanceAtEmployment,
     annualRate,
     annualGrossIncome,
     annualGrossIncomeThreshold: policy.annualGrossIncomeThreshold,
@@ -102,6 +93,9 @@ export function calculateIncomeContingentLoan(
     totalInterest: currentValueComparison.totalInterest,
     totalRepayment: currentValueComparison.totalPayment,
     currentValueComparison,
+    preEmploymentBalances:exemptionResult.preEmploymentBalances,
+    interestExemptBalance:exemptionResult.exemptBalanceAtEmployment,
+    interestExemption:{...exemptionResult.exemption,exemptedInterest:exemptionResult.exemption.exemptedInterest+currentValueComparison.totalExemptedInterest},
     calculationPossible: true,
     repaymentRate: policy.repaymentRate,
     annualGrossIncomeThreshold: policy.annualGrossIncomeThreshold,

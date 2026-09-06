@@ -18,7 +18,7 @@ export function renderLoanIntroduction() {
   return `<section class="slow-intro" id="top" aria-labelledby="hero-title">
     <div class="slow-hero">
       <h1 id="hero-title">학자금 대출,<br>SLOW로 만나보세요</h1>
-      <p>Student Loan Operating Window</p>
+      <p>Student Loan Optimizing Window</p>
     </div>
     <div class="slow-topics" aria-label="후킹 멘트 섹션">
       ${topics.map(([title, lead], index) => `<article class="slow-topic" aria-labelledby="slow-topic-${index}">
