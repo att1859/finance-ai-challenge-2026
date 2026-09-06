@@ -1,3 +1,4 @@
+import { mountAiAssistant } from './ai-chat.js';
 import { renderRepaymentGuide } from '../ui/sections/repayment-guide.js';
 import { selectableMonths, nearestMonth, moveSelectedMonth } from './chart-selection.js';
 import { calculatePlan } from '../application/calculate-plan.js';
@@ -39,6 +40,7 @@ import { icon } from '../ui/shared/icon.js';
 
 const app = document.querySelector('#app');
 const state = createInitialState();
+let aiAssistant;
 
 const safe = escapeHtml;
 const selectedScenario = () => findSelectedScenario(state);
@@ -176,6 +178,7 @@ function recalculateResultOption(name, value, message) {
 }
 
 function renderResults() {
+  aiAssistant?.update();
   const root = document.querySelector('#result-root');
   const openDetails = [...(root?.querySelectorAll('details[open]') ?? [])].map(el => el.dataset.detail).filter(Boolean);
   if (!root || !state.ui.calculated) return;
@@ -372,6 +375,7 @@ function announceSelection() {
 export function bootstrapApp() {
   app.innerHTML = renderShell(state);
   bindShell();
+  aiAssistant = mountAiAssistant(state);
   window.matchMedia('(max-width: 580px)').addEventListener('change', () => { if (state.ui.calculated) renderResults(); });
 }
 

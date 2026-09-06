@@ -82,3 +82,13 @@ tests/
 졸업 후 준비기간은 비교용 0·1·2·3년 옵션이다. 한국장학재단 일반 상환 소개의 대출기간 상세(2026-09-06 확인)는 잔여재학년수+기본 3년+가산 3년으로 최장거치기간을 산정하며, 기본 3년은 연수·휴학·졸업 후 유예 각 1년이다. 따라서 졸업 후 준비기간의 공식 최대가 3년이라고 표시하지 않는다. 실제 학제·연령 제한은 신청 시 확인하며 앱은 기존 총 거치기간 상한을 유지한다. 근거: https://www.kosaf.go.kr/ko/tuition.do?pg=tuition04_02_01&ttab1=0
 
 모든 비교 지표에서 A/B 선택 바로 아래에 각 안의 등록금·생활비 상환상품과 고정/변동금리를 항상 표시한다. 해당 용도의 신규 대출이 없으면 대출 없음으로 표시하고 상품 변경·시나리오 변경 시 그래프와 함께 갱신한다.
+
+## AI 패널과 API 경계
+
+bootstrap은 mountAiAssistant로 body에 독립 패널을 붙이고 renderResults에서 상태 갱신을 알린다. 계산 domain/application은 수정하지 않는다. app/ai-context.js가 기존 선택자에서 표시 단위가 포함된 사실 묶음만 만든다. 결과 구조 변경 시 이 어댑터를 맞춘다.
+
+app/ai-session.js는 DOM 없이 대화·맥락 버전·취소·재시도를 관리한다. app/ai-chat.js는 패널과 health/chat 요청을 조립한다. ui/sections/ai-assistant.js와 ui/styles/ai-assistant.css는 기존 토큰·SEED 버튼을 사용한다.
+
+server/index.js는 루프백 HTTP 서버와 스키마·Host/Origin·크기·분당/동시 요청 한도를 담당한다. server/ai-provider.js만 Gemini 키와 generateContent 계약을 안다. server/knowledge.js는 제품 의미만 보관하며 자격 판정 엔진을 대체하지 않는다. 공급자 호출은 테스트에서 주입 가능하다.
+
+scripts/dev.js는 Vite와 API를 함께 시작하고 종료한다. Node 24에서 검증하며 native config loader를 사용한다. Vite /api 프록시는 AI_PORT(기본 8787)를 따른다. 키는 서버 환경 변수 또는 Git에서 제외된 .env.local에만 둔다. AI_SETUP.md에 실행과 검증 경계를 기록한다.

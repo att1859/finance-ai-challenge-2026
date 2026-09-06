@@ -4,11 +4,13 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
+    "dev": "node --env-file-if-exists=.env.local scripts/dev.js",
+    "dev:ui": "vite --host 127.0.0.1 --configLoader native",
+    "dev:api": "node --env-file-if-exists=.env.local server/index.js",
     "test": "node --test",
     "test:ui": "playwright test",
-    "build": "vite build",
-    "preview": "vite preview --host 127.0.0.1"
+    "build": "vite build --configLoader native",
+    "preview": "vite preview --host 127.0.0.1 --configLoader native"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
