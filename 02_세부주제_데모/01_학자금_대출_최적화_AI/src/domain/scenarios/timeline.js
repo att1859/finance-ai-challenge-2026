@@ -1,3 +1,4 @@
+import { calculateIncomeContingentCurrentValueComparison } from '../loans/current-value-comparison.js';
 // Month-start balances; payments belong to the following monthly interval.
 // ICL keeps the existing annual settlement model, without inventing monthly bills.
 export function buildScenarioTimeline(scenario, endMonth) {
@@ -6,6 +7,11 @@ export function buildScenarioTimeline(scenario, endMonth) {
   const employmentMonth = graduationMonth + stress.employmentDelayMonths;
   const general = loan.repayments.general;
   const icl = loan.repayments.incomeContingent;
+  const nextYear = icl?.calculationPossible ? calculateIncomeContingentCurrentValueComparison({
+    ...icl.policy,
+    balanceAtEmployment: icl.currentValueComparison.endingBalance,
+    annualGrossIncome: scenario.adjustedSalary * 12,
+  }).annualSchedule[0] : null;
   const generalRows = new Map((general?.monthlyRepaymentSchedule ?? []).map(row => [row.globalMonth, row]));
   const rows = Array.from({ length: endMonth + 1 }, (_, month) => {
     const phase = month < graduationMonth ? 'study' : month < employmentMonth ? 'transition' : 'career';
@@ -22,7 +28,7 @@ export function buildScenarioTimeline(scenario, endMonth) {
         balance += icl.disbursementSchedule.reduce((sum, item) => sum + (item.month <= month ? item.principal * (1 + rate) ** (month - item.month) : 0), 0);
       } else {
         const elapsed = month - employmentMonth;
-        const year = icl.currentValueComparison.annualSchedule[Math.floor(elapsed / 12)];
+        const year = icl.currentValueComparison.annualSchedule[Math.floor(elapsed / 12)] ?? nextYear;
         // Only annual balances exist after employment. Carry the latest settled
         // balance until the next annual settlement, rather than interpolate it.
         balance += year?.openingBalance ?? icl.currentValueComparison.endingBalance;

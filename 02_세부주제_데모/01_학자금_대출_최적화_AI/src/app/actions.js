@@ -1,4 +1,3 @@
-import { EMPTY_STRESS } from '../domain/scenarios/normalize-stress.js';
 
 export function setProfile(state, profile) {
   state.profile = profile;
@@ -12,12 +11,13 @@ export function applyPlan(state, plan) {
   state.baselineFullLoanCapView = plan.baselineFullLoanCapView;
   state.currentFullLoanCapView = plan.currentFullLoanCapView;
   state.policySnapshotIds = plan.policySnapshotIds;
+  state.comparison.month = Math.min(state.comparison.month, plan.baselineScenarios[0].timeline.endMonth);
 
   state.currentRecommendations.forEach((recommendation) => {
     const scenarioId = recommendation.scenarioId;
     const currentSelection = state.resultSelections.candidateByScenario[scenarioId];
     const available = recommendation.candidates.some(({ id }) => id === currentSelection);
-    if (!available) {
+    if (!available && !state.customScenarios?.some(s => s.id === scenarioId)) {
       state.resultSelections.candidateByScenario[scenarioId]
         = recommendation.recommendedCandidateIds[0]
         ?? recommendation.pendingCandidateIds[0]
@@ -25,9 +25,8 @@ export function applyPlan(state, plan) {
         ?? null;
     }
     if (!(scenarioId in state.resultSelections.includeLivingByScenario)) {
-      const scenario = state.currentScenarios.find(({ id }) => id === scenarioId);
       state.resultSelections.includeLivingByScenario[scenarioId]
-        = (scenario?.livingLoan.principal ?? 0) > 0;
+        = true;
     }
   });
 
@@ -58,11 +57,21 @@ export function updateResultSelections(state, patch) {
 }
 
 export function resetStress(state) {
-  state.stress = { ...EMPTY_STRESS };
+  state.stress = { ...state.stress, employmentDelayMonths: 0, salaryReductionRate: 0 };
+  state.comparison.view = state.stress.graduationDelayMonths ? 'changed' : 'baseline';
 }
 
 export function updateStress(state, patch) {
   state.stress = { ...state.stress, ...patch };
+  state.comparison.view = Object.values(state.stress).some(value => value > 0) ? 'changed' : 'baseline';
+}
+
+export function selectComparison(state, side, id) {
+  if (!state.currentScenarios.some(scenario => scenario.id === id)) return;
+  const other = 1 - side;
+  if (state.comparison.ids[other] === id) state.comparison.ids[other] = state.comparison.ids[side];
+  state.comparison.ids[side] = id;
+  if (!state.comparison.ids.includes(state.selectedScenarioId)) state.selectedScenarioId = id;
 }
 
 export function updateUi(state, patch) {

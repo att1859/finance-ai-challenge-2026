@@ -118,6 +118,7 @@ export function buildCalculationTrace({
       },
       livingLoanBySemester: {
         id: 'living-loan-by-semester',
+        mode: scenario.custom ? 'manual' : 'funding-gap',
         policyReferenceIds: ['living-limit'],
         cumulativeLimit: scenario.livingLoan.cumulativeLimit,
         rawRequired: scenario.livingLoan.rawRequired,

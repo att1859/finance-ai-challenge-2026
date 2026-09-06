@@ -27,7 +27,7 @@ test('최초 입력은 학비·생활·근로만 받고 대출 선택은 결과�
   await expect(page.getByText('졸업 후 거치기간')).toHaveCount(0);
   await expect(page.getByText('상환기간')).toHaveCount(0);
 
-  await page.locator('.hero').getByRole('button', { name: '예시 정보로 시작하기' }).click();
+  await page.locator('.input-mode').getByRole('button', { name: '예시 정보로 시작하기' }).click();
   await expect(page.getByRole('combobox', { name: '학자금 지원구간' })).toHaveValue('3');
   await expect(page.getByRole('spinbutton', { name: /학기당 대출 없이 낼 등록금/ })).toHaveValue('120');
   await expect(page.getByText('특별 자격')).toHaveCount(0);
@@ -64,9 +64,10 @@ test('기본 생활비와 주휴·간편 차감이 반영된 근로소득을 입
 test('결과에서 가능한 상품·생활비·상환기간·자격·기존 대출 조건을 선택한다', async ({ page }) => {
   const errors = trackPageErrors(page);
   await page.goto('/');
-  await page.locator('.hero').getByRole('button', { name: '예시 정보로 시작하기' }).click();
+  await page.locator('.input-mode').getByRole('button', { name: '예시 정보로 시작하기' }).click();
   await page.getByRole('button', { name: /추천 결과 확인하기/ }).click();
 
+  await page.getByText('대출 구성 및 상환 일정', { exact: true }).click();
   const loanOptions = page.locator('.loan-options');
   await expect(loanOptions.getByRole('heading', { name: /균형안 v1의 대출 구성/ })).toBeVisible();
   await expect(loanOptions.getByRole('radio')).toHaveCount(4);
@@ -93,9 +94,10 @@ test('결과 조건을 바꾸면 자격·근로시간·실행액·상환값을 �
   test.setTimeout(60000);
   const errors = trackPageErrors(page);
   await page.goto('/');
-  await page.locator('.hero').getByRole('button', { name: '예시 정보로 시작하기' }).click();
+  await page.locator('.input-mode').getByRole('button', { name: '예시 정보로 시작하기' }).click();
   await page.getByRole('button', { name: /추천 결과 확인하기/ }).click();
 
+  await page.getByText('대출 구성 및 상환 일정', { exact: true }).click();
   let options = page.locator('.loan-options');
   await options.getByRole('radio', { name: /일반 상환 등록금 \+ 일반 상환 생활비/ }).check();
   const monthlyPayment = page.locator('.loan-detail dl > div').first().locator('dd');
@@ -123,10 +125,12 @@ test('결과 조건을 바꾸면 자격·근로시간·실행액·상환값을 �
 test('선택 결과는 용도별 대출과 상품별 상환·10년 잔액·정책근거를 함께 보여준다', async ({ page }) => {
   const errors = trackPageErrors(page);
   await page.goto('/');
-  await page.locator('.hero').getByRole('button', { name: '예시 정보로 시작하기' }).click();
+  await page.locator('.input-mode').getByRole('button', { name: '예시 정보로 시작하기' }).click();
   await page.getByRole('button', { name: /추천 결과 확인하기/ }).click();
+  if (!(await page.locator('.loan-options').isVisible())) await page.getByText('대출 구성 및 상환 일정', { exact: true }).click();
   await page.locator('.loan-options').getByRole('radio', { name: /일반 상환 등록금 \+ 일반 상환 생활비/ }).check();
 
+  if (!(await page.locator('.loan-options').isVisible())) await page.getByText('대출 구성 및 상환 일정', { exact: true }).click();
   const detail = page.locator('.selected-detail');
   await expect(detail.getByText('상품·용도별 신규 대출')).toBeVisible();
   await expect(detail.getByRole('table', { name: '선택한 신규 대출 구성' })).toContainText('등록금');
@@ -134,15 +138,15 @@ test('선택 결과는 용도별 대출과 상품별 상환·10년 잔액·정�
   await expect(detail.getByText('일반 상환 월 원리금균등 납입액')).toBeVisible();
   await expect(detail.getByText('일반 상환 거치 중 최대 월이자')).toBeVisible();
   await expect(detail.getByText('일반 상환 시작일')).toBeVisible();
-  await expect(detail.getByText('10년간 납부이자')).toBeVisible();
-  await expect(detail.getByText('10년 말 남은 잔액')).toBeVisible();
 
   await detail.getByText('학기별 대출 실행과 계산 순서').click();
   await expect(detail.getByText(/예상 실행일/).first()).toBeVisible();
+  await page.getByText('계산 가정 및 출처', { exact: true }).click();
   await detail.getByText('이 계산에 사용한 정책 기준').click();
   await expect(detail.getByText(/연 1\.7% · 고정금리/)).toBeVisible();
   await expect(detail.getByRole('link', { name: /일반 상환 학자금대출/ })).toBeVisible();
 
+  if (!(await page.locator('.loan-options').isVisible())) await page.getByText('대출 구성 및 상환 일정', { exact: true }).click();
   await page.locator('.loan-options').getByRole('radio', { name: /취업 후 상환 등록금 \+ 취업 후 상환 생활비/ }).check();
   await expect(detail.getByText('취업 후 상환 연간 예상 의무상환액')).toBeVisible();
   await expect(detail.getByText('취업 후 상환 월평균 환산액(참고)')).toBeVisible();
@@ -152,18 +156,16 @@ test('선택 결과는 용도별 대출과 상품별 상환·10년 잔액·정�
 test('추천 설명은 근로감소 효과와 현재가치·잔액·변동금리·자격 주의를 구체화한다', async ({ page }) => {
   const errors = trackPageErrors(page);
   await page.goto('/');
-  await page.locator('.hero').getByRole('button', { name: '예시 정보로 시작하기' }).click();
+  await page.locator('.input-mode').getByRole('button', { name: '예시 정보로 시작하기' }).click();
   await page.getByRole('button', { name: /추천 결과 확인하기/ }).click();
 
+  if (!(await page.locator('.loan-options').isVisible())) await page.getByText('대출 구성 및 상환 일정', { exact: true }).click();
   const detail = page.locator('.selected-detail');
   await expect(detail.getByRole('heading', { name: '조건 확인 후 추천을 확정할 수 있어요' })).toBeVisible();
-  await expect(detail.getByText(/현재 기준 10년 단순 비교/).first()).toBeVisible();
-  await expect(detail.locator('.ten-year-ledger')).toContainText('취업 시점부터 10년(120개월)');
-  await expect(detail.locator('.ten-year-ledger')).toContainText('미래의 상승·하락은 예측하지 않습니다');
-  await expect(detail.getByRole('heading', { name: '현재 기준 10년 단순 비교' })).toHaveCount(1);
   await expect(detail.getByText(/변동금리 상품입니다/)).toBeVisible();
   await expect(detail.getByText(/공통 신청요건/)).toBeVisible();
 
+  await page.getByRole('combobox', { name: '비교할 시나리오 B', exact: true }).selectOption('maximum-use');
   await page.getByRole('radio', { name: /최대활용안/ }).check();
   await expect(detail.getByText(/생활비 대출은 총 .*현재보다 주당 .* 덜 일할 때/)).toBeVisible();
   await expect(detail.getByText(/10년 뒤에도 취업 후 상환 잔액이 남을 수 있습니다/)).toBeVisible();
@@ -173,10 +175,11 @@ test('추천 설명은 근로감소 효과와 현재가치·잔액·변동금리
 test('결과 설명은 실제 상품·0원·근로 유지 상태에 맞고 좁은 화면에서도 읽을 수 있다', async ({ page }, testInfo) => {
   const errors = trackPageErrors(page);
   await page.goto('/');
-  await page.locator('.hero').getByRole('button', { name: '예시 정보로 시작하기' }).click();
+  await page.locator('.input-mode').getByRole('button', { name: '예시 정보로 시작하기' }).click();
   await page.getByRole('spinbutton', { name: '대학 시절 희망 월 생활비 만 원' }).fill('130');
   await page.getByRole('button', { name: /추천 결과 확인하기/ }).click();
   await page.getByRole('radio', { name: /최소대출안/ }).check();
+  if (!(await page.locator('.loan-options').isVisible())) await page.getByText('대출 구성 및 상환 일정', { exact: true }).click();
   const detail = page.locator('.selected-detail');
   const options = page.locator('.loan-options');
   await options.getByRole('radio', { name: /일반 상환 등록금 \+ 취업 후 상환 생활비/ }).check();
@@ -184,7 +187,6 @@ test('결과 설명은 실제 상품·0원·근로 유지 상태에 맞고 좁�
   await expect(detail.locator('.loan-detail')).toContainText('일반 상환은 약정한 날짜부터 매달');
   await expect(detail.locator('.loan-detail')).toContainText('실제 매달 청구되는 금액은 아닙니다');
   await expect(detail.locator('.loan-detail')).toContainText('가장 많이 내는 달의 금액');
-  await expect(detail.locator('.ten-year-ledger')).toContainText('납부액에 이미 포함된 이자');
   await expect(detail.locator('.recommendation-explanation')).not.toContainText('같은 규칙 등급');
 
   for (const width of [1440, 720, 360]) {
@@ -217,7 +219,7 @@ test('결과 설명은 실제 상품·0원·근로 유지 상태에 맞고 좁�
 test('예시 정보로 세 계획을 계산하고 키보드로 선택안을 바꾼다', async ({ page }) => {
   const errors = trackPageErrors(page);
   await page.goto('/');
-  await page.locator('.hero').getByRole('button', { name: '예시 정보로 시작하기' }).click();
+  await page.locator('.input-mode').getByRole('button', { name: '예시 정보로 시작하기' }).click();
   await expect(page.getByRole('textbox', { name: '학교' })).toHaveValue('한빛대학교');
 
   await page.getByRole('button', { name: /추천 결과 확인하기/ }).click();
@@ -230,9 +232,8 @@ test('예시 정보로 세 계획을 계산하고 키보드로 선택안을 바�
   const balance = page.getByRole('radio', { name: /균형안 v1/ });
   await expect(balance).toBeChecked();
   await expect(balance).toHaveAccessibleName(/주당 15시간 · 현재보다 5시간 감소/);
+  await expect(page.locator('.scenario-line')).toHaveCount(2);
   await expect(page.locator('.selected-detail')).toContainText('현재보다 주당 5시간 덜 일할 수 있어요');
-  await expect(page.locator('.comparison-figure .table-wrap')).toContainText('현재 20시간');
-  await expect(page.locator('.comparison-figure .table-wrap')).not.toContainText('희망 10시간');
   await balance.focus();
   await balance.press('ArrowLeft');
 
@@ -240,35 +241,37 @@ test('예시 정보로 세 계획을 계산하고 키보드로 선택안을 바�
   await expect(minimum).toBeChecked();
   await expect(page.locator('.selected-detail').getByRole('heading', { name: '최소대출안' })).toBeVisible();
   await expect(page.locator('.selected-detail')).toContainText('현재 근로시간 유지');
+  await page.getByText('자금 계산 내역', { exact: true }).click();
   await expect(page.locator('.funding-ledger')).toContainText('예상 실수령 근로소득');
   await expect(page.locator('.funding-ledger')).toContainText('등록금 대출');
   await expect(page.locator('.funding-ledger')).toContainText('생활비 대출');
 
+  await page.getByText('추가 조건', { exact: true }).click();
   await page.getByRole('checkbox', { name: /졸업 1년 지연/ }).click();
-  await expect(page.getByText('위험 조건 초기화')).toBeVisible();
+  await expect(page.getByRole('button', { name: '조건 초기화', exact: true })).toBeVisible();
   expect(errors).toEqual([]);
 });
 
-test('첫 화면에서 소비평탄화 설명을 열고 상세 계산을 확인한다', async ({ page }) => {
+test('첫 화면의 다섯 설명과 공식 등록금 요건 팝업을 확인한다', async ({ page }) => {
   const errors = trackPageErrors(page);
   await page.goto('/');
-
-  await page.getByRole('button', { name: /대출까지 써도 괜찮을까요/ }).click();
-  const dialog = page.getByRole('dialog', { name: '대출까지 써도 괜찮을까요?' });
+  await expect(page.locator('.slow-topic h2')).toHaveCount(5);
+  await expect(page.locator('.slow-intro details')).toHaveCount(0);
+  await expect(page.locator('.slow-topic-copy p')).toHaveCount(5);
+  await expect(page.locator('.brand')).toHaveText('SLOW');
+  const trigger = page.getByRole('button', { name: '실제 학자금 대출 상세 요건 알아보기' });
+  await trigger.click();
+  const dialog = page.getByRole('dialog', { name: '등록금 대출 상세 요건', exact: true });
   await expect(dialog).toBeVisible();
-  await expect(dialog.locator('.rate-ledger dd').nth(0)).toContainText('약 17만 원');
-  await expect(dialog.locator('.rate-ledger dd').nth(1)).toContainText('약 30만 원');
-
-  await dialog.getByText('피셔 방정식으로 계산 원리 보기').click();
-  await expect(dialog.getByText(/1\.017 ÷ 1\.028/)).toBeVisible();
-
+  await expect(dialog.getByRole('heading', {name: '일반 상환 등록금 대출', exact: true})).toBeVisible();
+  await expect(dialog.getByRole('link', {name: '취업 후 상환 신청 자격 원문'})).toHaveAttribute('href', /kosaf\.go\.kr/);
   await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();
-
-  await page.getByRole('button', { name: /대출까지 써도 괜찮을까요/ }).click();
-  await expect(dialog.locator('details')).not.toHaveAttribute('open', '');
-  expect(await dialog.locator('.smoothing-dialog-body').evaluate((element) => element.scrollTop)).toBe(0);
-  await page.keyboard.press('Escape');
+  await expect(trigger).toBeFocused();
+  await trigger.click();
+  expect(await dialog.locator('.smoothing-dialog-body').evaluate(element => element.scrollTop)).toBe(0);
+  await dialog.getByRole('button', { name: '닫기', exact: true }).click();
+  await expect(dialog).toBeHidden();
   expect(errors).toEqual([]);
 });
 
@@ -276,14 +279,14 @@ test('결과에서 취업 후 상환을 선택하고 좁은 화면에서 가로 
   const errors = trackPageErrors(page);
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto('/');
-  await page.locator('.hero').getByRole('button', { name: '예시 정보로 시작하기' }).click();
+  await page.locator('.input-mode').getByRole('button', { name: '예시 정보로 시작하기' }).click();
   await page.getByRole('button', { name: /추천 결과 확인하기/ }).click();
+  if (!(await page.locator('.loan-options').isVisible())) await page.getByText('대출 구성 및 상환 일정', { exact: true }).click();
   await page.locator('.loan-options').getByRole('radio', { name: /취업 후 상환 등록금 \+ 취업 후 상환 생활비/ }).check();
 
   await expect(page.getByText('취업 후 상환 연간 예상 의무상환액').first()).toBeVisible();
   await expect(page.getByText('취업 후 상환 월평균 환산액(참고)').first()).toBeVisible();
   await expect(page.getByText('월평균 납입액')).toHaveCount(0);
-  await expect(page.locator('.stress-section').getByText('연간 예상 의무상환액')).toBeVisible();
 
   const shortTouchTargets = await page.locator(
     '.loan-candidate-copy, .loan-options .condition-check, .loan-options summary',

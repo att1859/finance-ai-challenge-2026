@@ -8,13 +8,17 @@ export function scenarioById(state, scenarioId, scenarios = state.currentScenari
 }
 
 export function selectedScenario(state) {
-  return scenarioById(state, state.selectedScenarioId);
+  return scenarioById(state, state.selectedScenarioId, visibleScenarios(state));
 }
 
 export function selectedRecommendation(state) {
-  return state.currentRecommendations.find(
+  return (state.comparison?.view === 'baseline' ? state.baselineRecommendations : state.currentRecommendations).find(
     ({ scenarioId }) => scenarioId === state.selectedScenarioId,
   );
+}
+
+export function visibleScenarios(state) {
+  return state.comparison?.view === 'baseline' ? state.baselineScenarios : state.currentScenarios;
 }
 
 export function selectedLoanCandidate(state) {
@@ -23,6 +27,7 @@ export function selectedLoanCandidate(state) {
     state.selectedScenarioId
   ];
   return recommendation?.candidates.find(({ id }) => id === candidateId)
+    ?? (selectedScenario(state)?.custom ? recommendation?.excludedCandidates.find(({ id }) => id === candidateId) : null)
     ?? recommendation?.candidates[0]
     ?? null;
 }

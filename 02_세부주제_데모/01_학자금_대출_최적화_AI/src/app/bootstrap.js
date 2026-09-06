@@ -1,9 +1,13 @@
+import { selectableMonths, nearestMonth, moveSelectedMonth } from './chart-selection.js';
 import { calculatePlan } from '../application/calculate-plan.js';
+import { renderCustomEditor } from '../ui/sections/custom-scenario-editor.js';
+import { validateCustomScenario, stepLivingAmount, requestedLivingAmounts, validateLivingAmount } from '../domain/scenarios/custom-scenario.js';
 import {
   applyPlan,
   resetStress,
   selectLoanCandidate,
   selectScenario,
+  selectComparison,
   setProfile,
   updateResultSelections,
   updateStress,
@@ -19,7 +23,6 @@ import {
   renderWorkIncomeSummaryContent,
   validateProfile,
 } from '../ui/sections/diagnosis-form.js';
-import { renderFundingFormula } from '../ui/sections/funding-formula.js';
 import {
   confirmedCommonEligibility,
   renderLoanOptions,
@@ -27,11 +30,10 @@ import {
 import {
   renderComparisonFigure,
   renderScenarioSelector,
+  renderPointReadout,
 } from '../ui/sections/scenario-comparison.js';
 import { renderSelectedDetail } from '../ui/sections/selected-detail.js';
 import { renderShell } from '../ui/sections/shell.js';
-import { renderSources } from '../ui/sections/sources.js';
-import { renderStressControls } from '../ui/sections/stress-controls.js';
 import { escapeHtml } from '../ui/shared/escape-html.js';
 import { icon } from '../ui/shared/icon.js';
 
@@ -66,6 +68,18 @@ function handleClick(event) {
   if (action === 'reset-stress') {
     resetStress(state);
     recalculate();
+  }
+  if (action === 'add-custom' || action === 'edit-custom') openCustomEditor(action === 'edit-custom' ? trigger.dataset.id : null);
+  if (action === 'delete-custom') {
+    const id = trigger.dataset.id;
+    state.customScenarios = state.customScenarios.filter(item => item.id !== id);
+    delete state.resultSelections.candidateByScenario[id];
+    delete state.resultSelections.includeLivingByScenario[id];
+    const remaining = state.currentScenarios.filter(s => s.id !== id).map(s => s.id);
+    state.comparison.ids = state.comparison.ids.map(value => value === id ? remaining.find(v => !state.comparison.ids.includes(v)) : value);
+    if (state.selectedScenarioId === id) state.selectedScenarioId = state.comparison.ids[0];
+    recalculate();
+    document.querySelector('[data-action="add-custom"]')?.focus({preventScroll:true});
   }
 }
 
@@ -141,18 +155,21 @@ function loadSample() {
 }
 
 function recalculate(announce = true) {
+  const selectionBefore = JSON.stringify(state.resultSelections);
   const resultSelections = Object.fromEntries(
-    state.currentScenarios.map(({ id }) => [id, {
+    [...new Set([...state.currentScenarios.map(s => s.id), ...state.customScenarios.map(s => s.id)])].map(id => [id, {
       candidateId: state.resultSelections.candidateByScenario[id],
       includeLiving: state.resultSelections.includeLivingByScenario[id],
     }]),
   );
   applyPlan(state, calculatePlan({
     ...state.profile,
+    customScenarios: state.customScenarios,
     graceYears: state.resultSelections.graceYears,
     repaymentYears: state.resultSelections.repaymentYears,
     resultSelections,
   }, state.stress));
+  if (selectionBefore !== JSON.stringify(state.resultSelections)) { recalculate(announce); return; }
   renderResults();
   if (announce) announceSelection();
 }
@@ -172,6 +189,7 @@ function recalculateResultOption(name, value, message) {
 
 function renderResults() {
   const root = document.querySelector('#result-root');
+  const openDetails = [...(root?.querySelectorAll('details[open]') ?? [])].map(el => el.dataset.detail).filter(Boolean);
   if (!root || !state.ui.calculated) return;
   if (state.ui.loading) {
     root.innerHTML = `<section class="result-loading" aria-live="polite"><span class="loader" aria-hidden="true"></span><h2>세 가지 계획을 계산하고 있어요.</h2><p>학비, 생활비, 근로시간과 가능한 대출 구성을 함께 비교합니다.</p></section>`;
@@ -184,22 +202,75 @@ function renderResults() {
         <div><h2 id="result-title">내게 맞는 대학 생활 계획을 비교해 보세요.</h2><p>${safe(state.profile.school)} · 졸업까지 ${state.profile.graduationYears}년 · 현재 조건 기준</p></div>
         <aside>${icon('info')}<p><strong>간이 예상 결과입니다.</strong> 실제 대출 자격·승인은 한국장학재단이 최종 판단합니다.</p></aside>
       </div>
-      ${renderScenarioSelector(state)}
       <p id="selection-status" class="sr-only" role="status" aria-live="polite"></p>
-      ${renderLoanOptions(state, current)}
       ${renderComparisonFigure(state, current)}
+      ${renderScenarioSelector(state)}
       ${renderSelectedDetail(state, current)}
-      ${renderFundingFormula(state, current)}
-      ${renderStressControls(state, current)}
-      ${renderSources()}
     </section>`;
   bindResultEvents();
+  openDetails.forEach(key => { const details = root.querySelector(`[data-detail="${key}"]`); if (details) details.open = true; });
 }
 
 function bindResultEvents() {
+  const restore = (name, value) => {
+    renderResults();
+    const controls = [...document.querySelectorAll('[name]')];
+    controls.find(el => el.name === name && ((el.type !== 'radio' && el.getAttribute('role') !== 'radio') || el.value === value))?.focus({ preventScroll: true });
+  };
+  document.querySelectorAll('[name^="comparison-"], [name="condition-view"]').forEach(input => input.addEventListener('change', event => {
+    const { name, value } = event.target;
+    if (name === 'comparison-metric') state.comparison.metric = value;
+    else if (name === 'condition-view') state.comparison.view = value;
+    else selectComparison(state, Number(name.slice(-1)), value);
+    restore(name, value);
+  }));
+  const months = selectableMonths(state);
+  const updateMonth = month => {
+    state.comparison.month = nearestMonth(months, month);
+    document.querySelector('#timeline-readout').innerHTML = renderPointReadout(state);
+    const x = 95 + state.comparison.month / months.at(-1) * 765;
+    const cursor = document.querySelector('#timeline-cursor');
+    cursor.setAttribute('x1', x); cursor.setAttribute('x2', x);
+    const source = state.comparison.view === 'baseline' ? state.baselineScenarios : state.currentScenarios;
+    const svg = document.querySelector('.timeline-chart');
+    svg.querySelectorAll('.timeline-point').forEach(point => {
+      const value = source.find(s => s.id === point.dataset.scenario).timeline.rows[state.comparison.month][state.comparison.metric];
+      point.setAttribute('visibility', Number.isFinite(value) ? 'visible' : 'hidden');
+      if (Number.isFinite(value)) {
+        point.setAttribute('cx', x);
+        point.setAttribute('cy', 295 - (value - Number(svg.dataset.low)) / (Number(svg.dataset.high) - Number(svg.dataset.low)) * 225);
+      }
+    });
+  };
+  document.querySelectorAll('[data-month-step]').forEach(button => button.addEventListener('click', () => updateMonth(moveSelectedMonth(months, state.comparison.month, Number(button.dataset.monthStep)))));
+  const chart = document.querySelector('.timeline-chart');
+  const pointer = event => {
+    const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(chart.getScreenCTM().inverse());
+    updateMonth((point.x - 95) / 765 * months.at(-1));
+  };
+  chart?.addEventListener('click', pointer);
+  chart?.addEventListener('keydown', event => {
+    if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+    event.preventDefault();
+    updateMonth(event.key === 'Home' ? 0 : event.key === 'End' ? months.at(-1) : moveSelectedMonth(months,state.comparison.month,event.key === 'ArrowLeft' ? -1 : 1));
+  });
+  document.querySelectorAll('.seed-choice').forEach(group => {
+    const choose = button => {
+      const {name,value} = button;
+      if (name === 'employmentDelayMonths') { updateStress(state,{employmentDelayMonths:Number(value)}); recalculate(); restore(name,value); }
+      else button.dispatchEvent(new Event('change',{bubbles:true}));
+    };
+    group.addEventListener('click',event=>{const button=event.target.closest('button');if(button)choose(button);});
+    group.addEventListener('keydown',event=>{
+      if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+      event.preventDefault();
+      const buttons=[...group.querySelectorAll('button')], index=buttons.indexOf(document.activeElement);
+      choose(buttons[event.key==='Home'?0:event.key==='End'?buttons.length-1:(index+(event.key==='ArrowLeft'?-1:1)+buttons.length)%buttons.length]);
+    });
+  });
   document.querySelectorAll('input[name="scenario"]').forEach((input)=>input.addEventListener('change',(event)=>{
     selectScenario(state, event.target.value);
-    renderResults(); announceSelection();
+    restore('scenario', event.target.value); announceSelection();
   }));
   document.querySelectorAll('.loan-options input, .loan-options select').forEach((input) => (
     input.addEventListener('change', handleResultOptionChange)
@@ -219,7 +290,9 @@ function bindResultEvents() {
     if (event.target.name === 'graduationDelay') {
       updateStress(state, { graduationDelayMonths: event.target.checked ? 12 : 0 });
     }
+    const { name, value } = event.target;
     recalculate();
+    restore(name, value);
   }));
 }
 
@@ -228,6 +301,8 @@ function handleResultOptionChange(event) {
   const scenarioId = state.selectedScenarioId;
   if (name === 'loanCandidate') {
     selectLoanCandidate(state, scenarioId, value);
+    const custom = state.customScenarios.find(s=>s.id===scenarioId);
+    if (custom) custom.candidateId = value;
     recalculateResultOption(
       name,
       value,
@@ -251,8 +326,9 @@ function handleResultOptionChange(event) {
   }
   if (name === 'graceYears' || name === 'repaymentYears') {
     const numericValue = Number(value);
-    updateResultSelections(state, { [name]: numericValue });
-    setProfile(state, { ...state.profile, [name]: numericValue });
+    const custom = state.customScenarios.find(s=>s.id===scenarioId);
+    if (custom) custom[name] = numericValue;
+    else { updateResultSelections(state, { [name]: numericValue }); setProfile(state, { ...state.profile, [name]: numericValue }); }
     recalculateResultOption(
       name,
       value,
@@ -310,4 +386,95 @@ function announceSelection() {
 export function bootstrapApp() {
   app.innerHTML = renderShell(state);
   bindShell();
+}
+
+function openCustomEditor(id) {
+  const scenario = selectedScenario();
+  const existing = state.customScenarios.find(item => item.id === id);
+  const amounts = scenario.livingLoan.semesters.map(row => row.principal);
+  const draft = existing ? structuredClone(existing) : {
+    name: `내 시나리오 ${state.nextCustomId}`, workHours: scenario.workHours,
+    livingPerSemester: amounts[0] ?? 0,
+    livingBySemester: amounts.every(v => v === amounts[0]) ? null : amounts,
+    graceYears: scenario.custom?.graceYears ?? state.resultSelections.graceYears,
+    repaymentYears: scenario.custom?.repaymentYears ?? state.resultSelections.repaymentYears,
+  };
+  draft.candidateId = state.resultSelections.candidateByScenario[id ?? scenario.id] ?? 'general:general';
+  const count = scenario.funding.semesters;
+  document.querySelector('#custom-editor')?.remove();
+  app.insertAdjacentHTML('beforeend', renderCustomEditor(draft, count, Boolean(existing)));
+  const dialog = document.querySelector('#custom-editor');
+  const form = dialog.querySelector('form');
+  const read = () => ({
+    ...draft, name: form.elements['custom-name'].value.trim(),
+    workHours: form.elements['custom-hours'].value === '' ? NaN : Number(form.elements['custom-hours'].value),
+    livingPerSemester: form.elements['custom-amount'].value,
+    livingBySemester: form.elements['individual-semesters'].checked
+      ? Array.from({length:count},(_,i)=>form.elements[`semester-${i}`].value) : null,
+    graceYears: Number(form.elements['custom-grace'].value),
+    repaymentYears: Number(form.elements['custom-repayment'].value),
+    candidateId: `${form.elements['custom-tuition'].value}:${form.elements['custom-living'].value}`,
+  });
+  const preview = () => {
+    const config = read();
+    dialog.querySelector('#custom-error').textContent = '';
+    dialog.querySelector('#semester-fields').hidden = !config.livingBySemester;
+    dialog.querySelectorAll('[data-field-error]').forEach(el => {
+      const input = form.elements[el.dataset.fieldError];
+      const error = validateLivingAmount(input.value);
+      el.textContent = error ?? '';
+      input.setAttribute('aria-invalid', String(Boolean(error)));
+    });
+    const values = requestedLivingAmounts(config, count);
+    const valid = !validateLivingAmount(config.livingPerSemester) && values.every((v,i)=>!validateLivingAmount(config.livingBySemester?.[i] ?? config.livingPerSemester));
+    dialog.querySelector('#custom-amount-preview').textContent = valid
+      ? `${count}학기 생활비 대출 합계 ${values.reduce((s,v)=>s+v,0).toLocaleString('ko-KR')}만 원 · 학기별 실행 후 해당 학기 생활비로 나눠 사용합니다.`
+      : '실행 가능한 금액을 입력하면 합계를 표시합니다.';
+  };
+  form.addEventListener('input', preview);
+  form.addEventListener('change', event => {
+    if (event.target.name === 'individual-semesters' && event.target.checked && !draft.livingBySemester) {
+      for (let i=0;i<count;i++) form.elements[`semester-${i}`].value = form.elements['custom-amount'].value;
+    }
+    preview();
+  });
+  form.addEventListener('click', event => {
+    if (event.target.closest('[data-close-editor]')) { dialog.close(); return; }
+    const step = event.target.closest('[data-amount-step]');
+    if (step) {
+      const input = form.elements[step.dataset.field];
+      input.value = stepLivingAmount(input.value, Number(step.dataset.amountStep));
+      preview();
+    }
+  });
+  dialog.addEventListener('close', () => {
+    dialog.remove();
+    document.querySelector(existing ? `[data-action="edit-custom"][data-id="${id}"]` : '[data-action="add-custom"]')?.focus({preventScroll:true});
+  });
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    const config = read();
+    const errors = validateCustomScenario(config, state.profile, count);
+    if (state.currentScenarios.some(s => s.id !== id && s.name === config.name)) errors.name = '다른 시나리오와 구분되는 이름을 입력해 주세요.';
+    if (Object.keys(errors).length) {
+      dialog.querySelector('#custom-error').textContent = [...new Set(Object.values(errors))].join(' ');
+      const key = Object.keys(errors)[0];
+      const fieldName = {name:'custom-name',workHours:'custom-hours',livingPerSemester:'custom-amount'}[key] ?? key;
+      form.elements[fieldName]?.focus();
+      return;
+    }
+    const savedId = id ?? `custom-${state.nextCustomId++}`;
+    const saved = {...config,id:savedId,livingPerSemester:Number(config.livingPerSemester),livingBySemester:config.livingBySemester?.map(Number) ?? null};
+    state.customScenarios = existing ? state.customScenarios.map(item=>item.id===id?saved:item) : [...state.customScenarios,saved];
+    state.resultSelections.candidateByScenario[savedId] = saved.candidateId;
+    state.resultSelections.includeLivingByScenario[savedId] = true;
+    if (!existing) state.comparison.ids[1] = savedId;
+    state.selectedScenarioId = savedId;
+    dialog.close();
+    recalculate();
+    document.querySelector('#detail-title')?.scrollIntoView({block:'nearest'});
+  });
+  preview();
+  dialog.showModal();
+  form.elements['custom-name'].focus();
 }

@@ -9,6 +9,7 @@ import { nonNegative } from '../shared/numbers.js';
 import { SCENARIO_DEFINITIONS } from './definitions.js';
 import { buildCalculationTrace } from './calculation-trace.js';
 import { normalizeStress } from './normalize-stress.js';
+import { livingCumulativeLimit, requestedLivingAmounts, validateLivingAmount } from './custom-scenario.js';
 
 const HOURS_STEP = 0.5;
 const MONTHS_PER_SEMESTER = 6;
@@ -23,16 +24,7 @@ function ceilToUnit(value, unit) {
 }
 
 function getLivingCumulativeLimit(profile, policySnapshot) {
-  const limits = policySnapshot.purposes.living.cumulativePrincipalLimits;
-  const requestedKey = profile.livingCumulativeLimitKey;
-
-  if (requestedKey && Number.isFinite(limits[requestedKey])) {
-    return limits[requestedKey];
-  }
-
-  return profile.academicLevel === 'graduate'
-    ? limits.generalGraduateMaster
-    : limits.undergraduateFourYearOrCollege;
+  return livingCumulativeLimit(profile, policySnapshot);
 }
 
 function getSemesterMonthCounts(studyMonths, semesters) {
@@ -195,17 +187,40 @@ function calculateTuitionFunding(profile, funding) {
   });
 }
 
+function customLivingFunding(profile, definition, funding, policySnapshot, includeLiving) {
+  const config = definition.custom;
+  const calculated = calculateLivingFundingAtHours({ profile, funding, workHours: Number(config.workHours), policySnapshot });
+  const requested = requestedLivingAmounts(config, funding.semesters);
+  let remaining = calculated.cumulativeLimit;
+  const semesters = calculated.semesters.map((row, i) => {
+    const requestedPrincipal = includeLiving === false ? 0 : requested[i];
+    const error = validateLivingAmount(requestedPrincipal, policySnapshot);
+    if (error) throw new RangeError(error);
+    const available = Math.min(requestedPrincipal, remaining);
+    const principal = available < policySnapshot.purposes.living.minimumPerDisbursement ? 0 : available;
+    remaining -= principal;
+    return { ...row, requestedPrincipal, applicationAdjusted: requestedPrincipal, roundingAdjustment: 0, principal,
+      cumulativeLimitRemainingBefore: remaining + principal, unmetLivingGap: Math.max(0, row.rawRequired - principal),
+      limitedByPolicy: principal !== requestedPrincipal };
+  });
+  return { ...calculated, semesters, principal: semesters.reduce((s,r)=>s+r.principal,0),
+    unmetLivingGap: semesters.reduce((s,r)=>s+r.unmetLivingGap,0), manual: true };
+}
+
 export function calculateScenario(
   profile,
   definition,
   stress = {},
   policySnapshot = LOAN_POLICY_SNAPSHOT,
 ) {
+  if (definition.custom) profile = { ...profile, graceYears: definition.custom.graceYears, repaymentYears: definition.custom.repaymentYears };
   const normalizedStress = normalizeStress(stress);
   const funding = calculateFundingSummary(profile, normalizedStress);
   const currentWorkHours = roundToHoursStep(profile.currentWorkHours);
   const resultSelection = profile.resultSelections?.[definition.id] ?? {};
-  const livingLoan = resultSelection.includeLiving === false
+  const livingLoan = definition.custom
+    ? customLivingFunding(profile, definition, funding, policySnapshot, resultSelection.includeLiving)
+    : resultSelection.includeLiving === false
     ? excludeLivingLoan(profile, funding, policySnapshot)
     : selectScenarioLivingFunding({
     profile,
@@ -216,7 +231,7 @@ export function calculateScenario(
   const workHours = livingLoan.workHours;
   const tuitionFunding = calculateTuitionFunding(profile, funding);
   const [selectedTuitionProduct, selectedLivingProduct] = String(
-    resultSelection.candidateId ?? `${profile.loanType ?? 'general'}:${profile.loanType ?? 'general'}`,
+    resultSelection.candidateId ?? definition.custom?.candidateId ?? `${profile.loanType ?? 'general'}:${profile.loanType ?? 'general'}`,
   ).split(':');
   const tuitionProduct = selectedTuitionProduct === 'income-contingent'
     ? 'income-contingent'
@@ -292,7 +307,7 @@ export function calculateScenario(
     funding,
     workMonthly: livingLoan.workMonthly,
     workTotal: livingLoan.workTotal,
-    workHoursReduced: Math.max(currentWorkHours - workHours, 0),
+    workHoursReduced: currentWorkHours - workHours,
     workIncomeBreakdown: livingLoan.workIncomeBreakdown,
     tuitionFunding,
     livingLoan,
@@ -342,8 +357,11 @@ function scenarioSignature(scenario) {
   ].join(':');
 }
 
-export function calculateAllScenarios(profile, stress = {}, policy) {
-  const scenarios = SCENARIO_DEFINITIONS.map(
+export function calculateAllScenarios(profile, stress = {}, policy, preserveDefinitions = false) {
+  const definitions = [...SCENARIO_DEFINITIONS, ...(profile.customScenarios ?? []).map(custom => ({
+    id: custom.id, name: custom.name, summary: '직접 정한 근로시간과 학기당 생활비 대출로 계산합니다.', strategy: 'custom', custom,
+  }))];
+  const scenarios = definitions.map(
     (definition) => calculateScenario(profile, definition, stress, policy),
   );
   const policySnapshot = policy ?? LOAN_POLICY_SNAPSHOT;
@@ -355,7 +373,7 @@ export function calculateAllScenarios(profile, stress = {}, policy) {
   );
   const shouldRemoveDuplicates = roundToHoursStep(profile.currentWorkHours)
     - naturalMaximumUse.workHours === 0;
-  if (!shouldRemoveDuplicates) return scenarios;
+  if (preserveDefinitions || !shouldRemoveDuplicates) return scenarios;
   const seen = new Set();
 
   return scenarios.filter((scenario) => {

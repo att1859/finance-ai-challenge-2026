@@ -1,4 +1,8 @@
+import { quietButton } from '../shared/seed-controls.js';
 import { selectedLoanCandidate } from '../../app/selectors.js';
+import { renderLoanOptions } from './loan-options.js';
+import { renderFundingFormula } from './funding-formula.js';
+import { renderSources } from './sources.js';
 import { formatMoney, moneyHtml, signedMoney } from '../formatters/money.js';
 import { escapeHtml } from '../shared/escape-html.js';
 import { icon } from '../shared/icon.js';
@@ -13,15 +17,6 @@ function moneyOrPending(value, digits = 1) {
   return Number.isFinite(value) ? money(value, digits) : '확인 필요';
 }
 
-function safetyCopy(value) {
-  return {
-    safe: ['상환 후 생활비 충족', '현재 소득 기준으로 상환 후에도 희망 생활비가 남습니다.'],
-    watch: ['상환 후 생활비 조정 필요', '상환 후 남는 월소득이 희망 생활비보다 적습니다.'],
-    'at-risk': ['상환 후 생활비 주의', '상환 후 남는 월소득이 서비스의 생활비 점검 기준보다 낮습니다.'],
-    deficit: ['상환 후 생활비 부족', '월평균으로 비교한 상환부담이 예상 월소득보다 큽니다.'],
-    'calculation-impossible': ['계산 불가', '공식 정책값을 확인한 뒤 다시 계산해야 합니다.'],
-  }[value];
-}
 
 function renderComposition(candidate) {
   const { tuition, living } = candidate.compositionDescription.purposes;
@@ -50,7 +45,7 @@ function renderRecommendationExplanation(candidate, scenario) {
     : candidate.isPendingConfirmation
       ? '조건 확인 후 추천을 확정할 수 있어요'
       : '선택한 구성의 특징';
-  const workEffect = scenario.livingLoan.principal > 0
+  const workEffect = scenario.custom ? `직접 정한 주당 ${formatHours(scenario.workHours)}시간 근로와 학기별 생활비 대출 총 ${formatMoney(scenario.livingLoan.principal)}을 반영했습니다. 희망 생활비보다 많거나 적을 수 있습니다.` : scenario.livingLoan.principal > 0
     ? scenario.workHoursReduced > 0
       ? `남은 재학기간의 생활비 대출은 총 ${formatMoney(scenario.livingLoan.principal, { digits: 1 })}입니다. 현재보다 주당 ${formatHours(scenario.workHoursReduced)}시간 덜 일할 때의 생활비 부족분을 채웁니다.`
       : `현재 근로시간을 유지해도 부족한 생활비를 채우기 위해, 남은 재학기간에 총 ${formatMoney(scenario.livingLoan.principal, { digits: 1 })}을 빌리는 계산입니다.`
@@ -114,16 +109,6 @@ function renderRepayment(loan) {
   return `<div class="loan-detail"><div><h4>언제, 얼마를 갚나요?</h4><p>${timing}</p></div><dl>${rows.map(([term, value, note]) => `<div><dt>${term}</dt><dd>${value}</dd><small>${note}</small></div>`).join('')}</dl></div>`;
 }
 
-function renderTenYearComparison(loan) {
-  const comparison = loan.currentValueComparison;
-  if (!comparison) return '';
-
-  return `<section class="ten-year-ledger" aria-labelledby="ten-year-title"><div><h4 id="ten-year-title">현재 기준 10년 단순 비교</h4><p>취업 시점부터 10년(120개월)을 비교합니다. 소득·생활비·상환기준소득·금리를 현재 값으로 유지하며, 미래의 상승·하락은 예측하지 않습니다.</p></div><dl>
-    <div><dt>10년간 납부액</dt><dd>${moneyOrPending(comparison.totalPayment)}</dd><small>이 기간에 갚는 원금과 이자의 합계</small></div>
-    <div><dt>10년간 납부이자</dt><dd>${moneyOrPending(comparison.totalInterest)}</dd><small>10년간 납부액에 이미 포함된 이자</small></div>
-    <div><dt>10년 말 남은 잔액</dt><dd>${moneyOrPending(comparison.endingBalance)}</dd><small>10년이 지난 뒤에도 갚아야 할 금액</small></div>
-  </dl></section>`;
-}
 
 function renderExecutionLedger(candidate) {
   const entries = candidate.calculationTrace.steps.loanDisbursements.entries;
@@ -145,26 +130,42 @@ function renderPolicyBasis(candidate) {
 export function renderSelectedDetail(state, scenario) {
   const candidate = selectedLoanCandidate(state);
   if (!candidate) return '';
-  const loan = candidate.loan;
-  const safety = safetyCopy(candidate.safety);
+  const loan = scenario.loan;
+  const summary = scenario.timeline.summary;
+  const baseline = state.baselineScenarios.find(s => s.id === scenario.id);
+  const delta = (key) => state.comparison.view === 'changed'
+    && Number.isFinite(summary[key]) && Number.isFinite(baseline.timeline.summary[key])
+    ? ` · 기본 대비 ${signedMoney(summary[key] - baseline.timeline.summary[key])}` : '';
   const workReductionNote = scenario.workHoursReduced === 0
     ? '현재 근로시간 유지'
-    : `현재보다 주당 ${formatHours(scenario.workHoursReduced)}시간 덜 일할 수 있어요`;
+    : scenario.workHoursReduced < 0 ? `현재보다 주당 ${formatHours(-scenario.workHoursReduced)}시간 더 일하는 계획` : `현재보다 주당 ${formatHours(scenario.workHoursReduced)}시간 덜 일할 수 있어요`;
 
   return `<section class="selected-detail" aria-labelledby="detail-title">
-    <div class="detail-heading"><div><h3 id="detail-title">${scenario.name}</h3><p>${scenario.summary}</p></div><span class="safety safety-${candidate.safety}"><b>${safety[0]}</b>${safety[1]}</span></div>
+    <div class="detail-heading"><div><h3 id="detail-title">${safe(scenario.name)}</h3><p>${state.comparison.view === 'baseline' ? '기본 조건' : '그래프와 같은 변경 조건'} · ${safe(scenario.summary)}</p></div>${scenario.custom ? `<div class="custom-actions"><button type="button" class="${quietButton}" data-action="edit-custom" data-id="${scenario.id}">내 시나리오 수정</button><button type="button" class="${quietButton}" data-action="delete-custom" data-id="${scenario.id}">삭제</button></div>` : ''} </div>
+    ${scenario.custom && scenario.livingLoan.semesters.some(s=>s.limitedByPolicy) ? '<p role="status">누적 대출 한도로 일부 학기 금액이 줄었습니다. 자금 계산 내역에서 실제 반영액을 확인하세요.</p>' : ''}
     <div class="detail-metrics">
-      ${metric('대학 시절 월 생활비 여력', moneyOrPending(scenario.possibleCollegeSpend), `희망 ${formatMoney(state.profile.desiredCollegeSpend)} 대비 ${signedMoney(scenario.collegeSpendGap)}`)}
+      ${metric('재학 중 월평균 생활비 여력', moneyOrPending(summary.collegeLiving), '희망 생활비 차감 전' + delta('collegeLiving'))}
       ${metric('시나리오 주당 근로시간', `${formatHours(scenario.workHours)}<small>시간</small>`, workReductionNote)}
-      ${metric('신규 대출 원금', moneyOrPending(candidate.loanComposition.totals.combined), '남은 재학기간에 새로 빌리는 총액 · 이자 제외')}
-      ${metric('졸업 시 예상 대출잔액', moneyOrPending(loan.balanceAtGraduation), '졸업할 때까지 갚지 않고 남아 있을 금액')}
+      ${metric('졸업 시 예상 대출잔액', moneyOrPending(summary.graduationBalance), '졸업할 때 남아 있는 금액' + delta('graduationBalance'))}
+      ${metric('취업 첫해 월평균 상환 부담', moneyOrPending(summary.careerRepayment), '취업 후 상환은 연간액의 월평균 환산 · 실제 월 청구액 아님' + delta('careerRepayment'))}
+      ${metric('취업 첫해 월평균 생활비 여력', moneyOrPending(summary.careerLiving), '희망 생활비 차감 전' + delta('careerLiving'))}
     </div>
+    <details class="detail-disclosure" data-detail="loans"><summary>대출 구성 및 상환 일정</summary>
+    ${renderLoanOptions(state, scenario)}
     ${renderComposition(candidate)}
     ${renderRecommendationExplanation(candidate, scenario)}
     ${renderRepayment(loan)}
-    ${renderTenYearComparison(loan)}
     ${renderExecutionLedger(candidate)}
+    <details><summary>기간별 상환액과 잔액</summary><div class="table-wrap"><table><caption>그래프와 같은 관찰 기간 · 상환부담은 월평균 환산 포함</caption><thead><tr><th>경과 개월</th><th>상환 부담 (만 원/월)</th><th>월초 잔액 (만 원)</th></tr></thead><tbody>${scenario.timeline.rows.map(row => `<tr><th scope="row">${row.month}</th><td>${moneyOrPending(row.repayment)}</td><td>${moneyOrPending(row.balance)}</td></tr>`).join('')}</tbody></table></div></details>
+    </details>
+    <details class="detail-disclosure" data-detail="funding"><summary>자금 계산 내역</summary>
+    ${renderFundingFormula(state, scenario)}
+    <p>재학 중 생활비 여력 = 월 근로소득 + 해당 학기 생활비 대출의 월 배분 − 해당 월 상환부담. 취업 후에는 월소득에서 상환부담을 뺍니다.</p></details>
+    <details class="detail-disclosure" data-detail="sources"><summary>계산 가정 및 출처</summary>
+    <p>소득·생활비·금리·상환기준소득을 고정합니다. 세금·물가·추가 차입은 예측하지 않습니다. 취업 후 상환의 월 부담은 연간 예상액 ÷ 12이며, 취업 이후 잔액은 연간 결산 시점에 갱신합니다.</p>
     ${renderPolicyBasis(candidate)}
+    ${renderSources()}
+    </details>
   </section>`;
 }
 

@@ -4,7 +4,10 @@ import { EMPTY_STRESS } from '../domain/scenarios/normalize-stress.js';
 export function createInitialState() {
   return {
     profile: { ...DEFAULT_PROFILE },
+    customScenarios: [],
+    nextCustomId: 1,
     selectedScenarioId: 'balance',
+    comparison: { ids: ['minimum-loan', 'balance'], metric: 'living', month: 0, view: 'baseline' },
     baselineScenarios: [],
     currentScenarios: [],
     baselineRecommendations: [],

@@ -18,6 +18,7 @@ export function renderDiagnosisSection(profile, inputMode = 'manual') {
 export function renderForm(p) {
   return `
     <form id="diagnosis-form" novalidate>
+      <p class="privacy-note">입력 정보는 브라우저 세션에서만 계산하며 서버에 저장하지 않습니다.</p>
       <div class="form-section">
         <div class="form-section-title"><span>01</span><div><h3>재학 정보</h3><p>졸업까지 남은 기간이 총 필요금액과 대출 실행 횟수를 결정해요.</p></div></div>
         <div class="form-grid">
