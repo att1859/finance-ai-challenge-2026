@@ -62,8 +62,9 @@
 #diagnosis-form { margin-top:24px; }
 .compact-profile { padding:24px 0; gap:24px 32px; }
 .contribution-field { position:relative; min-width:0; }
-.contribution-field .field > span:first-child { padding-right:44px; min-height:24px; }
-.info-button { position:absolute; right:0; top:-10px; width:44px; min-height:44px; font-family:var(--font-body); }
+.contribution-field .field > span:first-child { padding-right:32px; min-height:24px; }
+.contribution-field .info-button { position:absolute; right:0; top:0; display:inline-grid; place-items:center; width:24px; height:24px; min-height:24px; padding:0; border:1px solid var(--line-strong); border-radius:50%; background:transparent; color:var(--ink-2); font:600 13px/1 var(--font-body); }
+.contribution-field .info-button:hover, .contribution-field .info-button[aria-expanded="true"] { background:var(--paper-2); }
 .field-help { margin:8px 0 0; padding:14px; background:var(--paper-2); border:1px solid var(--line); color:var(--muted); font-size:.85rem; }
 .field-help[hidden] { display:none; }
 @media(max-width:580px) { .compact-profile { grid-template-columns:1fr; } }
