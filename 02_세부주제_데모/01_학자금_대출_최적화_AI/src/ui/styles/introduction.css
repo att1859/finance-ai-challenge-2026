@@ -48,3 +48,11 @@
   .tuition-facts > div { grid-template-columns: 1fr; gap: 5px; }
   .smoothing-dialog-frame { max-height: calc(93dvh - 1px); }
 }
+
+.slow-info { display: inline-flex; vertical-align: middle; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 4px; border: 0; border-radius: var(--radius-control); background: transparent; color: var(--ink-2); cursor: pointer; }
+.slow-info svg { width: 14px; height: 14px; }
+.slow-info:hover { background: var(--paper-2, #ebeae4); }
+.slow-info:focus-visible { outline: 2px solid #1769aa; outline-offset: 2px; }
+.slow-info-note { position: fixed; inset: auto; margin: 0; width: max-content; max-width: min(420px, calc(100vw - 40px)); max-height: calc(100dvh - 24px); overflow: auto; padding: 16px; border: 1px solid var(--line-strong); border-radius: var(--radius-surface); background: #fffefa; color: var(--ink-2); font: inherit; font-size: 14px; line-height: 1.7; word-break: keep-all; overflow-wrap: anywhere; }
+.slow-info-note p { margin: 0; }
+.slow-info-note p + p { margin-top: 12px; }

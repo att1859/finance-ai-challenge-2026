@@ -120,3 +120,5 @@ app/ai-session.js는 DOM 없이 대화·맥락 버전·취소·재시도를 관�
 server/index.js는 루프백 HTTP 서버와 스키마·Host/Origin·크기·분당/동시 요청 한도를 담당한다. server/ai-provider.js만 Gemini 키와 generateContent 계약을 안다. server/knowledge.js는 제품 의미만 보관하며 자격 판정 엔진을 대체하지 않는다. 공급자 호출은 테스트에서 주입 가능하다.
 
 scripts/dev.js는 Vite와 API를 함께 시작하고 종료한다. Node 24에서 검증하며 native config loader를 사용한다. Vite /api 프록시는 AI_PORT(기본 8787)를 따른다. 키는 서버 환경 변수 또는 Git에서 제외된 .env.local에만 둔다. AI_SETUP.md에 실행과 검증 경계를 기록한다.
+
+첫 화면의 다섯 안내 본문은 2026-09-06 사용자 제공 문구를 사용한다. 3번의 주택담보대출 4.48% 뒤에는 작은 i 아이콘으로 “2026년7월 가중평균금리 기준”을 표시하며, 마지막 문장 뒤의 i 아이콘은 고정·변동금리 설명을 연다. native popover로 클릭·호버·터치·키보드 및 Escape/바깥 클릭 닫기를 지원한다. 학자금 금리는 기존 정책 스냅샷을 사용한다.

@@ -52,6 +52,38 @@ const selectedScenario = () => findSelectedScenario(state);
 function bindShell() {
   const form = document.querySelector('#diagnosis-form');
   applyControls(app);
+  app.querySelectorAll('.slow-info').forEach((button) => {
+    const note = document.getElementById(button.getAttribute('popovertarget'));
+    let closeTimer;
+    let pinned = false;
+    const position = () => {
+      const rect = button.getBoundingClientRect();
+      note.style.left = `${Math.max(12, Math.min(rect.left, document.documentElement.clientWidth - note.offsetWidth - 12))}px`;
+      note.style.top = `${Math.max(12, Math.min(rect.bottom + 6, window.innerHeight - note.offsetHeight - 12))}px`;
+    };
+    const open = () => {
+      clearTimeout(closeTimer);
+      if (!note.matches(':popover-open')) note.showPopover();
+      position();
+    };
+    const closeSoon = () => { closeTimer = setTimeout(() => { if (!pinned) note.hidePopover(); }, 180); };
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      pinned = !pinned;
+      if (pinned) open();
+      else note.hidePopover();
+    });
+    button.addEventListener('pointerenter', (event) => { if (event.pointerType === 'mouse') open(); });
+    button.addEventListener('pointerleave', (event) => { if (event.pointerType === 'mouse') closeSoon(); });
+    note.addEventListener('pointerenter', () => clearTimeout(closeTimer));
+    note.addEventListener('pointerleave', closeSoon);
+    note.addEventListener('toggle', () => {
+      if (note.matches(':popover-open')) position();
+      else pinned = false;
+    });
+    window.addEventListener('resize', () => { if (note.matches(':popover-open')) position(); });
+    window.addEventListener('scroll', () => { if (note.matches(':popover-open')) position(); }, { passive: true });
+  });
   const smoothingDialog = document.querySelector('#smoothing-dialog');
   app.addEventListener('click', handleClick);
   smoothingDialog?.addEventListener('click', (event) => {
