@@ -25,6 +25,7 @@
   .scenario-options { grid-template-columns: 1fr; }
   .scenario-option { min-height: 88px; }
   .scenario-option + .scenario-option { border-left: 0; border-top: 1px solid var(--line); }
+  .loan-candidates { grid-template-columns: 1fr; }
   .comparison-figure { padding: 26px 22px; }
   .comparison-figure figcaption { display: block; }
   .comparison-figure figcaption > p { margin-top: 13px; }
@@ -36,6 +37,8 @@
   table { min-width: 680px; }
   .loan-detail { grid-template-columns: 1fr; }
   .loan-detail ul { grid-column: 1; margin-top: 0; }
+  .ten-year-ledger { grid-template-columns: 1fr; gap: 16px; }
+  .recommendation-explanation { grid-template-columns: 1fr; gap: 16px; }
   .funding-ledger dl > div { grid-template-columns: 170px 1fr; }
   .stress-controls { grid-template-columns: 1fr; }
 }
@@ -64,6 +67,8 @@
   .result-intro { margin-bottom: 30px; }
   .scenario-selector legend { font-size: .9rem; }
   .scenario-option { padding: 15px; }
+  .loan-options { margin-left: -18px; margin-right: -18px; padding: 26px 18px; }
+  .living-choice-row, .result-condition-grid { grid-template-columns: 1fr; }
   .comparison-figure { margin-left: -18px; margin-right: -18px; margin-bottom: 65px; padding: 24px 18px; border-inline: 0; border-radius: 0; }
   .scenario-key { justify-content: flex-start; }
   .metric-chart { gap: 27px; }
@@ -83,6 +88,11 @@
   .detail-metrics > div { padding: 18px 10px; }
   .detail-metrics strong { font-size: 1.35rem; }
   .loan-detail dl { grid-template-columns: 1fr; }
+  .ten-year-ledger dl { grid-template-columns: 1fr; }
+  .ten-year-ledger dl > div { padding: 10px 0; }
+  .ten-year-ledger dl > div + div { border-left: 0; border-top: 1px solid #43515b; }
+  .policy-basis li { display: grid; }
+  .policy-basis li span { text-align: left; }
   .funding-section, .stress-section, .sources-section { margin-bottom: 72px; }
   .formula-line { gap: 6px; }
   .formula-line span { min-height: 36px; padding: 6px 10px; font-size: .76rem; }

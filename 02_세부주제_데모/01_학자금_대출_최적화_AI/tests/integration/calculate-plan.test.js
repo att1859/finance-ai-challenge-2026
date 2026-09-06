@@ -7,8 +7,8 @@ import { SAMPLE_PROFILE } from '../../src/data/sample-profile.js';
 test('전체 계획 계산은 기준안과 위험 조건 적용안을 같은 세 시나리오로 반환한다', () => {
   const result = calculatePlan(SAMPLE_PROFILE, { graduationDelayMonths: 12 });
 
-  assert.deepEqual(result.baselineScenarios.map(({ id }) => id), ['focus', 'balance', 'debt-min']);
-  assert.deepEqual(result.currentScenarios.map(({ id }) => id), ['focus', 'balance', 'debt-min']);
+  assert.deepEqual(result.baselineScenarios.map(({ id }) => id), ['minimum-loan', 'balance', 'maximum-use']);
+  assert.deepEqual(result.currentScenarios.map(({ id }) => id), ['minimum-loan', 'balance', 'maximum-use']);
   assert.equal(result.baselineScenarios[1].funding.studyMonths, 48);
   assert.equal(result.currentScenarios[1].funding.studyMonths, 60);
   assert.equal('supportPrograms' in result, false);
@@ -37,8 +37,20 @@ test('전체 계획 계산은 기준안과 위험 조건 적용안을 같은 세
     && Array.isArray(interestExemptions)
     && Array.isArray(repaymentDeferrals)
   )));
+  const general = result.baselineScenarios[1].loan.repayments.general;
+  assert.equal(general.repaymentTerms.requestedGraduationPreparationYears, 1);
+  assert.equal(general.repaymentTerms.repaymentYears, 10);
+  assert.ok(general.componentRepaymentSchedules.every(({ disbursementDate, repaymentStartDate }) => (
+    disbursementDate < repaymentStartDate
+  )));
+  assert.ok(general.monthlyRepaymentSchedule.some(({ repaymentComponentCount }) => (
+    repaymentComponentCount > 1
+  )));
+  assert.equal(result.baselineScenarios[1].loan.repaymentStartDate, general.repaymentStartDate);
   assert.equal(result.loanEligibilityCombinations.length, 4);
   assert.ok(result.loanEligibilityCombinations.every(({ status }) => status === 'unknown'));
+  assert.equal(result.baselineFullLoanCapView.name, '풀대출 상한 보기');
+  assert.equal(result.baselineFullLoanCapView.isRecommendation, false);
 });
 
 test('과거 지원금 값은 전체 계획의 시나리오에 영향을 주지 않는다', () => {
@@ -52,16 +64,16 @@ test('과거 지원금 값은 전체 계획의 시나리오에 영향을 주지 
 test('간편 차감률이 높아지면 실수령 근로소득이 줄고 필요한 대출액이 늘어난다', () => {
   const simple = calculatePlan({
     ...SAMPLE_PROFILE,
-    loanCap: 10000,
+    desiredCollegeSpend: 130,
     workTaxPreset: 'simple-3.3',
   });
   const social = calculatePlan({
     ...SAMPLE_PROFILE,
-    loanCap: 10000,
+    desiredCollegeSpend: 130,
     workTaxPreset: 'social-9.5',
   });
-  const simpleBalance = simple.currentScenarios.find(({ id }) => id === 'balance');
-  const socialBalance = social.currentScenarios.find(({ id }) => id === 'balance');
+  const simpleBalance = simple.currentScenarios.find(({ id }) => id === 'minimum-loan');
+  const socialBalance = social.currentScenarios.find(({ id }) => id === 'minimum-loan');
 
   assert.ok(socialBalance.workMonthly < simpleBalance.workMonthly);
   assert.ok(
@@ -90,4 +102,35 @@ test('전체 계획은 선택 상품에 맞는 상환 단위와 정책 방식을
     incomeContingent.monthlyBurdenForComparison,
     incomeContingent.monthlyAverageMandatoryRepayment,
   );
+});
+
+test('결과 선택은 상품·생활비 포함·상환기간을 같은 계산 결과에 즉시 반영한다', () => {
+  const selected = calculatePlan({
+    ...SAMPLE_PROFILE,
+    desiredCollegeSpend: 130,
+    repaymentYears: 5,
+    resultSelections: {
+      balance: {
+        candidateId: 'general:income-contingent',
+        includeLiving: true,
+      },
+    },
+  }).currentScenarios.find(({ id }) => id === 'balance');
+  const withoutLiving = calculatePlan({
+    ...SAMPLE_PROFILE,
+    desiredCollegeSpend: 130,
+    resultSelections: {
+      balance: {
+        candidateId: 'general:income-contingent',
+        includeLiving: false,
+      },
+    },
+  }).currentScenarios.find(({ id }) => id === 'balance');
+
+  assert.equal(selected.loan.type, 'mixed');
+  assert.equal(selected.loan.repayments.general.repaymentTerms.repaymentYears, 5);
+  assert.ok(selected.loan.repayments.incomeContingent.principal > 0);
+  assert.equal(withoutLiving.workHours, SAMPLE_PROFILE.currentWorkHours);
+  assert.equal(withoutLiving.loanComposition.totals.living, 0);
+  assert.ok(withoutLiving.unmetLivingGap > 0);
 });

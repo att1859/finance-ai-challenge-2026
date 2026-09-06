@@ -3,18 +3,16 @@ import {
   calculateMonthlyWorkIncome,
   WORK_TAX_PRESETS,
 } from '../../domain/funding/work-income.js';
-import { INCOME_CONTINGENT_POLICY } from '../../policies/loans/2026.js';
-import { formatMoney, moneyHtml } from '../formatters/money.js';
+import { formatMoney } from '../formatters/money.js';
 import { escapeHtml } from '../shared/escape-html.js';
 import { icon } from '../shared/icon.js';
 
 const safe = escapeHtml;
-const money = moneyHtml;
 const compactMoney = (value) => formatMoney(value, { digits: 1 }).replace(' 만 원', '만 원');
 
 export function renderDiagnosisSection(profile, inputMode = 'manual') {
   const sampleMode = inputMode === 'sample';
-  return `<section class="diagnosis-section" id="diagnosis" aria-labelledby="diagnosis-title"><div class="section-heading"><h2 id="diagnosis-title">계산에 필요한 정보를 입력해 주세요.</h2><p>현재 확인할 수 있는 학비, 생활비, 근로조건과 대출 정보를 입력해 주세요.</p></div><div class="input-mode" aria-label="입력 방식"><button class="mode-option ${sampleMode ? '' : 'is-active'}" type="button" data-action="manual"><span>직접 입력</span><small>내 상황에 맞게 값을 바꿔요</small></button><button class="mode-option ${sampleMode ? 'is-active' : ''}" type="button" data-action="sample"><span>예시 정보로 시작하기</span><small>${sampleMode ? '가상 정보가 입력됐어요' : '가상 정보가 입력돼요'}</small></button></div>${renderForm(profile)}</section>`;
+  return `<section class="diagnosis-section" id="diagnosis" aria-labelledby="diagnosis-title"><div class="section-heading"><h2 id="diagnosis-title">계산에 필요한 정보를 입력해 주세요.</h2><p>현재 확인할 수 있는 학비, 생활비와 근로조건만 입력해 주세요.</p></div><div class="input-mode" aria-label="입력 방식"><button class="mode-option ${sampleMode ? '' : 'is-active'}" type="button" data-action="manual"><span>직접 입력</span><small>내 상황에 맞게 값을 바꿔요</small></button><button class="mode-option ${sampleMode ? 'is-active' : ''}" type="button" data-action="sample"><span>예시 정보로 시작하기</span><small>${sampleMode ? '가상 정보가 입력됐어요' : '가상 정보가 입력돼요'}</small></button></div>${renderForm(profile)}</section>`;
 }
 
 export function renderForm(p) {
@@ -30,9 +28,10 @@ export function renderForm(p) {
         </div>
       </div>
       <div class="form-section">
-        <div class="form-section-title"><span>02</span><div><h3>학비와 대출 조건</h3><p>실제 납부 등록금과 학자금 지원구간을 입력해 주세요.</p></div></div>
+        <div class="form-section-title"><span>02</span><div><h3>학비</h3><p>실제 납부 등록금에서 대출 없이 낼 금액을 먼저 빼요.</p></div></div>
         <div class="form-grid">
           <label class="field"><span>학기당 실제 납부 등록금</span><span class="input-unit"><input name="tuitionPerSemester" type="number" min="0" value="${p.tuitionPerSemester}" required><em>만 원</em></span><small class="error" data-error-for="tuitionPerSemester"></small></label>
+          <label class="field"><span>학기당 대출 없이 낼 등록금</span><span class="input-unit"><input name="tuitionContributionPerSemester" type="number" min="0" value="${p.tuitionContributionPerSemester}" required><em>만 원</em></span><small class="field-hint">실제 납부 등록금보다 클 수 없어요.</small><small class="error" data-error-for="tuitionContributionPerSemester"></small></label>
           <label class="field"><span>학자금 지원구간</span><select name="supportBracket"><option value="">모름 / 확인 필요</option>${Array.from({length:10},(_,i)=>`<option value="${i+1}">${i+1}구간</option>`).join('')}</select></label>
         </div>
       </div>
@@ -49,24 +48,7 @@ export function renderForm(p) {
         <div id="work-income-summary" class="inline-summary work-income-summary" aria-live="polite">${renderWorkIncomeSummaryContent(p)}</div>
         <details class="loan-explainer work-income-explainer"><summary>근로소득 계산 기준과 주의사항 ${icon('chevron')}</summary><div><p>주휴수당은 주 5일 근무, 소정근로일 개근, 계속근로를 가정해 간편 계산합니다. 연장·야간·휴일근로 가산수당은 포함하지 않습니다.</p><p>선택한 차감률은 비교를 위한 추정값으로 실제 세금·보험료와 다를 수 있습니다. <a href="https://www.moel.go.kr/mainpop2.do" target="_blank" rel="noopener">고용노동부 안내</a>와 <a href="https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=4&amp;cciNo=1&amp;cnpClsNo=1&amp;csmSeq=1381&amp;popMenu=ov" target="_blank" rel="noopener">찾기쉬운 생활법령정보</a>에서 조건을 확인할 수 있습니다.</p></div></details>
       </div>
-      <div class="form-section">
-        <div class="form-section-title"><span>04</span><div><h3>대출 계획</h3><p>대출상품에 따라 졸업 후 상환 방식과 표시 단위가 달라져요.</p></div></div>
-        <fieldset class="loan-type-fieldset"><legend>학자금대출 유형</legend><div class="loan-type-grid">
-          ${loanChoice('general','일반 상환','정한 거치·상환기간에 따라 매달 갚아요.',p.loanType)}
-          ${loanChoice('income-contingent','취업 후 상환','연소득이 기준을 넘으면 의무상환액이 생겨요.',p.loanType)}
-        </div></fieldset>
-        <details class="loan-explainer"><summary>두 대출 유형은 무엇이 다른가요? ${icon('chevron')}</summary><div><p><strong>일반 상환</strong>은 거치기간 뒤 정해진 기간 동안 원리금균등으로 매달 갚습니다.</p><p><strong>취업 후 상환</strong>은 소득이 상환기준을 넘으면 초과분을 기준으로 연간 의무상환액이 정해집니다. 월평균 환산액은 비교용 참고값이며 실제 월별 청구액이 아닙니다.</p><p>두 상품 모두 정책 스냅샷의 금리를 사용하며 실제 자격과 상환액은 공식 심사를 확인해야 합니다.</p></div></details>
-        <div class="form-grid loan-common">
-          ${numberField('loanCap','신규 대출 한도',p.loanCap,'만 원')}
-          ${numberField('existingLoanBalance','현재 학자금대출 잔액',p.existingLoanBalance,'만 원')}
-        </div>
-        <div id="general-loan-fields" class="form-grid ${p.loanType === 'general' ? '' : 'is-hidden'}">
-          ${numberField('graceYears','졸업 후 거치기간',p.graceYears,'년','0.5')}
-          ${numberField('repaymentYears','상환기간',p.repaymentYears,'년','0.5')}
-        </div>
-        <p id="icl-policy-note" class="policy-inline ${p.loanType === 'income-contingent' ? '' : 'is-hidden'}">${icon('info')} ${INCOME_CONTINGENT_POLICY.basisYear}년 총급여 환산 기준 ${money(INCOME_CONTINGENT_POLICY.annualIncomeThreshold)}, 예상 의무상환율 ${INCOME_CONTINGENT_POLICY.repaymentRate*100}%를 사용합니다.</p>
-      </div>
-      <div class="form-submit-row"><div><strong>입력값을 바꾸면 세 계획을 다시 계산합니다.</strong><p>간이 예상 결과이며 공식 심사·승인 결과가 아닙니다.</p></div><button class="button button-primary button-large" type="submit">세 가지 계획 비교하기 ${icon('arrow')}</button></div>
+      <div class="form-submit-row"><div><strong>먼저 세 계획과 가능한 대출 구성을 계산합니다.</strong><p>상품과 상환조건은 결과에서 비교하고 바꿀 수 있어요.</p></div><button class="button button-primary button-large" type="submit">추천 결과 확인하기 ${icon('arrow')}</button></div>
     </form>`;
 }
 
@@ -91,18 +73,9 @@ export function renderWorkIncomeSummaryContent(profile) {
   return `<p class="work-income-total"><span>현재 월 예상 실수령 근로소득</span><strong id="work-income-preview">${compactMoney(income.netMonthly)}</strong></p><p id="work-income-breakdown" class="work-income-breakdown">기본급 ${compactMoney(income.baseMonthly)} <b>+</b> 주휴수당 ${compactMoney(income.holidayMonthly)} <b>−</b> ${WORK_TAX_PRESETS[income.taxPreset].label} ${compactMoney(income.deductionMonthly)}</p><p id="work-holiday-note" class="work-income-assumption"><strong>${holidayNote}</strong> · 월평균 4.345주와 주휴 지급 조건을 가정한 간편 추정입니다.</p>`;
 }
 
-function loanChoice(value, title, copy, selected) {
-  return `<label class="loan-choice"><input type="radio" name="loanType" value="${value}" ${selected===value?'checked':''} required><span><strong>${title}</strong><small>${copy}</small></span></label>`;
-}
-
-export function toggleLoanFields(type) {
-  document.querySelector('#general-loan-fields').classList.toggle('is-hidden', type !== 'general');
-  document.querySelector('#icl-policy-note').classList.toggle('is-hidden', type !== 'income-contingent');
-}
-
 export function readProfile(form) {
   const data = new FormData(form);
-  const numeric = ['tuitionPerSemester','desiredCollegeSpend','desiredCareerSpend','currentWorkHours','hourlyWage','graduationYears','salary','loanCap','repaymentYears','graceYears','existingLoanBalance'];
+  const numeric = ['tuitionPerSemester','tuitionContributionPerSemester','desiredCollegeSpend','desiredCareerSpend','currentWorkHours','hourlyWage','graduationYears','salary'];
   const profile = { ...DEFAULT_PROFILE };
   for (const [key, value] of data.entries()) if (!numeric.includes(key)) profile[key] = value;
   numeric.forEach((key) => {
@@ -115,8 +88,11 @@ export function validateProfile(profile) {
   const errors = {};
   if (!profile.school.trim()) errors.school = '학교명을 입력해 주세요.';
   if (profile.graduationYears < 0.5 || profile.graduationYears > 8 || (profile.graduationYears * 2) % 1 !== 0) errors.graduationYears = '0.5년 단위로 0.5~8년 사이를 입력해 주세요.';
-  ['tuitionPerSemester','desiredCollegeSpend','desiredCareerSpend','currentWorkHours','hourlyWage','salary','loanCap','repaymentYears','graceYears','existingLoanBalance'].forEach((key) => {
+  ['tuitionPerSemester','tuitionContributionPerSemester','desiredCollegeSpend','desiredCareerSpend','currentWorkHours','hourlyWage','salary'].forEach((key) => {
     if (!Number.isFinite(profile[key]) || profile[key] < 0) errors[key] = '0 이상의 숫자를 입력해 주세요.';
   });
+  if (profile.tuitionContributionPerSemester > profile.tuitionPerSemester) {
+    errors.tuitionContributionPerSemester = '실제 납부 등록금 이하로 입력해 주세요.';
+  }
   return errors;
 }

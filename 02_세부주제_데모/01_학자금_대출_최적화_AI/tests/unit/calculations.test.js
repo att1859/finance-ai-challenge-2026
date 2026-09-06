@@ -11,6 +11,7 @@ import {
 } from '../../src/domain/loans/loan-composition.js';
 import {
   calculateAllScenarios,
+  calculateFullLoanCapView,
   calculateScenario,
 } from '../../src/domain/scenarios/calculate-scenario.js';
 import { SCENARIO_DEFINITIONS } from '../../src/domain/scenarios/definitions.js';
@@ -45,6 +46,10 @@ const snapshotWithIncomeRepayment = ({ threshold, rate }) => ({
 test('최초 프로필은 월 희망 생활비 80만 원을 사용하고 금리는 입력받지 않는다', () => {
   assert.equal(DEFAULT_PROFILE.desiredCollegeSpend, 80);
   assert.equal(SAMPLE_PROFILE.desiredCollegeSpend, 80);
+  assert.equal(DEFAULT_PROFILE.graceYears, 1);
+  assert.equal(DEFAULT_PROFILE.tuitionContributionPerSemester, 0);
+  assert.equal(SAMPLE_PROFILE.tuitionContributionPerSemester, 120);
+  assert.equal(DEFAULT_PROFILE.repaymentYears, 10);
   assert.equal('annualRate' in DEFAULT_PROFILE, false);
   assert.equal('repaymentMethod' in DEFAULT_PROFILE, false);
 });
@@ -103,12 +108,133 @@ test('간편 차감 선택은 같은 총소득에 3.3%·9.5%·0%를 각각 적�
   closeTo(daily.netMonthly, daily.grossMonthly);
 });
 
-test('세 시나리오는 현재 근로시간의 0%·50%·100%와 감소량을 반환한다', () => {
+test('세 시나리오는 최소대출·최대감소의 절반·최대활용 순으로 계산한다', () => {
   const scenarios = calculateAllScenarios({ ...SAMPLE_PROFILE, currentWorkHours: 13 });
 
-  assert.deepEqual(scenarios.map(({ workHours }) => workHours), [0, 6.5, 13]);
-  assert.deepEqual(scenarios.map(({ workHoursReduced }) => workHoursReduced), [13, 6.5, 0]);
+  assert.deepEqual(scenarios.map(({ id }) => id), ['minimum-loan', 'balance', 'maximum-use']);
+  assert.deepEqual(scenarios.map(({ workHours }) => workHours), [13, 11.5, 9.5]);
+  assert.deepEqual(scenarios.map(({ workHoursReduced }) => workHoursReduced), [0, 1.5, 3.5]);
+  assert.deepEqual(scenarios.map(({ livingLoan }) => livingLoan.principal), [720, 1080, 1560]);
   assert.ok(scenarios.every(({ workIncomeBreakdown }) => workIncomeBreakdown));
+});
+
+test('최대활용안은 주휴수당 15시간 경계를 0.5시간 단위로 탐색한다', () => {
+  const maximumUse = calculateAllScenarios({
+    ...SAMPLE_PROFILE,
+    currentWorkHours: 16,
+    graduationYears: 0.5,
+    desiredCollegeSpend: 110,
+  }).find(({ id }) => id === 'maximum-use');
+
+  assert.equal(maximumUse.workHours, 15);
+  assert.equal(maximumUse.workIncomeBreakdown.weeklyHolidayEligible, true);
+  assert.equal(maximumUse.unmetLivingGap, 0);
+});
+
+test('생활비가 충족되면 0원이며 한도로도 부족하면 미충족액을 남긴다', () => {
+  const noLoan = calculateScenario({
+    ...SAMPLE_PROFILE,
+    desiredCollegeSpend: 50,
+  }, SCENARIO_DEFINITIONS[0]);
+  const capped = calculateAllScenarios({
+    ...SAMPLE_PROFILE,
+    currentWorkHours: 0,
+    graduationYears: 0.5,
+    desiredCollegeSpend: 500,
+  });
+
+  assert.equal(noLoan.livingLoan.principal, 0);
+  assert.equal(capped.length, 1);
+  assert.equal(capped[0].livingLoan.principal, 200);
+  assert.equal(capped[0].unmetLivingGap, 2800);
+});
+
+test('등록금은 비대출 납부액을 먼저 차감하고 풀대출은 별도 상한으로 계산한다', () => {
+  const profile = {
+    ...SAMPLE_PROFILE,
+    tuitionPerSemester: 420,
+    tuitionContributionPerSemester: 120,
+  };
+  const minimum = calculateScenario(profile, SCENARIO_DEFINITIONS[0]);
+  const fullCap = calculateFullLoanCapView(profile);
+
+  assert.equal(minimum.tuitionFunding.loanPerSemester, 300);
+  assert.equal(minimum.loanComposition.totals.tuition, 2400);
+  assert.equal(fullCap.livingPrincipal, 1600);
+  assert.equal(fullCap.isRecommendation, false);
+  assert.deepEqual(fullCap.policyReference.sourceIds, ['kosaf-overview', 'kosaf-living']);
+});
+
+test('학기당 대출 없이 낼 등록금 0원과 등록금 전액 경계를 계산한다', () => {
+  const definition = SCENARIO_DEFINITIONS[0];
+  const none = calculateScenario({
+    ...SAMPLE_PROFILE,
+    tuitionContributionPerSemester: 0,
+  }, definition);
+  const full = calculateScenario({
+    ...SAMPLE_PROFILE,
+    tuitionContributionPerSemester: SAMPLE_PROFILE.tuitionPerSemester,
+  }, definition);
+
+  assert.equal(none.tuitionFunding.loanPerSemester, SAMPLE_PROFILE.tuitionPerSemester);
+  assert.equal(full.tuitionFunding.loanPerSemester, 0);
+  assert.equal(full.loanComposition.totals.tuition, 0);
+});
+
+test('calculationTrace는 필요자금부터 상환까지 순서와 반올림 전 원시값을 보존한다', () => {
+  const scenario = calculateScenario({
+    ...SAMPLE_PROFILE,
+    desiredCollegeSpend: 130,
+    tuitionContributionPerSemester: 120,
+  }, SCENARIO_DEFINITIONS[0]);
+  const trace = scenario.calculationTrace;
+
+  assert.equal(trace.rounding, 'none');
+  assert.deepEqual(trace.order, [
+    'funding-need',
+    'work-income',
+    'living-loan-by-semester',
+    'loan-disbursements',
+    'grace-interest',
+    'repayment',
+  ]);
+  assert.equal(
+    trace.steps.workIncome.outputs.netMonthly,
+    scenario.workIncomeBreakdown.netMonthly,
+  );
+  assert.equal(
+    trace.steps.livingLoanBySemester.semesters[0].rawRequired,
+    scenario.livingLoan.semesters[0].rawRequired,
+  );
+  assert.equal(
+    trace.steps.fundingNeed.outputs.tuitionLoanNeed,
+    scenario.tuitionFunding.principal,
+  );
+  assert.ok(trace.steps.loanDisbursements.entries.length > 0);
+  assert.ok(trace.steps.graceInterest.entries.length > 0);
+  assert.ok(trace.steps.repayment.general.monthlySchedule.length > 0);
+});
+
+test('계산에 사용한 금리·한도·자격·상환 기준은 기준일과 공식 출처를 추적한다', () => {
+  const scenario = calculateScenario({
+    ...SAMPLE_PROFILE,
+    desiredCollegeSpend: 130,
+  }, SCENARIO_DEFINITIONS[0]);
+  const byId = Object.fromEntries(
+    scenario.policyReferences.map((item) => [item.id, item]),
+  );
+
+  assert.equal(byId['living-limit'].values.semesterLimit, 200);
+  assert.equal(byId['living-limit'].values.appliedCumulativeLimit, 2400);
+  assert.equal(byId['general-interest-and-repayment'].values.interest.annualRate, 1.7);
+  assert.equal(byId['general-interest-and-repayment'].effectiveFrom, '2026-07-01');
+  assert.equal(byId['general-interest-and-repayment'].checkedAt, '2026-09-01');
+  assert.ok(byId['general-interest-and-repayment'].sources.every(
+    ({ url }) => url.startsWith('https://'),
+  ));
+  assert.ok(scenario.calculationTrace.steps.repayment.policyReferenceIds
+    .includes('general-interest-and-repayment'));
+  assert.ok(byId['eligibility:general:living'].sources.length > 0);
 });
 
 test('원리금균등은 금리 0%와 1.5%를 각각 계산한다', () => {
@@ -188,8 +314,15 @@ test('졸업 지연은 재학기간에 반영하고 취업 지연은 일반 상�
   assert.equal(jobDelay.loan.totalInterest, baseline.loan.totalInterest);
 });
 
-test('대출상한과 음수 생활비 여력을 0으로 위장하지 않는다', () => {
-  const scenarios = calculateAllScenarios({ ...SAMPLE_PROFILE, loanCap: 100, tuitionPerSemester: 2000 });
-  assert.ok(scenarios.every((item) => item.loanComposition.totals.combined <= 100));
-  assert.ok(scenarios.some((item) => item.possibleCollegeSpend < 0));
+test('생활비 한도와 미충족 생활비를 등록금 원금과 섞지 않는다', () => {
+  const scenarios = calculateAllScenarios({
+    ...SAMPLE_PROFILE,
+    currentWorkHours: 0,
+    desiredCollegeSpend: 500,
+    tuitionPerSemester: 2000,
+    tuitionContributionPerSemester: 0,
+  });
+  assert.ok(scenarios.every((item) => item.loanComposition.totals.living <= 1600));
+  assert.ok(scenarios.every((item) => item.unmetLivingGap > 0));
+  assert.ok(scenarios.every((item) => item.loanComposition.totals.tuition === 16000));
 });

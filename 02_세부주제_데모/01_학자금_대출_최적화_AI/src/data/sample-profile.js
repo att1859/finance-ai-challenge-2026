@@ -2,6 +2,7 @@ export const DEFAULT_PROFILE = Object.freeze({
   school: '',
   academicYear: '2',
   tuitionPerSemester: 420,
+  tuitionContributionPerSemester: 0,
   supportBracket: '',
   region: '부산광역시',
   desiredCollegeSpend: 80,
@@ -12,8 +13,8 @@ export const DEFAULT_PROFILE = Object.freeze({
   graduationYears: 4,
   salary: 300,
   loanCap: 5000,
-  repaymentYears: 5,
-  graceYears: 0,
+  repaymentYears: 10,
+  graceYears: 1,
   loanType: 'general',
   existingLoanBalance: 0,
 });
@@ -23,4 +24,5 @@ export const SAMPLE_PROFILE = Object.freeze({
   school: '한빛대학교',
   supportBracket: '3',
   region: '부산광역시',
+  tuitionContributionPerSemester: 120,
 });

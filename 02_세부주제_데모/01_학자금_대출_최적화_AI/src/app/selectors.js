@@ -11,6 +11,22 @@ export function selectedScenario(state) {
   return scenarioById(state, state.selectedScenarioId);
 }
 
+export function selectedRecommendation(state) {
+  return state.currentRecommendations.find(
+    ({ scenarioId }) => scenarioId === state.selectedScenarioId,
+  );
+}
+
+export function selectedLoanCandidate(state) {
+  const recommendation = selectedRecommendation(state);
+  const candidateId = state.resultSelections.candidateByScenario[
+    state.selectedScenarioId
+  ];
+  return recommendation?.candidates.find(({ id }) => id === candidateId)
+    ?? recommendation?.candidates[0]
+    ?? null;
+}
+
 export function hasActiveStress(state) {
   return Object.values(state.stress).some((value) => value > 0);
 }

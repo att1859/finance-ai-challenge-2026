@@ -61,7 +61,7 @@ export function renderShell(state) {
       <section class="diagnosis-section" id="diagnosis" aria-labelledby="diagnosis-title">
         <div class="section-heading">
           <h2 id="diagnosis-title">계산에 필요한 정보를 입력해 주세요.</h2>
-          <p>현재 확인할 수 있는 학비, 생활비, 근로조건과 대출 정보를 입력해 주세요.</p>
+          <p>현재 확인할 수 있는 학비, 생활비와 근로조건만 입력해 주세요.</p>
         </div>
         <div class="input-mode" aria-label="입력 방식">
           <button class="mode-option is-active" type="button" data-action="manual"><span>직접 입력</span><small>내 상황에 맞게 값을 바꿔요</small></button>

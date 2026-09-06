@@ -1,4 +1,5 @@
 import { nonNegative } from '../shared/numbers.js';
+import { calculateIncomeContingentCurrentValueComparison } from './current-value-comparison.js';
 import { buildLoanDisbursementSchedule } from './disbursement-schedule.js';
 import {
   getLoanCompositionComponents,
@@ -70,21 +71,17 @@ export function calculateIncomeContingentLoan(
     };
   }
 
-  const balanceBeforeFirstYearPayment = balanceAtEmployment * ((1 + monthlyRate) ** 12);
-  const incomeBasedRepayment = Math.max(
-    0,
-    annualGrossIncome - policy.annualGrossIncomeThreshold,
-  ) * policy.repaymentRate;
-  const annualMandatoryRepayment = Math.min(
-    balanceBeforeFirstYearPayment,
-    incomeBasedRepayment > 0
-      ? Math.max(incomeBasedRepayment, policy.minimumAnnualMandatoryRepayment)
-      : 0,
-  );
-  const projectedBalance = Math.max(
-    0,
-    balanceBeforeFirstYearPayment - annualMandatoryRepayment,
-  );
+  const currentValueComparison = calculateIncomeContingentCurrentValueComparison({
+    balanceAtEmployment,
+    annualRate,
+    annualGrossIncome,
+    annualGrossIncomeThreshold: policy.annualGrossIncomeThreshold,
+    repaymentRate: policy.repaymentRate,
+    minimumAnnualMandatoryRepayment: policy.minimumAnnualMandatoryRepayment,
+  });
+  const firstYear = currentValueComparison.annualSchedule[0];
+  const annualMandatoryRepayment = firstYear.mandatoryRepayment;
+  const projectedBalance = firstYear.closingBalance;
 
   return {
     type: 'income-contingent',
@@ -102,8 +99,9 @@ export function calculateIncomeContingentLoan(
     monthlyPayment: null,
     monthlyAverageEquivalent: annualMandatoryRepayment / 12,
     projectedBalance,
-    totalInterest: null,
-    totalRepayment: null,
+    totalInterest: currentValueComparison.totalInterest,
+    totalRepayment: currentValueComparison.totalPayment,
+    currentValueComparison,
     calculationPossible: true,
     repaymentRate: policy.repaymentRate,
     annualGrossIncomeThreshold: policy.annualGrossIncomeThreshold,

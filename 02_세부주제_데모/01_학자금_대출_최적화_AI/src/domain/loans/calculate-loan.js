@@ -4,12 +4,16 @@ import { nonNegative } from '../shared/numbers.js';
 import { calculateGeneralLoan } from './general-loan.js';
 import { calculateIncomeContingentLoan } from './income-contingent-loan.js';
 import { getLoanCompositionComponents } from './loan-composition.js';
+import { calculateGeneralCurrentValueComparison } from './current-value-comparison.js';
 
 function generalRepaymentPolicy(policySnapshot) {
   const product = policySnapshot?.products?.general;
   return {
     annualRate: product?.interest?.annualRate,
     repaymentMethod: product?.repayment?.serviceComparisonMethod,
+    maximumGraceYears: product?.repayment?.maximumGraceYears,
+    maximumRepaymentYears: product?.repayment?.maximumRepaymentYears,
+    scheduleAnchorDate: policySnapshot?.effectiveFrom,
   };
 }
 
@@ -52,7 +56,7 @@ function sumKnownResults(results, key) {
 }
 
 function activeProducts(profile, loanComposition) {
-  const selectedProduct = profile.loanType === 'income-contingent'
+  const selectedProduct = (profile.existingLoanProduct ?? profile.loanType) === 'income-contingent'
     ? 'income-contingent'
     : 'general';
   const products = new Set(
@@ -97,6 +101,9 @@ export function calculateLoan(
   const monthlyScheduledPayment = general
     ? general.monthlyPayment
     : 0;
+  const firstYearScheduledRepayment = general
+    ? general.firstYearRepayment
+    : 0;
   const annualMandatoryRepayment = incomeContingent
     ? incomeContingent.annualMandatoryRepayment
     : 0;
@@ -109,6 +116,41 @@ export function calculateLoan(
   const type = results.length > 1
     ? 'mixed'
     : results[0]?.type ?? selectedProduct;
+  const generalCurrentValueComparison = calculationPossible
+    ? calculateGeneralCurrentValueComparison({
+      general,
+      funding,
+      stress: normalizedStress,
+    })
+    : null;
+  const incomeContingentCurrentValueComparison = calculationPossible
+    ? incomeContingent?.currentValueComparison ?? null
+    : null;
+  const comparisonParts = [
+    generalCurrentValueComparison,
+    incomeContingentCurrentValueComparison,
+  ].filter(Boolean);
+  const adjustedMonthlyIncome = nonNegative(profile.salary)
+    * (1 - normalizedStress.salaryReductionRate);
+  const currentValueComparison = calculationPossible
+    ? {
+      label: '현재 기준 10년 단순 비교',
+      periodMonths: 120,
+      monthlyIncome: adjustedMonthlyIncome,
+      monthlyLivingCost: nonNegative(profile.desiredCareerSpend),
+      general: generalCurrentValueComparison,
+      incomeContingent: incomeContingentCurrentValueComparison,
+      totalPayment: sumResults(comparisonParts, 'totalPayment'),
+      totalInterest: sumResults(comparisonParts, 'totalInterest'),
+      endingBalance: sumResults(comparisonParts, 'endingBalance'),
+      assumptions: {
+        incomeGrowthRate: 0,
+        livingCostGrowthRate: 0,
+        thresholdGrowthRate: 0,
+        interestRateChange: 0,
+      },
+    }
+    : null;
 
   return {
     type,
@@ -120,17 +162,22 @@ export function calculateLoan(
     disbursementSchedule: results.flatMap(({ disbursementSchedule }) => (
       disbursementSchedule
     )),
+    componentRepaymentSchedules: general?.componentRepaymentSchedules ?? [],
+    monthlyRepaymentSchedule: general?.monthlyRepaymentSchedule ?? [],
+    repaymentStartDate: general?.repaymentStartDate ?? null,
+    repaymentEndDate: general?.repaymentEndDate ?? null,
     balanceAtGraduation: sumResults(results, 'balanceAtGraduation'),
     duringStudyPayment: sumResults(results, 'duringStudyPayment'),
     duringStudyMonthlyPayment: sumResults(results, 'duringStudyMonthlyPayment'),
     firstYearRepayment: calculationPossible
-      ? (monthlyScheduledPayment * 12) + annualMandatoryRepayment
+      ? firstYearScheduledRepayment + annualMandatoryRepayment
       : null,
     firstMonthPayment: general?.firstMonthPayment ?? null,
     monthlyScheduledPayment,
     annualMandatoryRepayment,
     monthlyAverageMandatoryRepayment,
     monthlyBurdenForComparison,
+    currentValueComparison,
     projectedBalance: sumKnownResults(results, 'projectedBalance'),
     totalInterest: incomeContingent
       ? null

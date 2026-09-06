@@ -74,6 +74,7 @@ function createPolicyReference(policySnapshot, product, purpose) {
 function buildPurposeComponents({
   policySnapshot,
   principal,
+  principalsBySemester,
   product,
   purpose,
   semesters,
@@ -81,7 +82,12 @@ function buildPurposeComponents({
   const safePrincipal = nonNegative(principal);
   if (safePrincipal === 0) return Object.freeze([]);
 
-  const equalPrincipal = safePrincipal / semesters;
+  const allocatedPrincipals = Array.isArray(principalsBySemester)
+    ? Array.from(
+      { length: semesters },
+      (_, index) => nonNegative(principalsBySemester[index]),
+    )
+    : Array.from({ length: semesters }, () => safePrincipal / semesters);
   const policyReference = createPolicyReference(
     policySnapshot,
     product,
@@ -89,10 +95,7 @@ function buildPurposeComponents({
   );
 
   return Object.freeze(Array.from({ length: semesters }, (_, index) => {
-    const allocatedBefore = equalPrincipal * index;
-    const componentPrincipal = index === semesters - 1
-      ? safePrincipal - allocatedBefore
-      : equalPrincipal;
+    const componentPrincipal = allocatedPrincipals[index];
     const semester = index + 1;
 
     return Object.freeze({
@@ -105,12 +108,13 @@ function buildPurposeComponents({
       eligibility: UNKNOWN_ELIGIBILITY,
       policyReference,
     });
-  }));
+  }).filter(({ principal: componentPrincipal }) => componentPrincipal > 0));
 }
 
 export function createLoanComposition({
   policySnapshot,
   principalByPurpose,
+  principalByPurposeSemester,
   productByPurpose,
   semesters,
 }) {
@@ -120,11 +124,18 @@ export function createLoanComposition({
 
   assertAllowedComposition(policySnapshot, productByPurpose);
   const semesterCount = Math.max(1, Math.round(nonNegative(semesters)));
-  const tuitionPrincipal = nonNegative(principalByPurpose?.tuition);
-  const livingPrincipal = nonNegative(principalByPurpose?.living);
+  const tuitionBySemester = principalByPurposeSemester?.tuition;
+  const livingBySemester = principalByPurposeSemester?.living;
+  const tuitionPrincipal = Array.isArray(tuitionBySemester)
+    ? tuitionBySemester.reduce((sum, value) => sum + nonNegative(value), 0)
+    : nonNegative(principalByPurpose?.tuition);
+  const livingPrincipal = Array.isArray(livingBySemester)
+    ? livingBySemester.reduce((sum, value) => sum + nonNegative(value), 0)
+    : nonNegative(principalByPurpose?.living);
   const tuitionComponents = buildPurposeComponents({
     policySnapshot,
     principal: tuitionPrincipal,
+    principalsBySemester: tuitionBySemester,
     product: productByPurpose.tuition,
     purpose: 'tuition',
     semesters: semesterCount,
@@ -132,6 +143,7 @@ export function createLoanComposition({
   const livingComponents = buildPurposeComponents({
     policySnapshot,
     principal: livingPrincipal,
+    principalsBySemester: livingBySemester,
     product: productByPurpose.living,
     purpose: 'living',
     semesters: semesterCount,

@@ -28,12 +28,11 @@ npm run dev
 ## 문서
 
 - `PRODUCT.md`: 제품 목표와 역할 구조
+- `DESIGN.md`: 현행 디자인 시스템
 - `SPEC.md`: 화면·기능 상세 명세
 - `USER_FLOWS.md`: 담당자·고객 시연 흐름
 - `COPY.md`: 역할별 용어와 문구 원칙
 - `DATA_SCHEMA.md`: 시나리오·고객·상태 데이터 구조
-- `ACCEPTANCE.md`: 완료 조건과 검증 기록
-- `IMPLEMENTATION_PLAN.md`: 구현 순서와 범위
 
 ## 주의
 

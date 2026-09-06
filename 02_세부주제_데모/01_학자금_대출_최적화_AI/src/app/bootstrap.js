@@ -2,8 +2,10 @@ import { calculatePlan } from '../application/calculate-plan.js';
 import {
   applyPlan,
   resetStress,
+  selectLoanCandidate,
   selectScenario,
   setProfile,
+  updateResultSelections,
   updateStress,
   updateUi,
 } from './actions.js';
@@ -15,10 +17,13 @@ import {
   readProfile,
   renderDiagnosisSection,
   renderWorkIncomeSummaryContent,
-  toggleLoanFields,
   validateProfile,
 } from '../ui/sections/diagnosis-form.js';
 import { renderFundingFormula } from '../ui/sections/funding-formula.js';
+import {
+  confirmedCommonEligibility,
+  renderLoanOptions,
+} from '../ui/sections/loan-options.js';
 import {
   renderComparisonFigure,
   renderScenarioSelector,
@@ -35,7 +40,6 @@ const state = createInitialState();
 
 const safe = escapeHtml;
 const selectedScenario = () => findSelectedScenario(state);
-const loanTypeLabel = (type) => type === 'income-contingent' ? '취업 후 상환' : '일반 상환';
 
 function bindShell() {
   const form = document.querySelector('#diagnosis-form');
@@ -76,7 +80,6 @@ function openSmoothingDialog() {
 
 function handleFormInput(event) {
   const form = event.currentTarget;
-  if (event.target.name === 'loanType') toggleLoanFields(event.target.value);
   if (event.target.name === 'graduationYears') {
     const years = Number(event.target.value) || 0;
     document.querySelector('#graduation-equivalent').textContent = `${years}년 = ${years * 2}학기 · ${years * 12}개월`;
@@ -138,27 +141,52 @@ function loadSample() {
 }
 
 function recalculate(announce = true) {
-  applyPlan(state, calculatePlan(state.profile, state.stress));
+  const resultSelections = Object.fromEntries(
+    state.currentScenarios.map(({ id }) => [id, {
+      candidateId: state.resultSelections.candidateByScenario[id],
+      includeLiving: state.resultSelections.includeLivingByScenario[id],
+    }]),
+  );
+  applyPlan(state, calculatePlan({
+    ...state.profile,
+    graceYears: state.resultSelections.graceYears,
+    repaymentYears: state.resultSelections.repaymentYears,
+    resultSelections,
+  }, state.stress));
   renderResults();
   if (announce) announceSelection();
+}
+
+function recalculateResultOption(name, value, message) {
+  recalculate(false);
+  window.requestAnimationFrame(() => {
+    const escapedValue = window.CSS?.escape ? window.CSS.escape(String(value)) : String(value);
+    const selector = name === 'loanCandidate' && value != null
+      ? `[name="${name}"][value="${escapedValue}"]`
+      : `[name="${name}"]`;
+    document.querySelector(selector)?.focus({ preventScroll: true });
+    const status = document.querySelector('#condition-update-status');
+    if (status) status.textContent = message;
+  });
 }
 
 function renderResults() {
   const root = document.querySelector('#result-root');
   if (!root || !state.ui.calculated) return;
   if (state.ui.loading) {
-    root.innerHTML = `<section class="result-loading" aria-live="polite"><span class="loader" aria-hidden="true"></span><h2>세 가지 계획을 계산하고 있어요.</h2><p>학비, 생활비, 근로시간, 대출 유형을 같은 기준으로 비교합니다.</p></section>`;
+    root.innerHTML = `<section class="result-loading" aria-live="polite"><span class="loader" aria-hidden="true"></span><h2>세 가지 계획을 계산하고 있어요.</h2><p>학비, 생활비, 근로시간과 가능한 대출 구성을 함께 비교합니다.</p></section>`;
     return;
   }
   const current = selectedScenario();
   root.innerHTML = `
     <section class="results" aria-labelledby="result-title">
       <div class="result-intro">
-        <div><h2 id="result-title">내게 맞는 대학 생활 계획을 비교해 보세요.</h2><p>${safe(state.profile.school)} · 졸업까지 ${state.profile.graduationYears}년 · ${loanTypeLabel(state.profile.loanType)} 기준</p></div>
+        <div><h2 id="result-title">내게 맞는 대학 생활 계획을 비교해 보세요.</h2><p>${safe(state.profile.school)} · 졸업까지 ${state.profile.graduationYears}년 · 현재 조건 기준</p></div>
         <aside>${icon('info')}<p><strong>간이 예상 결과입니다.</strong> 실제 대출 자격·승인은 한국장학재단이 최종 판단합니다.</p></aside>
       </div>
       ${renderScenarioSelector(state)}
       <p id="selection-status" class="sr-only" role="status" aria-live="polite"></p>
+      ${renderLoanOptions(state, current)}
       ${renderComparisonFigure(state, current)}
       ${renderSelectedDetail(state, current)}
       ${renderFundingFormula(state, current)}
@@ -173,6 +201,14 @@ function bindResultEvents() {
     selectScenario(state, event.target.value);
     renderResults(); announceSelection();
   }));
+  document.querySelectorAll('.loan-options input, .loan-options select').forEach((input) => (
+    input.addEventListener('change', handleResultOptionChange)
+  ));
+  document.querySelector('.eligibility-panel')?.addEventListener('toggle', (event) => {
+    updateResultSelections(state, {
+      eligibilityDetailsOpen: event.currentTarget.open,
+    });
+  });
   document.querySelectorAll('.stress-controls input').forEach((input)=>input.addEventListener('change',(event)=>{
     if (event.target.name === 'employmentDelayMonths') {
       updateStress(state, { employmentDelayMonths: Number(event.target.value) });
@@ -185,6 +221,83 @@ function bindResultEvents() {
     }
     recalculate();
   }));
+}
+
+function handleResultOptionChange(event) {
+  const { name, value, checked: isChecked, type } = event.target;
+  const scenarioId = state.selectedScenarioId;
+  if (name === 'loanCandidate') {
+    selectLoanCandidate(state, scenarioId, value);
+    recalculateResultOption(
+      name,
+      value,
+      '대출 구성을 바꿔 자격과 상환 결과를 다시 계산했습니다.',
+    );
+    return;
+  }
+  if (name === 'includeLivingLoan') {
+    updateResultSelections(state, {
+      includeLivingByScenario: {
+        ...state.resultSelections.includeLivingByScenario,
+        [scenarioId]: isChecked,
+      },
+    });
+    recalculateResultOption(
+      name,
+      null,
+      '생활비 대출 선택을 반영해 근로시간과 대출 실행·상환 결과를 다시 계산했습니다.',
+    );
+    return;
+  }
+  if (name === 'graceYears' || name === 'repaymentYears') {
+    const numericValue = Number(value);
+    updateResultSelections(state, { [name]: numericValue });
+    setProfile(state, { ...state.profile, [name]: numericValue });
+    recalculateResultOption(
+      name,
+      value,
+      '일반 상환 기간을 반영해 월 납입액과 10년 결과를 다시 계산했습니다.',
+    );
+    return;
+  }
+  if (name === 'hasExistingLoan') {
+    updateResultSelections(state, { hasExistingLoan: isChecked });
+    setProfile(state, {
+      ...state.profile,
+      existingLoanBalance: isChecked ? state.profile.existingLoanBalance : 0,
+    });
+    recalculateResultOption(
+      name,
+      null,
+      '기존 학자금대출 선택을 반영해 상환 결과를 다시 계산했습니다.',
+    );
+    return;
+  }
+  if (name === 'commonEligibilityConfirmed') {
+    setProfile(state, {
+      ...state.profile,
+      commonEligibilityConfirmed: isChecked,
+      commonEligibility: isChecked ? confirmedCommonEligibility() : {},
+    });
+    recalculateResultOption(
+      name,
+      null,
+      '공통 신청요건 확인을 반영해 자격과 추천 후보를 다시 계산했습니다.',
+    );
+    return;
+  }
+  const numericFields = ['age', 'previousSemesterScore', 'previousSemesterCredits', 'existingLoanBalance'];
+  const profileValue = numericFields.includes(name)
+    ? (value === '' ? undefined : Number(value))
+    : type === 'checkbox'
+      ? isChecked
+      : value;
+  setProfile(state, { ...state.profile, [name]: profileValue });
+  recalculateResultOption(
+    name,
+    value,
+    '입력한 조건을 반영해 자격, 추천 후보와 상환 결과를 다시 계산했습니다.',
+  );
 }
 
 function announceSelection() {
