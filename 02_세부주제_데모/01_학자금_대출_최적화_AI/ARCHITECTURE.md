@@ -6,7 +6,7 @@
 
 ## Dependency direction
 
-UI의 공통 recipe는 `ui/shared/seed-controls.js`, 전역 SEED 테마와 native 제어 어댑터는 `ui/styles/seed-theme.css`가 소유한다. 초기·결과·예시·편집기 렌더 후 `applySeedControls`를 적용한다. 기능별 CSS는 공통 제어의 반경과 선택 스킨을 재정의하지 않는다. 시각 기준은 DESIGN.md의 SEED 토큰 대응표를 따른다.
+UI 공통 제어는 `ui/shared/controls.js`와 `ui/styles/controls.css`가 소유한다. 초기·결과·예시·편집기 렌더 뒤에 공통 제어를 적용한다. 기능별 CSS는 공통 제어의 반경과 선택 스킨을 재정의하지 않는다. 시각 기준은 DESIGN.md를 따른다.
 
 ```text
 main
@@ -67,7 +67,7 @@ tests/
 
 `app/chart-selection.js`는 학기·졸업·취업·상환·연도 시점을 관리한다. 클릭·키보드로 조회 시점을 고정하며 포인터 이동은 무시한다. 월별 표는 전체 행을 유지한다.
 
-`customScenarios`는 id·name·tuitionStrategy·livingPerSemester·candidateId·graceYears·repaymentYears를 사용하며 UI에서 근로시간을 받지 않는다. `custom-scenario.js`는 신청단위 검증을 담당하고 native dialog는 명시적 저장과 취소를 제공한다. 현재 계획에서는 생활비 입력액 하나만 실행한다. SEED 버튼·세그먼트는 기존 shared/seed-controls.js를 재사용한다.
+`customScenarios`는 id·name·tuitionStrategy·livingPerSemester·candidateId·graceYears·repaymentYears를 사용하며 UI에서 근로시간을 받지 않는다. `custom-scenario.js`는 신청단위 검증을 담당하고 native dialog는 명시적 저장과 취소를 제공한다. 현재 계획에서는 생활비 입력액 하나만 실행한다. 버튼·세그먼트는 기존 공통 제어를 재사용한다.
 
 ## 첫 화면 안내
 
@@ -84,7 +84,6 @@ tests/
 졸업 후 준비기간은 비교용 0·1·2·3년 옵션이다. 한국장학재단 일반 상환 소개의 대출기간 상세(2026-09-06 확인)는 잔여재학년수+기본 3년+가산 3년으로 최장거치기간을 산정하며, 기본 3년은 연수·휴학·졸업 후 유예 각 1년이다. 따라서 졸업 후 준비기간의 공식 최대가 3년이라고 표시하지 않는다. 실제 학제·연령 제한은 신청 시 확인하며 앱은 기존 총 거치기간 상한을 유지한다. 근거: https://www.kosaf.go.kr/ko/tuition.do?pg=tuition04_02_01&ttab1=0
 
 모든 비교 지표에서 A/B 선택 바로 아래에 각 안의 등록금·생활비 상환상품과 고정/변동금리를 항상 표시한다. 해당 용도의 신규 대출이 없으면 대출 없음으로 표시하고 상품 변경·시나리오 변경 시 그래프와 함께 갱신한다.
-
 
 ## 상세 자격·혜택 입력 (2026-09-06)
 
@@ -112,3 +111,12 @@ ICL 지원구간의 대출 자격과 이자면제 판정은 별개다. 기초·�
 학적·지원구간과 기본값/미체크 항목의 최종 확인을 필수로 받는다. 연령 예외를 주장하면 필요한 실제 나이를 확인한다. 미입력은 가까운 오류 문구와 첫 항목 포커스로 안내하며 자격 미충족은 입력 완료를 막지 않는다. 완료하면 한 번 재계산하고 입력칸을 접어 학적·지원구간 요약과 정보 수정 버튼을 남긴다. 상품 선택 제목을 완료 버튼 근처에 배치하며 포커스를 옮긴다. 수정 중에는 이전 확정 결과와 미반영 상태를 표시하고 다시 완료하기 전까지 계산에 반영하지 않는다.
 
 `app/eligibility-draft.js`는 작성·검증·확정을 관리한다. `state.eligibility`와 확정 `state.profile`을 분리한다. `ui/sections/eligibility-workflow.js`는 접힘·오류·요약을 표시한다. 작성 시 해당 영역만 갱신하고 완료 시 공통 재계산 경계를 사용한다.
+## AI 패널과 API 경계
+
+bootstrap은 mountAiAssistant로 body에 독립 패널을 붙이고 renderResults에서 상태 갱신을 알린다. 계산 domain/application은 수정하지 않는다. app/ai-context.js가 기존 선택자에서 표시 단위가 포함된 사실 묶음만 만든다. 결과 구조 변경 시 이 어댑터를 맞춘다.
+
+app/ai-session.js는 DOM 없이 대화·맥락 버전·취소·재시도를 관리한다. app/ai-chat.js는 패널과 health/chat 요청을 조립한다. ui/sections/ai-assistant.js와 ui/styles/ai-assistant.css는 기존 토큰·공통 버튼을 사용한다.
+
+server/index.js는 루프백 HTTP 서버와 스키마·Host/Origin·크기·분당/동시 요청 한도를 담당한다. server/ai-provider.js만 Gemini 키와 generateContent 계약을 안다. server/knowledge.js는 제품 의미만 보관하며 자격 판정 엔진을 대체하지 않는다. 공급자 호출은 테스트에서 주입 가능하다.
+
+scripts/dev.js는 Vite와 API를 함께 시작하고 종료한다. Node 24에서 검증하며 native config loader를 사용한다. Vite /api 프록시는 AI_PORT(기본 8787)를 따른다. 키는 서버 환경 변수 또는 Git에서 제외된 .env.local에만 둔다. AI_SETUP.md에 실행과 검증 경계를 기록한다.
